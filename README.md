@@ -15,6 +15,7 @@ later without changing the core gameplay loop.
 - Victory flow after a configurable number of waves.
 - Biome progression: Park -> Lagoon -> Fire.
 - Final victory message after protecting all biomes.
+- Windows/Xbox-style gamepad support through the browser Gamepad API.
 
 ## Run Locally
 
@@ -41,6 +42,18 @@ The game is static, so no build step is required.
 - Use `1x` / `2x` to change game speed.
 - Use biome buttons to switch the current test map.
 - Use `Reiniciar` to restart the current biome.
+
+### Gamepad Controls
+
+Most browsers expose a gamepad only after one controller button is pressed once.
+
+- `D-pad` / left stick: move through menus or move the tile cursor.
+- `A` / `RT`: confirm or place the selected tower.
+- `B`: close the config panel or leave the victory screen for the menu.
+- `LB` / `RB`: cycle tower selection.
+- `X` / `Start`: pause or resume.
+- `Y`: toggle `1x` / `2x` speed.
+- `Back/View`: return to the menu during gameplay.
 
 ## Victory And Progression
 

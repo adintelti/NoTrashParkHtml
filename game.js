@@ -1,6 +1,26 @@
 const COLS = 12;
 const ROWS = 9;
 const WAVES_TO_WIN = 3;
+const GAMEPAD_DEADZONE = 0.35;
+const GAMEPAD_MOVE_REPEAT = 0.16;
+const GAMEPAD_NAV_REPEAT = 0.18;
+
+const gamepadButtons = {
+  a: 0,
+  b: 1,
+  x: 2,
+  y: 3,
+  lb: 4,
+  rb: 5,
+  lt: 6,
+  rt: 7,
+  back: 8,
+  start: 9,
+  dpadUp: 12,
+  dpadDown: 13,
+  dpadLeft: 14,
+  dpadRight: 15
+};
 
 const towers = {
   sentinel: {
@@ -85,6 +105,7 @@ const enemyTypes = [
 ];
 
 const themeOrder = ["park", "lagoon", "lava"];
+const towerOrder = Object.keys(towers);
 const victoryTitles = {
   park: "Parque Protegido!",
   lagoon: "Lagoa Protegida!",
@@ -120,6 +141,17 @@ let state = createFreshState("park");
 let lastFrame = performance.now();
 let messageTimer = 0;
 let resizeObserver;
+const gamepadInput = {
+  index: null,
+  connected: false,
+  cursorX: 0,
+  cursorY: 0,
+  moveCooldown: 0,
+  navCooldown: 0,
+  lastButtons: [],
+  lastDirection: { x: 0, y: 0 },
+  lastNavDirection: { x: 0, y: 0 }
+};
 
 function createFreshState(theme = "park") {
   return {
@@ -156,16 +188,22 @@ function startGame(theme = state.theme) {
   dom.game.classList.remove("is-hidden");
   hideVictory();
   buildBoard();
+  resetGamepadCursor();
+  clearGamepadButtonFocus();
   updateHud();
-  showMessage("Escolha uma torre e clique no mapa.");
+  showMessage("Escolha uma torre e proteja o mapa.");
 }
 
 function returnToMenu() {
   state.running = false;
   hideVictory();
+  clearGamepadCursor();
   clearDynamicElements();
   dom.game.classList.add("is-hidden");
   dom.menu.classList.remove("is-hidden");
+  if (gamepadInput.connected) {
+    focusGamepadButton(dom.playButton);
+  }
 }
 
 function buildBoard() {
@@ -200,6 +238,7 @@ function buildBoard() {
   state.pathSet = pathSet;
   state.blockedSet = blockedSet;
   measureBoard();
+  syncGamepadCursor();
 }
 
 function clearDynamicElements() {
@@ -291,6 +330,7 @@ function placeTower(x, y) {
 
   state.placedTowers.push(tower);
   setElementPosition(el, tower.x, tower.y);
+  syncGamepadCursor();
   updateHud();
 }
 
@@ -595,6 +635,367 @@ function renderAllPositions() {
   state.impacts.forEach((impact) => setElementPosition(impact.el, impact.x, impact.y));
 }
 
+function togglePause() {
+  if (!state.running || state.gameOver || isVictoryOpen()) return;
+  state.paused = !state.paused;
+  updateHud();
+}
+
+function toggleSpeed() {
+  if (!state.running || state.gameOver || isVictoryOpen()) return;
+  state.speed = state.speed === 1 ? 2 : 1;
+  updateHud();
+}
+
+function isMenuVisible() {
+  return !dom.menu.classList.contains("is-hidden");
+}
+
+function isVictoryOpen() {
+  return !dom.victoryOverlay.hidden;
+}
+
+function clamp(value, min, max) {
+  return Math.min(max, Math.max(min, value));
+}
+
+function isBuildableTile(x, y) {
+  const key = coordKey(x, y);
+  return Boolean(state.pathSet)
+    && !state.pathSet.has(key)
+    && !state.blockedSet.has(key)
+    && !state.occupied.has(key);
+}
+
+function getTileAt(x, y) {
+  return dom.board.querySelector(`[data-x="${x}"][data-y="${y}"]`);
+}
+
+function clearGamepadCursor() {
+  const currentTile = dom.board.querySelector(".gamepad-target");
+  currentTile?.classList.remove("gamepad-target", "gamepad-unavailable");
+}
+
+function syncGamepadCursor() {
+  clearGamepadCursor();
+  if (!gamepadInput.connected || !state.running || dom.game.classList.contains("is-hidden")) return;
+
+  const tile = getTileAt(gamepadInput.cursorX, gamepadInput.cursorY);
+  if (tile) {
+    tile.classList.add("gamepad-target");
+    tile.classList.toggle("gamepad-unavailable", !isBuildableTile(gamepadInput.cursorX, gamepadInput.cursorY));
+  }
+}
+
+function resetGamepadCursor() {
+  const centerX = Math.floor(COLS / 2);
+  const centerY = Math.floor(ROWS / 2);
+  const tile = getNearestBuildableTile(centerX, centerY) || { x: centerX, y: centerY };
+  gamepadInput.cursorX = tile.x;
+  gamepadInput.cursorY = tile.y;
+  syncGamepadCursor();
+}
+
+function getNearestBuildableTile(originX, originY) {
+  let bestTile = null;
+  let bestScore = Infinity;
+
+  for (let y = 0; y < ROWS; y += 1) {
+    for (let x = 0; x < COLS; x += 1) {
+      if (!isBuildableTile(x, y)) continue;
+      const score = Math.hypot(x - originX, y - originY);
+      if (score < bestScore) {
+        bestTile = { x, y };
+        bestScore = score;
+      }
+    }
+  }
+
+  return bestTile;
+}
+
+function moveGamepadCursor(dx, dy) {
+  if (!state.running || isVictoryOpen()) return;
+
+  const nextX = clamp(gamepadInput.cursorX + dx, 0, COLS - 1);
+  const nextY = clamp(gamepadInput.cursorY + dy, 0, ROWS - 1);
+  if (nextX === gamepadInput.cursorX && nextY === gamepadInput.cursorY) return;
+
+  gamepadInput.cursorX = nextX;
+  gamepadInput.cursorY = nextY;
+  syncGamepadCursor();
+}
+
+function cycleSelectedTower(step) {
+  const enabledTowerKeys = towerOrder.filter((towerKey) => {
+    const button = dom.towerShop.querySelector(`[data-tower="${towerKey}"]`);
+    return !button?.disabled;
+  });
+  const availableTowerKeys = enabledTowerKeys.length ? enabledTowerKeys : towerOrder;
+  const currentIndex = availableTowerKeys.indexOf(state.selectedTower);
+  const nextIndex = currentIndex >= 0
+    ? (currentIndex + step + availableTowerKeys.length) % availableTowerKeys.length
+    : 0;
+
+  state.selectedTower = availableTowerKeys[nextIndex];
+  updateHud();
+}
+
+function clearGamepadButtonFocus() {
+  document.querySelector(".gamepad-focused")?.classList.remove("gamepad-focused");
+}
+
+function focusGamepadButton(button) {
+  if (!button) return;
+  clearGamepadButtonFocus();
+  button.classList.add("gamepad-focused");
+  button.focus({ preventScroll: true });
+}
+
+function isElementVisible(el) {
+  const rect = el.getBoundingClientRect();
+  const style = window.getComputedStyle(el);
+  return rect.width > 0
+    && rect.height > 0
+    && style.visibility !== "hidden"
+    && style.display !== "none";
+}
+
+function getGamepadFocusableButtons() {
+  const root = isVictoryOpen()
+    ? dom.victoryOverlay
+    : isMenuVisible()
+      ? dom.menu
+      : null;
+
+  if (!root) return [];
+
+  return Array.from(root.querySelectorAll("button"))
+    .filter((button) => !button.disabled && !button.hidden && isElementVisible(button));
+}
+
+function moveGamepadButtonFocus(direction) {
+  const buttons = getGamepadFocusableButtons();
+  if (!buttons.length) return;
+
+  const current = buttons.includes(document.activeElement) ? document.activeElement : null;
+  if (!current) {
+    focusGamepadButton(buttons.find((button) => button.classList.contains("is-active")) || buttons[0]);
+    return;
+  }
+
+  const currentRect = current.getBoundingClientRect();
+  const currentCenter = getRectCenter(currentRect);
+  const axis = Math.abs(direction.x) >= Math.abs(direction.y) ? "x" : "y";
+  const sign = axis === "x" ? Math.sign(direction.x) : Math.sign(direction.y);
+  const scoredButtons = buttons
+    .filter((button) => button !== current)
+    .map((button) => {
+      const center = getRectCenter(button.getBoundingClientRect());
+      const primary = axis === "x" ? center.x - currentCenter.x : center.y - currentCenter.y;
+      const cross = axis === "x" ? center.y - currentCenter.y : center.x - currentCenter.x;
+      return {
+        button,
+        primary,
+        score: Math.abs(primary) + Math.abs(cross) * 0.45
+      };
+    })
+    .filter((candidate) => candidate.primary * sign > 4)
+    .sort((a, b) => a.score - b.score);
+
+  if (scoredButtons.length) {
+    focusGamepadButton(scoredButtons[0].button);
+    return;
+  }
+
+  const currentIndex = buttons.indexOf(current);
+  const fallbackStep = sign >= 0 ? 1 : -1;
+  const fallbackIndex = (currentIndex + fallbackStep + buttons.length) % buttons.length;
+  focusGamepadButton(buttons[fallbackIndex]);
+}
+
+function getRectCenter(rect) {
+  return {
+    x: rect.left + rect.width / 2,
+    y: rect.top + rect.height / 2
+  };
+}
+
+function activateFocusedGamepadButton() {
+  const buttons = getGamepadFocusableButtons();
+  if (!buttons.length) return;
+
+  const activeButton = buttons.includes(document.activeElement)
+    ? document.activeElement
+    : buttons.find((button) => button.classList.contains("is-active")) || buttons[0];
+
+  focusGamepadButton(activeButton);
+  activeButton.click();
+
+  if (activeButton === dom.configButton && !dom.configPanel.hidden) {
+    const firstConfigButton = dom.configPanel.querySelector("button");
+    focusGamepadButton(firstConfigButton);
+  }
+}
+
+function getActiveGamepad() {
+  if (!navigator.getGamepads) return null;
+
+  const gamepads = Array.from(navigator.getGamepads()).filter(Boolean);
+  if (gamepadInput.index !== null) {
+    const selectedGamepad = gamepads.find((gamepad) => gamepad.index === gamepadInput.index);
+    if (selectedGamepad) return selectedGamepad;
+  }
+
+  return gamepads.find((gamepad) => gamepad.mapping === "standard") || gamepads[0] || null;
+}
+
+function readGamepadButtons(gamepad) {
+  return gamepad.buttons.map((button) => button.pressed || button.value > 0.62);
+}
+
+function wasGamepadButtonPressed(buttons, buttonIndex) {
+  return Boolean(buttons[buttonIndex] && !gamepadInput.lastButtons[buttonIndex]);
+}
+
+function readGamepadDirection(gamepad, buttons) {
+  const axisX = Math.abs(gamepad.axes[0] || 0) > GAMEPAD_DEADZONE ? Math.sign(gamepad.axes[0]) : 0;
+  const axisY = Math.abs(gamepad.axes[1] || 0) > GAMEPAD_DEADZONE ? Math.sign(gamepad.axes[1]) : 0;
+  const dpadX = (buttons[gamepadButtons.dpadRight] ? 1 : 0) - (buttons[gamepadButtons.dpadLeft] ? 1 : 0);
+  const dpadY = (buttons[gamepadButtons.dpadDown] ? 1 : 0) - (buttons[gamepadButtons.dpadUp] ? 1 : 0);
+
+  return {
+    x: dpadX || axisX,
+    y: dpadY || axisY
+  };
+}
+
+function shouldRepeatDirection(direction, cooldownKey, lastDirectionKey, repeatDelay, dt) {
+  const hasDirection = direction.x !== 0 || direction.y !== 0;
+  if (!hasDirection) {
+    gamepadInput[cooldownKey] = 0;
+    gamepadInput[lastDirectionKey] = { x: 0, y: 0 };
+    return false;
+  }
+
+  const lastDirection = gamepadInput[lastDirectionKey];
+  const changedDirection = direction.x !== lastDirection.x || direction.y !== lastDirection.y;
+  gamepadInput[cooldownKey] -= dt;
+
+  if (changedDirection || gamepadInput[cooldownKey] <= 0) {
+    gamepadInput[cooldownKey] = repeatDelay;
+    gamepadInput[lastDirectionKey] = { ...direction };
+    return true;
+  }
+
+  return false;
+}
+
+function updateGamepadInput(dt) {
+  const gamepad = getActiveGamepad();
+  if (!gamepad) {
+    if (gamepadInput.connected) {
+      handleGamepadDisconnected();
+    }
+    return;
+  }
+
+  if (!gamepadInput.connected || gamepadInput.index !== gamepad.index) {
+    handleGamepadConnected(gamepad);
+  }
+
+  const buttons = readGamepadButtons(gamepad);
+  const justPressed = (buttonIndex) => wasGamepadButtonPressed(buttons, buttonIndex);
+  const direction = readGamepadDirection(gamepad, buttons);
+
+  if (isVictoryOpen() || isMenuVisible()) {
+    updateMenuGamepadInput(dt, direction, justPressed);
+  } else if (state.running) {
+    updateGameplayGamepadInput(dt, direction, justPressed);
+  }
+
+  gamepadInput.lastButtons = buttons;
+}
+
+function updateMenuGamepadInput(dt, direction, justPressed) {
+  if (shouldRepeatDirection(direction, "navCooldown", "lastNavDirection", GAMEPAD_NAV_REPEAT, dt)) {
+    moveGamepadButtonFocus(direction);
+  }
+
+  if (justPressed(gamepadButtons.a) || justPressed(gamepadButtons.start)) {
+    activateFocusedGamepadButton();
+  }
+
+  if (justPressed(gamepadButtons.b)) {
+    if (isVictoryOpen()) {
+      dom.victoryMenuButton.click();
+    } else if (!dom.configPanel.hidden) {
+      dom.configPanel.hidden = true;
+      focusGamepadButton(dom.configButton);
+    }
+  }
+}
+
+function updateGameplayGamepadInput(dt, direction, justPressed) {
+  clearGamepadButtonFocus();
+
+  if (shouldRepeatDirection(direction, "moveCooldown", "lastDirection", GAMEPAD_MOVE_REPEAT, dt)) {
+    moveGamepadCursor(direction.x, direction.y);
+  }
+
+  if (justPressed(gamepadButtons.a) || justPressed(gamepadButtons.rt)) {
+    placeTower(gamepadInput.cursorX, gamepadInput.cursorY);
+  }
+
+  if (justPressed(gamepadButtons.lb)) {
+    cycleSelectedTower(-1);
+  }
+
+  if (justPressed(gamepadButtons.rb)) {
+    cycleSelectedTower(1);
+  }
+
+  if (justPressed(gamepadButtons.x) || justPressed(gamepadButtons.start)) {
+    togglePause();
+  }
+
+  if (justPressed(gamepadButtons.y)) {
+    toggleSpeed();
+  }
+
+  if (justPressed(gamepadButtons.back)) {
+    returnToMenu();
+  }
+}
+
+function handleGamepadConnected(gamepad) {
+  gamepadInput.index = gamepad.index;
+  gamepadInput.connected = true;
+  gamepadInput.lastButtons = readGamepadButtons(gamepad);
+  syncGamepadCursor();
+  showGamepadNotice("Controle conectado.");
+}
+
+function handleGamepadDisconnected() {
+  gamepadInput.index = null;
+  gamepadInput.connected = false;
+  gamepadInput.lastButtons = [];
+  clearGamepadCursor();
+  clearGamepadButtonFocus();
+  showGamepadNotice("Controle desconectado.");
+}
+
+function showGamepadNotice(text) {
+  if (state.running && !dom.game.classList.contains("is-hidden")) {
+    showMessage(text);
+    return;
+  }
+
+  if (isMenuVisible()) {
+    showMenuNote(text);
+  }
+}
+
 function updateHud() {
   dom.coinText.textContent = String(state.coins);
   dom.livesText.textContent = String(state.lives);
@@ -649,6 +1050,7 @@ function tick(now) {
     }
   }
 
+  updateGamepadInput(rawDt);
   update(rawDt * state.speed);
   requestAnimationFrame(tick);
 }
@@ -663,14 +1065,8 @@ function bindEvents() {
     showMenuNote("Demo pronta no navegador.");
   });
   dom.backToMenuButton.addEventListener("click", returnToMenu);
-  dom.pauseButton.addEventListener("click", () => {
-    state.paused = !state.paused;
-    updateHud();
-  });
-  dom.speedButton.addEventListener("click", () => {
-    state.speed = state.speed === 1 ? 2 : 1;
-    updateHud();
-  });
+  dom.pauseButton.addEventListener("click", togglePause);
+  dom.speedButton.addEventListener("click", toggleSpeed);
   dom.restartButton.addEventListener("click", () => startGame(state.theme));
   dom.victoryContinueButton.addEventListener("click", () => {
     const nextTheme = getNextTheme(state.theme);
@@ -709,6 +1105,9 @@ function bindEvents() {
     placeTower(Number(tile.dataset.x), Number(tile.dataset.y));
   });
 
+  window.addEventListener("gamepadconnected", (event) => handleGamepadConnected(event.gamepad));
+  window.addEventListener("gamepaddisconnected", handleGamepadDisconnected);
+  window.addEventListener("pointerdown", clearGamepadButtonFocus);
   window.addEventListener("resize", measureBoard);
 
   resizeObserver = new ResizeObserver(measureBoard);
