@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>No Trash Park - Browser Demo</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="game.js" defer></script>
+  </head>
+  <body>
+    <div id="app" class="app">
+      <section id="menuScreen" class="screen menu-screen" aria-label="Main menu">
+        <div class="menu-world" aria-hidden="true">
+          <div class="cloud cloud-a"></div>
+          <div class="cloud cloud-b"></div>
+          <div class="menu-path"></div>
+          <div class="menu-creature creature-a"></div>
+          <div class="menu-creature creature-b"></div>
+          <div class="menu-tower tower-a"></div>
+          <div class="menu-tower tower-b"></div>
+        </div>
+
+        <div class="title-mark" aria-label="No Trash Park">
+          <div class="logo-block">NTP</div>
+          <h1>No Trash Park</h1>
+        </div>
+
+        <nav class="menu-actions" aria-label="Menu">
+          <button id="playButton" class="pixel-button menu-button" type="button">Jogar</button>
+          <button id="configButton" class="pixel-button menu-button" type="button">Config.</button>
+          <button id="exitButton" class="pixel-button menu-button" type="button">Sair</button>
+        </nav>
+
+        <div id="configPanel" class="config-panel" hidden>
+          <div class="config-title">Tema inicial</div>
+          <div class="segmented" role="group" aria-label="Starting theme">
+            <button class="seg-button is-active" data-menu-theme="park" type="button">Parque</button>
+            <button class="seg-button" data-menu-theme="lagoon" type="button">Lagoa</button>
+            <button class="seg-button" data-menu-theme="lava" type="button">Fogo</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="gameScreen" class="screen game-screen is-hidden" aria-label="Tower defense demo">
+        <main class="game-layout">
+          <section class="board-stage" aria-label="Battlefield">
+            <div class="top-hud" aria-live="polite">
+              <div class="stat-pill">
+                <span class="heart-stack" id="heartStack" aria-hidden="true"></span>
+                <span id="livesText">10</span>
+              </div>
+              <div class="stat-pill">
+                <span>Wave</span>
+                <strong id="waveText">0</strong>
+              </div>
+            </div>
+
+            <div id="board" class="board theme-park" data-testid="board"></div>
+            <div id="floatingMessage" class="floating-message" aria-live="polite"></div>
+
+            <div id="victoryOverlay" class="victory-overlay" role="dialog" aria-modal="true" aria-labelledby="victoryTitle" hidden>
+              <div class="victory-card">
+                <h2 id="victoryTitle">Parque Protegido!</h2>
+                <div class="victory-actions" aria-label="Victory options">
+                  <button id="victoryContinueButton" class="victory-choice" type="button">Continuar</button>
+                  <button id="victoryRestartButton" class="victory-choice" type="button">De novo!</button>
+                  <button id="victoryMenuButton" class="victory-choice" type="button">Menu</button>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <aside class="shop-panel" aria-label="Shop">
+            <div class="shop-top">
+              <div class="money-readout" aria-label="Coins">
+                <span class="coin-icon" aria-hidden="true">$</span>
+                <span id="coinText">300</span>
+              </div>
+              <button id="backToMenuButton" class="icon-button" title="Menu" aria-label="Menu" type="button"></button>
+            </div>
+
+            <div class="shop-title">SHOP</div>
+
+            <div id="towerShop" class="tower-shop" aria-label="Tower choices">
+              <button class="shop-button is-active" data-tower="sentinel" type="button">
+                <span>Sentinela</span>
+                <strong>$100</strong>
+              </button>
+              <button class="shop-button" data-tower="slow" type="button">
+                <span>Gelida</span>
+                <strong>$75</strong>
+              </button>
+              <button class="shop-button" data-tower="splash" type="button">
+                <span>Canhao</span>
+                <strong>$125</strong>
+              </button>
+              <button class="shop-button" data-tower="flame" type="button">
+                <span>Chama</span>
+                <strong>$150</strong>
+              </button>
+            </div>
+
+            <div class="theme-controls" role="group" aria-label="Level theme">
+              <button class="small-button is-active" data-theme="park" type="button">Parque</button>
+              <button class="small-button" data-theme="lagoon" type="button">Lagoa</button>
+              <button class="small-button" data-theme="lava" type="button">Fogo</button>
+            </div>
+
+            <div class="control-row">
+              <button id="pauseButton" class="shop-button wide" type="button">Pause</button>
+              <button id="speedButton" class="shop-button wide" type="button">1x</button>
+            </div>
+
+            <button id="restartButton" class="pixel-button restart-button" type="button">Reiniciar</button>
+          </aside>
+        </main>
+      </section>
+    </div>
+  </body>
+</html>
