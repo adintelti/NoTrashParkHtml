@@ -1,9 +1,16 @@
 const COLS = 12;
 const ROWS = 9;
-const WAVES_TO_WIN = 3;
+const GAME_VERSION = "1.1.0";
+const MIN_CUSTOM_WAVES = 20;
 const GAMEPAD_DEADZONE = 0.35;
 const GAMEPAD_MOVE_REPEAT = 0.16;
 const GAMEPAD_NAV_REPEAT = 0.18;
+
+const difficultyOptions = {
+  easy: 5,
+  medium: 12,
+  hard: 20
+};
 
 const gamepadButtons = {
   a: 0,
@@ -116,6 +123,7 @@ const dom = {
   menu: document.getElementById("menuScreen"),
   game: document.getElementById("gameScreen"),
   board: document.getElementById("board"),
+  versionText: document.getElementById("versionText"),
   playButton: document.getElementById("playButton"),
   configButton: document.getElementById("configButton"),
   configPanel: document.getElementById("configPanel"),
@@ -134,7 +142,13 @@ const dom = {
   pauseButton: document.getElementById("pauseButton"),
   speedButton: document.getElementById("speedButton"),
   restartButton: document.getElementById("restartButton"),
-  towerShop: document.getElementById("towerShop")
+  towerShop: document.getElementById("towerShop"),
+  customWavesInput: document.getElementById("customWavesInput")
+};
+
+const settings = {
+  difficulty: "medium",
+  customWaves: MIN_CUSTOM_WAVES
 };
 
 let state = createFreshState("park");
@@ -153,9 +167,10 @@ const gamepadInput = {
   lastNavDirection: { x: 0, y: 0 }
 };
 
-function createFreshState(theme = "park") {
+function createFreshState(theme = "park", waveLimit = getConfiguredWaveLimit()) {
   return {
     theme,
+    waveLimit,
     selectedTower: "sentinel",
     coins: 300,
     lives: 10,
@@ -181,7 +196,7 @@ function createFreshState(theme = "park") {
 }
 
 function startGame(theme = state.theme) {
-  state = createFreshState(theme);
+  state = createFreshState(theme, getConfiguredWaveLimit());
   state.running = true;
   syncThemeButtons(theme);
   dom.menu.classList.add("is-hidden");
@@ -336,8 +351,7 @@ function placeTower(x, y) {
 
 function startNextWave() {
   if (state.gameOver) return;
-  if (state.wave + 1 >= WAVES_TO_WIN && !state.victoryShown) {
-    state.wave = WAVES_TO_WIN;
+  if (state.wave >= state.waveLimit && !state.victoryShown) {
     state.victoryShown = true;
     state.victoryPending = true;
     showVictory();
@@ -635,6 +649,67 @@ function renderAllPositions() {
   state.impacts.forEach((impact) => setElementPosition(impact.el, impact.x, impact.y));
 }
 
+function updateVersionText() {
+  dom.versionText.textContent = `Versao ${GAME_VERSION}`;
+}
+
+function getConfiguredWaveLimit() {
+  if (settings.difficulty === "custom") {
+    return normalizeCustomWaves();
+  }
+  return difficultyOptions[settings.difficulty] || difficultyOptions.medium;
+}
+
+function getRawCustomWaves() {
+  const parsedValue = Number.parseInt(dom.customWavesInput.value, 10);
+  if (Number.isNaN(parsedValue)) {
+    return settings.customWaves;
+  }
+  return parsedValue;
+}
+
+function normalizeCustomWaves() {
+  const waveCount = Math.max(MIN_CUSTOM_WAVES, getRawCustomWaves());
+  settings.customWaves = waveCount;
+  dom.customWavesInput.value = String(waveCount);
+  return waveCount;
+}
+
+function setDifficulty(difficulty, focusCustomInput = false) {
+  settings.difficulty = difficulty;
+  if (difficulty === "custom" && dom.customWavesInput.value.trim() === "") {
+    dom.customWavesInput.value = String(settings.customWaves);
+  }
+  syncDifficultyButtons();
+
+  if (focusCustomInput) {
+    focusGamepadButton(dom.customWavesInput);
+    dom.customWavesInput.select();
+  }
+}
+
+function syncDifficultyButtons() {
+  document.querySelectorAll("[data-difficulty]").forEach((button) => {
+    button.classList.toggle("is-active", button.dataset.difficulty === settings.difficulty);
+  });
+}
+
+function isCustomWavesInput(el) {
+  return el === dom.customWavesInput;
+}
+
+function adjustCustomWavesFromGamepad(direction) {
+  const increase = direction.x > 0 || direction.y < 0;
+  const decrease = direction.x < 0 || direction.y > 0;
+  if (!increase && !decrease) return;
+
+  const currentValue = Math.max(MIN_CUSTOM_WAVES, getRawCustomWaves());
+  const nextValue = Math.max(MIN_CUSTOM_WAVES, currentValue + (increase ? 1 : -1));
+  settings.customWaves = nextValue;
+  dom.customWavesInput.value = String(nextValue);
+  setDifficulty("custom");
+}
+
 function togglePause() {
   if (!state.running || state.gameOver || isVictoryOpen()) return;
   state.paused = !state.paused;
@@ -770,8 +845,8 @@ function getGamepadFocusableButtons() {
 
   if (!root) return [];
 
-  return Array.from(root.querySelectorAll("button"))
-    .filter((button) => !button.disabled && !button.hidden && isElementVisible(button));
+  return Array.from(root.querySelectorAll("button, input"))
+    .filter((el) => !el.disabled && !el.hidden && isElementVisible(el));
 }
 
 function moveGamepadButtonFocus(direction) {
@@ -830,6 +905,14 @@ function activateFocusedGamepadButton() {
     : buttons.find((button) => button.classList.contains("is-active")) || buttons[0];
 
   focusGamepadButton(activeButton);
+
+  if (isCustomWavesInput(activeButton)) {
+    setDifficulty("custom");
+    normalizeCustomWaves();
+    activeButton.select();
+    return;
+  }
+
   activeButton.click();
 
   if (activeButton === dom.configButton && !dom.configPanel.hidden) {
@@ -918,6 +1001,18 @@ function updateGamepadInput(dt) {
 }
 
 function updateMenuGamepadInput(dt, direction, justPressed) {
+  if (isCustomWavesInput(document.activeElement)) {
+    if (shouldRepeatDirection(direction, "navCooldown", "lastNavDirection", GAMEPAD_NAV_REPEAT, dt)) {
+      adjustCustomWavesFromGamepad(direction);
+    }
+
+    if (justPressed(gamepadButtons.a) || justPressed(gamepadButtons.b) || justPressed(gamepadButtons.start)) {
+      normalizeCustomWaves();
+      focusGamepadButton(dom.configPanel.querySelector("[data-difficulty='custom']"));
+    }
+    return;
+  }
+
   if (shouldRepeatDirection(direction, "navCooldown", "lastNavDirection", GAMEPAD_NAV_REPEAT, dt)) {
     moveGamepadButtonFocus(direction);
   }
@@ -999,7 +1094,7 @@ function showGamepadNotice(text) {
 function updateHud() {
   dom.coinText.textContent = String(state.coins);
   dom.livesText.textContent = String(state.lives);
-  dom.waveText.textContent = String(state.wave);
+  dom.waveText.textContent = `${state.wave}/${state.waveLimit}`;
   dom.pauseButton.textContent = state.paused ? "Retomar" : "Pause";
   dom.speedButton.textContent = `${state.speed}x`;
   dom.heartStack.innerHTML = "";
@@ -1092,6 +1187,25 @@ function bindEvents() {
     });
   });
 
+  document.querySelectorAll("[data-difficulty]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const difficulty = button.dataset.difficulty;
+      setDifficulty(difficulty, difficulty === "custom");
+    });
+  });
+
+  dom.customWavesInput.addEventListener("focus", () => setDifficulty("custom"));
+  dom.customWavesInput.addEventListener("input", () => {
+    const digitsOnly = dom.customWavesInput.value.replace(/\D/g, "");
+    if (dom.customWavesInput.value !== digitsOnly) {
+      dom.customWavesInput.value = digitsOnly;
+    }
+    settings.difficulty = "custom";
+    syncDifficultyButtons();
+  });
+  dom.customWavesInput.addEventListener("change", normalizeCustomWaves);
+  dom.customWavesInput.addEventListener("blur", normalizeCustomWaves);
+
   dom.towerShop.addEventListener("click", (event) => {
     const button = event.target.closest("[data-tower]");
     if (!button || button.disabled) return;
@@ -1127,5 +1241,7 @@ function showMenuNote(text) {
 
 bindEvents();
 buildBoard();
+syncDifficultyButtons();
+updateVersionText();
 updateHud();
 requestAnimationFrame(tick);

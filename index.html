@@ -25,6 +25,8 @@
           <h1>No Trash Park</h1>
         </div>
 
+        <div id="versionText" class="version-text" aria-label="Game version"></div>
+
         <nav class="menu-actions" aria-label="Menu">
           <button id="playButton" class="pixel-button menu-button" type="button">Jogar</button>
           <button id="configButton" class="pixel-button menu-button" type="button">Config.</button>
@@ -32,11 +34,40 @@
         </nav>
 
         <div id="configPanel" class="config-panel" hidden>
-          <div class="config-title">Tema inicial</div>
-          <div class="segmented" role="group" aria-label="Starting theme">
-            <button class="seg-button is-active" data-menu-theme="park" type="button">Parque</button>
-            <button class="seg-button" data-menu-theme="lagoon" type="button">Lagoa</button>
-            <button class="seg-button" data-menu-theme="lava" type="button">Fogo</button>
+          <div class="config-section">
+            <div class="config-title">Tema inicial</div>
+            <div class="segmented" role="group" aria-label="Starting theme">
+              <button class="seg-button is-active" data-menu-theme="park" type="button">Parque</button>
+              <button class="seg-button" data-menu-theme="lagoon" type="button">Lagoa</button>
+              <button class="seg-button" data-menu-theme="lava" type="button">Fogo</button>
+            </div>
+          </div>
+
+          <div class="config-section">
+            <div class="config-title">Dificuldade</div>
+            <div class="difficulty-grid" role="group" aria-label="Difficulty">
+              <button class="seg-button" data-difficulty="easy" type="button">
+                <span>Facil</span>
+                <strong>5</strong>
+              </button>
+              <button class="seg-button is-active" data-difficulty="medium" type="button">
+                <span>Medio</span>
+                <strong>12</strong>
+              </button>
+              <button class="seg-button" data-difficulty="hard" type="button">
+                <span>Dificil</span>
+                <strong>20</strong>
+              </button>
+              <button class="seg-button" data-difficulty="custom" type="button">
+                <span>Custom</span>
+                <strong>20+</strong>
+              </button>
+            </div>
+
+            <label class="waves-field" for="customWavesInput">
+              <span>Ondas</span>
+              <input id="customWavesInput" class="waves-input" type="text" inputmode="numeric" pattern="[0-9]*" value="20" aria-label="Custom wave count">
+            </label>
           </div>
         </div>
       </section>

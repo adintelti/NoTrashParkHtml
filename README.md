@@ -9,6 +9,7 @@ later without changing the core gameplay loop.
 
 - Static HTML, CSS, and JavaScript demo.
 - Pixel-style menu and in-game shop panel.
+- Menu version label driven by `GAME_VERSION` in `game.js`.
 - Three themed biomes: Park, Lagoon, and Fire.
 - Tower placement on valid map tiles.
 - Enemy waves, projectiles, health bars, coins, lives, pause, and speed toggle.
@@ -36,6 +37,7 @@ The game is static, so no build step is required.
 ## Controls
 
 - Click `Jogar` to start.
+- Open `Config.` to choose the starting biome and wave difficulty.
 - Select a tower in the shop.
 - Click a valid terrain tile to place the selected tower.
 - Use `Pause` to pause or resume.
@@ -49,6 +51,7 @@ Most browsers expose a gamepad only after one controller button is pressed once.
 
 - `D-pad` / left stick: move through menus or move the tile cursor.
 - `A` / `RT`: confirm or place the selected tower.
+- With the custom wave field focused, `D-pad` / left stick changes the number.
 - `B`: close the config panel or leave the victory screen for the menu.
 - `LB` / `RB`: cycle tower selection.
 - `X` / `Start`: pause or resume.
@@ -57,14 +60,12 @@ Most browsers expose a gamepad only after one controller button is pressed once.
 
 ## Victory And Progression
 
-The number of waves required to win a biome is controlled in `game.js`:
+The starting menu config controls how many waves must be cleared in each biome:
 
-```js
-const WAVES_TO_WIN = 3;
-```
-
-For testing, the current value is `3`. Increase it later, for example to `15`,
-when the level pacing is ready.
+- `Facil`: 5 waves.
+- `Medio`: 12 waves.
+- `Dificil`: 20 waves.
+- `Custom`: any typed value from 20 waves upward.
 
 When the player wins:
 

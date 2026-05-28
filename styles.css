@@ -28,7 +28,8 @@ body {
   image-rendering: pixelated;
 }
 
-button {
+button,
+input {
   font: inherit;
 }
 
@@ -50,7 +51,8 @@ button {
 .shop-button,
 .small-button,
 .seg-button,
-.icon-button {
+.icon-button,
+.waves-input {
   border: 3px solid var(--outline);
   border-radius: 4px;
   color: #160b00;
@@ -67,7 +69,8 @@ button {
 .shop-button:hover,
 .small-button:hover,
 .seg-button:hover,
-.icon-button:hover {
+.icon-button:hover,
+.waves-input:hover {
   filter: brightness(1.08);
 }
 
@@ -75,7 +78,8 @@ button {
 .shop-button.gamepad-focused,
 .small-button.gamepad-focused,
 .seg-button.gamepad-focused,
-.icon-button.gamepad-focused {
+.icon-button.gamepad-focused,
+.waves-input.gamepad-focused {
   outline: 4px solid #fff0a1;
   outline-offset: 4px;
   filter: brightness(1.08);
@@ -235,6 +239,21 @@ button {
   letter-spacing: 0;
 }
 
+.version-text {
+  position: absolute;
+  left: clamp(16px, 3vw, 42px);
+  bottom: clamp(14px, 2.4vw, 32px);
+  z-index: 1;
+  padding: 5px 8px;
+  color: #14312a;
+  background: rgba(255, 240, 176, 0.78);
+  border: 3px solid #0d5938;
+  box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.16);
+  font-size: 0.85rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
 .menu-actions {
   position: relative;
   z-index: 1;
@@ -257,7 +276,7 @@ button {
   right: 190px;
   top: 50%;
   z-index: 2;
-  width: 220px;
+  width: min(310px, calc(100vw - 32px));
   padding: 12px;
   color: #180b02;
   background: #e6a840;
@@ -265,15 +284,27 @@ button {
   box-shadow: 7px 7px 0 rgba(0, 0, 0, 0.25);
 }
 
+.config-section + .config-section {
+  margin-top: 12px;
+}
+
 .config-title {
   margin-bottom: 8px;
   font-weight: 700;
 }
 
-.segmented {
+.segmented,
+.difficulty-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
   gap: 6px;
+}
+
+.segmented {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.difficulty-grid {
+  grid-template-columns: repeat(2, 1fr);
 }
 
 .seg-button {
@@ -282,11 +313,41 @@ button {
   font-size: 0.75rem;
 }
 
+.seg-button strong {
+  display: block;
+  margin-top: 2px;
+  font-size: 0.7rem;
+}
+
 .seg-button.is-active,
 .small-button.is-active,
 .shop-button.is-active {
   background: #ffe473;
   outline: 3px solid #fff0a1;
+}
+
+.waves-field {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.waves-input {
+  width: 100%;
+  min-height: 38px;
+  padding: 5px 8px;
+  cursor: text;
+  font-weight: 700;
+  text-align: center;
+}
+
+.waves-input:focus {
+  outline: 3px solid #fff0a1;
+  outline-offset: 3px;
 }
 
 .game-screen {
@@ -953,6 +1014,13 @@ button {
     right: 50%;
     bottom: 104px;
     transform: translateX(50%);
+  }
+
+  .version-text {
+    top: 14px;
+    right: 14px;
+    bottom: auto;
+    left: auto;
   }
 
   .game-layout {
