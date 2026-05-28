@@ -1,0 +1,105 @@
+.floating-message {
+  position: absolute;
+  left: 50%;
+  bottom: 18px;
+  z-index: 8;
+  max-width: min(86%, 560px);
+  min-height: 38px;
+  padding: 9px 14px;
+  color: #160b00;
+  background: rgba(255, 226, 111, 0.95);
+  border: 3px solid var(--outline);
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.3);
+  transform: translateX(-50%);
+  opacity: 0;
+  transition: opacity 160ms ease;
+  text-align: center;
+  font-weight: 700;
+}
+
+.floating-message.is-visible {
+  opacity: 1;
+}
+
+.victory-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 12;
+  display: grid;
+  place-items: center;
+  padding: clamp(16px, 5vw, 46px);
+  background: rgba(15, 40, 11, 0.42);
+}
+
+.victory-overlay[hidden] {
+  display: none;
+}
+
+.victory-card {
+  position: relative;
+  width: min(86%, 620px);
+  min-height: min(78%, 520px);
+  display: grid;
+  align-content: center;
+  gap: clamp(42px, 8vh, 78px);
+  padding: clamp(36px, 6vw, 70px);
+  color: #071c0b;
+  background:
+    linear-gradient(#131313 0 0) 28px 28px / 18px 18px no-repeat,
+    linear-gradient(#131313 0 0) calc(100% - 28px) 28px / 18px 18px no-repeat,
+    linear-gradient(#131313 0 0) 28px calc(100% - 28px) / 18px 18px no-repeat,
+    linear-gradient(#131313 0 0) calc(100% - 28px) calc(100% - 28px) / 18px 18px no-repeat,
+    #ffb703;
+  border: 22px solid #131313;
+  box-shadow:
+    18px 18px 0 #ffb703,
+    0 0 0 22px #ffb703,
+    0 18px 0 rgba(0, 0, 0, 0.28);
+  text-align: center;
+}
+
+.victory-card h2 {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  font-size: clamp(2.4rem, 7vw, 5.3rem);
+  line-height: 0.95;
+  letter-spacing: 0;
+  text-align: left;
+}
+
+.victory-overlay.is-final-victory .victory-card h2 {
+  font-size: clamp(1.8rem, 4.5vw, 3.6rem);
+  line-height: 1.12;
+  text-align: center;
+}
+
+.victory-actions {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: clamp(18px, 4vh, 34px);
+}
+
+.victory-choice {
+  width: min(100%, 430px);
+  min-height: 70px;
+  margin: 0 auto;
+  border: 0;
+  color: #060606;
+  background: transparent;
+  cursor: pointer;
+  font-size: clamp(1.9rem, 5vw, 4rem);
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: 0;
+  text-align: center;
+}
+
+.victory-choice:hover,
+.victory-choice:focus-visible,
+.victory-choice.gamepad-focused {
+  color: #0a4d13;
+  outline: 5px solid #0a4d13;
+  outline-offset: 6px;
+}

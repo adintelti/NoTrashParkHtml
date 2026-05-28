@@ -1,0 +1,109 @@
+:root {
+  --ink: #16110d;
+  --outline: #24170c;
+  --gold: #f7b617;
+  --gold-light: #ffd96b;
+  --panel: #a55e2d;
+  --panel-dark: #6c351d;
+  --cell-size: 56px;
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  overflow-x: hidden;
+  background: #111;
+  color: #fff7d6;
+  font-family: "Courier New", Courier, monospace;
+  image-rendering: pixelated;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+.app {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  background:
+    linear-gradient(180deg, rgba(4, 21, 36, 0.25), rgba(6, 5, 10, 0.65)),
+    #15568f;
+}
+
+.screen {
+  width: min(100vw, 1160px);
+  min-height: min(100vh, 720px);
+}
+
+.screen.is-hidden {
+  display: none;
+}
+
+.pixel-button,
+.shop-button,
+.small-button,
+.seg-button,
+.icon-button,
+.waves-input {
+  border: 3px solid var(--outline);
+  border-radius: 4px;
+  color: #160b00;
+  background: var(--gold);
+  box-shadow:
+    inset 3px 3px 0 var(--gold-light),
+    inset -3px -3px 0 #b46600,
+    0 4px 0 #351d0b;
+  cursor: pointer;
+  text-transform: none;
+}
+
+.pixel-button:hover,
+.shop-button:hover,
+.small-button:hover,
+.seg-button:hover,
+.icon-button:hover,
+.waves-input:hover {
+  filter: brightness(1.08);
+}
+
+.pixel-button.gamepad-focused,
+.shop-button.gamepad-focused,
+.small-button.gamepad-focused,
+.seg-button.gamepad-focused,
+.icon-button.gamepad-focused,
+.waves-input.gamepad-focused {
+  outline: 4px solid #fff0a1;
+  outline-offset: 4px;
+  filter: brightness(1.08);
+}
+
+.pixel-button:active,
+.shop-button:active,
+.small-button:active,
+.seg-button:active,
+.icon-button:active {
+  transform: translateY(2px);
+  box-shadow:
+    inset 3px 3px 0 var(--gold-light),
+    inset -3px -3px 0 #b46600,
+    0 2px 0 #351d0b;
+}
+
+.seg-button.is-active,
+.small-button.is-active,
+.shop-button.is-active {
+  background: #ffe473;
+  outline: 3px solid #fff0a1;
+}

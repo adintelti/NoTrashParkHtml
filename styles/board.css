@@ -1,0 +1,149 @@
+.board {
+  --board-cols: 12;
+  --board-rows: 9;
+  position: relative;
+  width: min(100%, 840px);
+  max-width: 840px;
+  aspect-ratio: 4 / 3;
+  display: grid;
+  grid-template-columns: repeat(var(--board-cols), 1fr);
+  grid-template-rows: repeat(var(--board-rows), 1fr);
+  overflow: hidden;
+  isolation: isolate;
+  background: #14651d;
+  cursor: crosshair;
+}
+
+.tile {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.tile::after {
+  content: "";
+  position: absolute;
+  inset: 18% 24% auto auto;
+  width: 7px;
+  height: 7px;
+  opacity: 0.44;
+  background: currentColor;
+}
+
+.tile.detail-b::after {
+  inset: auto auto 22% 18%;
+  width: 5px;
+  height: 11px;
+}
+
+.tile.detail-c::after {
+  inset: 32% auto auto 22%;
+  width: 13px;
+  height: 4px;
+}
+
+.tile.path {
+  z-index: 1;
+}
+
+.tile.can-place:hover {
+  outline: 4px solid rgba(255, 242, 130, 0.78);
+  outline-offset: -5px;
+}
+
+.tile.gamepad-target {
+  z-index: 3;
+  outline: 4px solid rgba(255, 242, 130, 0.95);
+  outline-offset: -5px;
+  box-shadow: inset 0 0 0 3px rgba(255, 246, 180, 0.45);
+}
+
+.tile.gamepad-target.blocked,
+.tile.gamepad-target.gamepad-unavailable {
+  outline-color: rgba(255, 102, 91, 0.95);
+  box-shadow: inset 0 0 0 3px rgba(255, 102, 91, 0.32);
+}
+
+.tile:focus {
+  outline: none;
+}
+
+.tile:focus-visible {
+  outline: 4px solid rgba(255, 242, 130, 0.9);
+  outline-offset: -5px;
+}
+
+.tile.blocked {
+  cursor: not-allowed;
+}
+
+.theme-park .tile.terrain {
+  color: #0a641b;
+  background:
+    radial-gradient(circle at 28% 34%, #0b751e 0 3px, transparent 4px),
+    radial-gradient(circle at 70% 82%, #0d7f25 0 2px, transparent 3px),
+    #10861f;
+}
+
+.theme-park .tile.path {
+  color: #613c22;
+  background:
+    linear-gradient(90deg, rgba(35, 19, 8, 0.22) 0 4px, transparent 4px 18px),
+    radial-gradient(circle at 32% 28%, #9f6c3a 0 7px, transparent 8px),
+    radial-gradient(circle at 74% 78%, #6d4427 0 6px, transparent 7px),
+    #7b5230;
+  border-color: #5d351f;
+}
+
+.theme-park .tile.terrain.blocked {
+  background:
+    radial-gradient(circle at 50% 42%, #171212 0 25%, transparent 26%),
+    #10861f;
+}
+
+.theme-lagoon .tile.terrain {
+  color: #d9fbff;
+  background:
+    linear-gradient(160deg, transparent 0 45%, rgba(255, 255, 255, 0.42) 45% 48%, transparent 48% 100%) 6px 18px / 58px 42px,
+    #65d5ed;
+}
+
+.theme-lagoon .tile.path {
+  color: #0d2b22;
+  background:
+    radial-gradient(circle at 20% 28%, #91e8d0 0 2px, transparent 3px),
+    radial-gradient(circle at 64% 70%, #91e8d0 0 2px, transparent 3px),
+    #06271f;
+  border-color: #0a1615;
+  box-shadow: inset 0 0 0 4px #074335;
+}
+
+.theme-lagoon .tile.terrain.blocked {
+  background:
+    radial-gradient(circle at 50% 50%, #219444 0 26%, transparent 27%),
+    #65d5ed;
+}
+
+.theme-lava .tile.terrain {
+  color: #6a2815;
+  background:
+    radial-gradient(circle at 26% 30%, #75321a 0 2px, transparent 3px),
+    radial-gradient(circle at 72% 70%, #4f1f13 0 2px, transparent 3px),
+    #8a3f1e;
+}
+
+.theme-lava .tile.path {
+  color: #8d5f4e;
+  background:
+    radial-gradient(circle at 18% 40%, #c99675 0 7px, transparent 8px),
+    radial-gradient(circle at 78% 68%, #744132 0 7px, transparent 8px),
+    #a06f5b;
+  border-color: #553024;
+}
+
+.theme-lava .tile.terrain.blocked {
+  background:
+    radial-gradient(circle at 52% 52%, #ffb12e 0 20%, #e54b16 21% 32%, transparent 33%),
+    #8a3f1e;
+}

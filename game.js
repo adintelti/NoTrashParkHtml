@@ -1,6 +1,6 @@
 const COLS = 12;
 const ROWS = 9;
-const GAME_VERSION = "1.1.0";
+const GAME_VERSION = "1.1.1";
 const MIN_CUSTOM_WAVES = 20;
 const GAMEPAD_DEADZONE = 0.35;
 const GAMEPAD_MOVE_REPEAT = 0.16;

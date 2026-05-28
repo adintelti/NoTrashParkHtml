@@ -1,0 +1,172 @@
+.range-ring {
+  position: absolute;
+  z-index: 3;
+  width: calc(var(--cell-size) * 4);
+  height: calc(var(--cell-size) * 4);
+  border: 3px dashed rgba(255, 247, 172, 0.7);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.tower,
+.enemy,
+.projectile,
+.impact {
+  position: absolute;
+  z-index: 4;
+  pointer-events: none;
+}
+
+.tower {
+  width: calc(var(--cell-size) * 0.62);
+  height: calc(var(--cell-size) * 0.82);
+  transform: translate(-50%, -68%);
+}
+
+.tower::before {
+  content: "";
+  position: absolute;
+  left: 18%;
+  right: 18%;
+  bottom: 0;
+  height: 30%;
+  border: 3px solid #19100c;
+  background: #2b2d33;
+}
+
+.tower::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 8%;
+  width: 42%;
+  height: 52%;
+  border: 3px solid #19100c;
+  border-radius: 50% 50% 40% 40%;
+  transform: translateX(-50%);
+}
+
+.tower-sentinel::after {
+  background: linear-gradient(#e7edf2 0 35%, #718690 36%);
+}
+
+.tower-slow::after {
+  background: radial-gradient(circle at 50% 30%, #ffffff 0 18%, #66d8ff 19% 100%);
+}
+
+.tower-splash::after {
+  background: radial-gradient(circle, #20242b 0 38%, #c6a16a 39% 100%);
+}
+
+.tower-flame::after {
+  background:
+    radial-gradient(circle at 55% 36%, #ffe69c 0 18%, transparent 19%),
+    linear-gradient(#d73a1f, #ff9f28);
+}
+
+.enemy {
+  width: calc(var(--cell-size) * 0.5);
+  height: calc(var(--cell-size) * 0.5);
+  border: 3px solid #130c09;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background: #dd3b22;
+  box-shadow: 4px 5px 0 rgba(0, 0, 0, 0.22);
+}
+
+.enemy::before,
+.enemy::after {
+  content: "";
+  position: absolute;
+  top: 22%;
+  width: 12%;
+  height: 12%;
+  background: #111;
+}
+
+.enemy::before {
+  left: 26%;
+}
+
+.enemy::after {
+  right: 26%;
+}
+
+.enemy-runner {
+  border-radius: 35% 55% 45% 60%;
+  background: #ed4b22;
+}
+
+.enemy-brute {
+  border-radius: 45% 55% 50% 42%;
+  background:
+    radial-gradient(circle at 22% 30%, #1bd18c 0 13%, transparent 14%),
+    #2a201d;
+}
+
+.enemy-shield {
+  border-radius: 18% 18% 50% 50%;
+  background: #745645;
+}
+
+.enemy.slowed {
+  box-shadow:
+    0 0 0 4px rgba(118, 223, 255, 0.65),
+    4px 5px 0 rgba(0, 0, 0, 0.22);
+}
+
+.health {
+  position: absolute;
+  left: -18%;
+  top: -28%;
+  width: 136%;
+  height: 6px;
+  border: 1px solid #130c09;
+  background: #35160f;
+}
+
+.health span {
+  display: block;
+  height: 100%;
+  background: #7dff54;
+}
+
+.projectile {
+  width: calc(var(--cell-size) * 0.16);
+  height: calc(var(--cell-size) * 0.16);
+  border: 2px solid #160b00;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background: #fff1a8;
+}
+
+.projectile-slow {
+  background: #8ee9ff;
+}
+
+.projectile-splash {
+  width: calc(var(--cell-size) * 0.2);
+  height: calc(var(--cell-size) * 0.2);
+  background: #2f3037;
+}
+
+.projectile-flame {
+  background: #ff7e1d;
+}
+
+.impact {
+  width: calc(var(--cell-size) * 0.72);
+  height: calc(var(--cell-size) * 0.72);
+  border: 4px solid rgba(255, 225, 106, 0.88);
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(0.4);
+  animation: pop 220ms steps(3, end) forwards;
+}
+
+@keyframes pop {
+  to {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.2);
+  }
+}

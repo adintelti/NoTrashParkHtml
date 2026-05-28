@@ -1,0 +1,196 @@
+.game-screen {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: clamp(8px, 1.6vw, 20px);
+  background:
+    linear-gradient(180deg, #0d2b3c, #16110d);
+}
+
+.game-layout {
+  width: min(100%, 1120px);
+  min-height: min(calc(100vh - 24px), 690px);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(230px, 280px);
+  border: 4px solid #160b04;
+  background: #080b0d;
+  box-shadow: 0 16px 0 rgba(0, 0, 0, 0.24);
+}
+
+.board-stage {
+  position: relative;
+  min-height: 520px;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  background: #0f411a;
+}
+
+.top-hud {
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  z-index: 6;
+  display: flex;
+  gap: 10px;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.stat-pill {
+  min-width: 74px;
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #180c03;
+  background: #fff0b0;
+  border: 3px solid var(--outline);
+  box-shadow: 0 3px 0 #51301a;
+  font-weight: 700;
+}
+
+.heart-stack {
+  display: flex;
+  gap: 2px;
+}
+
+.heart-dot {
+  width: 9px;
+  height: 9px;
+  background: #d52034;
+  border: 1px solid #640c17;
+  transform: rotate(45deg);
+}
+
+.shop-panel {
+  min-height: 100%;
+  padding: 12px;
+  color: #160b00;
+  background:
+    linear-gradient(90deg, rgba(75, 33, 15, 0.28) 1px, transparent 1px) 0 0 / 38px 100%,
+    linear-gradient(#b96c35, #8b4626);
+  border-left: 5px solid #351806;
+}
+
+.shop-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.money-readout {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 34px;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.coin-icon {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: #402100;
+  background: #ffd331;
+  border: 3px solid #7a3c00;
+}
+
+.icon-button {
+  position: relative;
+  width: 36px;
+  height: 34px;
+}
+
+.icon-button::before,
+.icon-button::after {
+  content: "";
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  height: 4px;
+  background: #1a0c00;
+  box-shadow: 0 8px 0 #1a0c00;
+}
+
+.icon-button::before {
+  top: 8px;
+}
+
+.shop-title {
+  width: fit-content;
+  margin: 0 auto 12px;
+  padding: 4px 8px;
+  color: #160b00;
+  background: #ffe76b;
+  border: 4px solid var(--outline);
+  font-size: 1.7rem;
+  font-weight: 900;
+  line-height: 1;
+  text-decoration: underline;
+}
+
+.tower-shop {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.shop-button {
+  min-height: 62px;
+  padding: 7px;
+  display: grid;
+  align-content: center;
+  gap: 4px;
+  font-size: 0.72rem;
+  text-align: left;
+}
+
+.shop-button strong {
+  font-size: 0.8rem;
+}
+
+.shop-button[disabled] {
+  opacity: 0.58;
+  cursor: not-allowed;
+}
+
+.theme-controls {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.small-button {
+  min-height: 42px;
+  padding: 5px 4px;
+  font-size: 0.68rem;
+}
+
+.control-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.shop-button.wide {
+  min-height: 56px;
+  place-items: center;
+  text-align: center;
+  font-size: 0.95rem;
+}
+
+.restart-button {
+  width: 100%;
+  min-height: 64px;
+  margin-top: 16px;
+  font-weight: 700;
+}

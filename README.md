@@ -79,7 +79,8 @@ When the player wins:
 ```text
 .
 |-- index.html       Main HTML structure and screens
-|-- styles.css       Pixel-art styling, map themes, UI, and modal visuals
+|-- styles.css       CSS entrypoint that imports focused style modules
+|-- styles/          Split CSS modules by UI responsibility
 |-- game.js          Game state, waves, towers, enemies, and progression
 |-- demo-preview.png Browser verification preview image
 ```
