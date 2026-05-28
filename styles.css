@@ -1,6 +1,7 @@
 @import "./styles/base.css";
 @import "./styles/menu.css";
 @import "./styles/game-layout.css";
+@import "./styles/gamepad-hints.css";
 @import "./styles/board.css";
 @import "./styles/entities.css";
 @import "./styles/overlays.css";

@@ -1,0 +1,132 @@
+.controller-hints {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.app.gamepad-connected.using-gamepad .controller-hints {
+  display: flex;
+}
+
+.hint-chip {
+  min-height: 32px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 7px;
+  color: #180c03;
+  background: rgba(255, 240, 176, 0.92);
+  border: 3px solid var(--outline);
+  box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.22);
+  font-size: 0.63rem;
+  font-weight: 900;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.pad-key {
+  position: relative;
+  flex: 0 0 auto;
+  min-width: 23px;
+  min-height: 23px;
+  display: inline-grid;
+  place-items: center;
+  padding: 0 5px;
+  color: #f8fbff;
+  background: #202734;
+  border: 2px solid #07101c;
+  box-shadow:
+    inset 2px 2px 0 rgba(255, 255, 255, 0.28),
+    inset -2px -2px 0 rgba(0, 0, 0, 0.32);
+  font-size: 0.62rem;
+  font-weight: 900;
+}
+
+.pad-key-face {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  padding: 0;
+}
+
+.pad-key-wide,
+.pad-key-trigger {
+  min-width: 34px;
+  border-radius: 6px;
+}
+
+.pad-key-dpad {
+  width: 24px;
+  height: 24px;
+  min-width: 24px;
+  padding: 0;
+  border-radius: 4px;
+}
+
+.pad-key-dpad::before,
+.pad-key-dpad::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  background: #f8fbff;
+  border-radius: 2px;
+  transform: translate(-50%, -50%);
+}
+
+.pad-key-dpad::before {
+  width: 15px;
+  height: 5px;
+}
+
+.pad-key-dpad::after {
+  width: 5px;
+  height: 15px;
+}
+
+.is-a {
+  background: #1f8d50;
+}
+
+.is-b {
+  background: #bc2c34;
+}
+
+.is-x {
+  background: #1f6fb6;
+}
+
+.is-y {
+  color: #221200;
+  background: #f0c12f;
+}
+
+.menu-controller-hints {
+  position: absolute;
+  left: 50%;
+  bottom: clamp(14px, 2.4vw, 32px);
+  z-index: 2;
+  max-width: min(560px, calc(100% - 320px));
+  flex-wrap: wrap;
+  justify-content: center;
+  transform: translateX(-50%);
+}
+
+.gameplay-board-hints {
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  z-index: 7;
+  max-width: calc(100% - 24px);
+  flex-wrap: wrap;
+}
+
+.shop-gamepad-hints {
+  margin: 0 0 12px;
+  grid-template-columns: 1fr 1fr;
+}
+
+.app.gamepad-connected.using-gamepad .shop-gamepad-hints {
+  display: grid;
+}

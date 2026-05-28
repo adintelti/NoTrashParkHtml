@@ -41,6 +41,11 @@
     left: auto;
   }
 
+  .menu-controller-hints {
+    bottom: 86px;
+    max-width: calc(100% - 24px);
+  }
+
   .game-layout {
     min-height: 100vh;
     grid-template-columns: 1fr;
@@ -64,6 +69,10 @@
   .tower-shop {
     grid-template-columns: repeat(4, 1fr);
   }
+
+  .shop-gamepad-hints {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
 }
 
 @media (max-width: 560px) {
@@ -81,6 +90,26 @@
 
   .shop-button {
     min-height: 54px;
+  }
+
+  .hint-chip {
+    min-height: 30px;
+    padding: 4px 5px;
+    font-size: 0.56rem;
+  }
+
+  .menu-controller-hints {
+    bottom: 78px;
+    gap: 6px;
+  }
+
+  .gameplay-board-hints {
+    left: 8px;
+    bottom: 8px;
+  }
+
+  .shop-gamepad-hints {
+    grid-template-columns: 1fr 1fr;
   }
 
   .logo-block {

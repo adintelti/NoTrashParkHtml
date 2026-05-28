@@ -1,0 +1,31 @@
+(() => {
+  const ntp = window.NTP = window.NTP || {};
+
+  ntp.dom = {
+    app: document.getElementById("app"),
+    menu: document.getElementById("menuScreen"),
+    game: document.getElementById("gameScreen"),
+    board: document.getElementById("board"),
+    versionText: document.getElementById("versionText"),
+    playButton: document.getElementById("playButton"),
+    configButton: document.getElementById("configButton"),
+    configPanel: document.getElementById("configPanel"),
+    exitButton: document.getElementById("exitButton"),
+    backToMenuButton: document.getElementById("backToMenuButton"),
+    coinText: document.getElementById("coinText"),
+    livesText: document.getElementById("livesText"),
+    waveText: document.getElementById("waveText"),
+    heartStack: document.getElementById("heartStack"),
+    floatingMessage: document.getElementById("floatingMessage"),
+    victoryOverlay: document.getElementById("victoryOverlay"),
+    victoryTitle: document.getElementById("victoryTitle"),
+    victoryContinueButton: document.getElementById("victoryContinueButton"),
+    victoryRestartButton: document.getElementById("victoryRestartButton"),
+    victoryMenuButton: document.getElementById("victoryMenuButton"),
+    pauseButton: document.getElementById("pauseButton"),
+    speedButton: document.getElementById("speedButton"),
+    restartButton: document.getElementById("restartButton"),
+    towerShop: document.getElementById("towerShop"),
+    customWavesInput: document.getElementById("customWavesInput")
+  };
+})();

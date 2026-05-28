@@ -9,7 +9,7 @@ later without changing the core gameplay loop.
 
 - Static HTML, CSS, and JavaScript demo.
 - Pixel-style menu and in-game shop panel.
-- Menu version label driven by `GAME_VERSION` in `game.js`.
+- Menu version label driven by `GAME_VERSION` in `src/constants.js`.
 - Three themed biomes: Park, Lagoon, and Fire.
 - Tower placement on valid map tiles.
 - Enemy waves, projectiles, health bars, coins, lives, pause, and speed toggle.
@@ -17,6 +17,7 @@ later without changing the core gameplay loop.
 - Biome progression: Park -> Lagoon -> Fire.
 - Final victory message after protecting all biomes.
 - Windows/Xbox-style gamepad support through the browser Gamepad API.
+- On-screen gamepad key hints while a connected controller is active.
 
 ## Run Locally
 
@@ -32,7 +33,8 @@ Then open:
 http://127.0.0.1:5173/index.html
 ```
 
-The game is static, so no build step is required.
+The game is static, so no build step is required. It can also be opened directly
+from `index.html`.
 
 ## Controls
 
@@ -48,6 +50,8 @@ The game is static, so no build step is required.
 ### Gamepad Controls
 
 Most browsers expose a gamepad only after one controller button is pressed once.
+When a controller is connected and used, the game shows compact key hints on the
+menu and during gameplay.
 
 - `D-pad` / left stick: move through menus or move the tile cursor.
 - `A` / `RT`: confirm or place the selected tower.
@@ -81,7 +85,8 @@ When the player wins:
 |-- index.html       Main HTML structure and screens
 |-- styles.css       CSS entrypoint that imports focused style modules
 |-- styles/          Split CSS modules by UI responsibility
-|-- game.js          Game state, waves, towers, enemies, and progression
+|-- game.js          JavaScript entrypoint
+|-- src/             Split JavaScript scripts by game responsibility
 |-- demo-preview.png Browser verification preview image
 ```
 
