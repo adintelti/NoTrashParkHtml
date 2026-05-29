@@ -19,6 +19,7 @@
     normalizeCustomWaves,
     placeTower,
     returnToMenu,
+    resumeDesiredMusic,
     ROWS,
     setDifficulty,
     showMenuNote,
@@ -112,6 +113,7 @@
 
     if (hasGamepadActivity(buttons, direction)) {
       markGamepadInputActive();
+      resumeDesiredMusic();
     }
 
     if (isVictoryOpen() || isMenuVisible()) {

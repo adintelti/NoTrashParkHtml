@@ -15,6 +15,13 @@
     hard: 20
   };
 
+  ntp.musicTracks = {
+    menu: "sound/bmg/menu.ogg",
+    park: "sound/bmg/level1-park.ogg",
+    lagoon: "sound/bmg/level2-water.ogg",
+    lava: "sound/bmg/level3-fire.ogg"
+  };
+
   ntp.gamepadButtons = {
     a: 0,
     b: 1,

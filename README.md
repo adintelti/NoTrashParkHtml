@@ -13,6 +13,7 @@ later without changing the core gameplay loop.
 - Three themed biomes: Park, Lagoon, and Fire.
 - Tower placement on valid map tiles.
 - Enemy waves, projectiles, health bars, coins, lives, pause, and speed toggle.
+- Background music per screen and biome, with fade transitions.
 - Victory flow after a configurable number of waves.
 - Biome progression: Park -> Lagoon -> Fire.
 - Final victory message after protecting all biomes.
@@ -87,6 +88,7 @@ When the player wins:
 |-- styles/          Split CSS modules by UI responsibility
 |-- game.js          JavaScript entrypoint
 |-- src/             Split JavaScript scripts by game responsibility
+|-- sound/           Background music assets
 |-- demo-preview.png Browser verification preview image
 ```
 

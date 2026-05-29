@@ -7,9 +7,13 @@
     configureGameplayHooks,
     dom,
     focusGamepadButton,
+    initializeBackgroundMusic,
     isGamepadConnected,
+    playMenuMusic,
+    playThemeMusic,
     resetGamepadCursor,
     startLoop,
+    state,
     syncDifficultyButtons,
     syncGamepadCursor,
     updateHud,
@@ -18,10 +22,12 @@
 
   configureGameplayHooks({
     afterStartGame() {
+      playThemeMusic(state.theme);
       resetGamepadCursor();
       clearGamepadButtonFocus();
     },
     afterReturnToMenu() {
+      playMenuMusic();
       clearGamepadCursor();
       if (isGamepadConnected()) {
         focusGamepadButton(dom.playButton);
@@ -37,5 +43,6 @@
   syncDifficultyButtons();
   updateVersionText();
   updateHud();
+  initializeBackgroundMusic();
   startLoop();
 })();
