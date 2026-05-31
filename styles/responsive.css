@@ -76,20 +76,144 @@
 }
 
 @media (max-width: 560px) {
+  html,
+  body,
+  .app {
+    min-height: 100dvh;
+  }
+
+  .screen {
+    min-height: 100dvh;
+  }
+
   .game-screen {
+    width: 100vw;
+    height: 100dvh;
+    min-height: 100dvh;
     padding: 0;
+    overflow: hidden;
+  }
+
+  .game-layout {
+    width: 100vw;
+    height: 100dvh;
+    min-height: 0;
+    grid-template-rows: minmax(0, 1fr) auto;
+    border-width: 3px;
+    box-shadow: none;
+  }
+
+  .board-stage {
+    min-height: 0;
+    padding: calc(42px + env(safe-area-inset-top)) 0 6px;
+    place-items: start center;
+  }
+
+  .board {
+    width: 100%;
+    max-width: none;
+    height: min(58dvh, calc(100dvh - 310px), 560px);
+    aspect-ratio: auto;
   }
 
   .top-hud {
-    top: 6px;
+    top: max(6px, env(safe-area-inset-top));
+    gap: 6px;
+  }
+
+  .stat-pill {
+    min-width: 62px;
+    min-height: 30px;
+    gap: 5px;
+    border-width: 2px;
+    box-shadow: 0 2px 0 #51301a;
+    font-size: 0.75rem;
+  }
+
+  .heart-dot {
+    width: 7px;
+    height: 7px;
+  }
+
+  .shop-panel {
+    min-height: 0;
+    padding:
+      8px
+      max(8px, env(safe-area-inset-right))
+      max(9px, env(safe-area-inset-bottom))
+      max(8px, env(safe-area-inset-left));
+    border-top-width: 4px;
+  }
+
+  .shop-top {
+    margin-bottom: 4px;
+  }
+
+  .money-readout {
+    min-height: 28px;
+    font-size: 0.82rem;
+  }
+
+  .coin-icon {
+    width: 24px;
+    height: 24px;
+    border-width: 2px;
+  }
+
+  .icon-button {
+    width: 32px;
+    height: 30px;
+  }
+
+  .icon-button::before,
+  .icon-button::after {
+    left: 7px;
+    right: 7px;
+    height: 3px;
+    box-shadow: 0 7px 0 #1a0c00;
+  }
+
+  .icon-button::before {
+    top: 7px;
+  }
+
+  .shop-title {
+    margin-bottom: 6px;
+    padding: 3px 7px;
+    border-width: 3px;
+    font-size: 1.1rem;
   }
 
   .tower-shop {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 6px;
   }
 
   .shop-button {
-    min-height: 54px;
+    min-height: 46px;
+    padding: 5px;
+    gap: 2px;
+    font-size: 0.58rem;
+  }
+
+  .shop-button strong {
+    font-size: 0.64rem;
+  }
+
+  .control-row {
+    gap: 8px;
+    margin-top: 8px;
+  }
+
+  .shop-button.wide {
+    min-height: 44px;
+    font-size: 0.78rem;
+  }
+
+  .restart-button {
+    min-height: 48px;
+    margin-top: 8px;
+    font-size: 0.78rem;
   }
 
   .hint-chip {
@@ -112,12 +236,164 @@
     grid-template-columns: 1fr 1fr;
   }
 
+  .floating-message {
+    bottom: 8px;
+    min-height: 30px;
+    padding: 6px 9px;
+    font-size: 0.72rem;
+  }
+
+  .tower {
+    width: calc(var(--cell-size) * 0.78);
+    height: calc(var(--cell-size) * 1.02);
+  }
+
+  .enemy {
+    width: calc(var(--cell-size) * 0.64);
+    height: calc(var(--cell-size) * 0.64);
+  }
+
+  .projectile {
+    width: calc(var(--cell-size) * 0.2);
+    height: calc(var(--cell-size) * 0.2);
+  }
+
+  .impact {
+    width: calc(var(--cell-size) * 0.86);
+    height: calc(var(--cell-size) * 0.86);
+  }
+
+  .health {
+    height: 7px;
+  }
+
+  .menu-screen {
+    height: 100dvh;
+    min-height: 100dvh;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    padding:
+      max(12px, env(safe-area-inset-top))
+      max(12px, env(safe-area-inset-right))
+      max(14px, env(safe-area-inset-bottom))
+      max(12px, env(safe-area-inset-left));
+  }
+
+  .title-mark {
+    grid-column: 1;
+    grid-row: 1;
+    align-self: start;
+    justify-self: center;
+    width: min(100%, 330px);
+    margin: clamp(36px, 7dvh, 68px) 0 0;
+    transform: rotate(-2deg);
+    text-shadow: 2px 2px 0 #083f61;
+  }
+
   .logo-block {
-    width: 210px;
-    height: 96px;
+    width: min(74vw, 300px);
+    height: clamp(92px, 24vw, 128px);
+    border-width: 6px;
+    box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.18);
+    font-size: clamp(4.4rem, 18vw, 6.6rem);
   }
 
   .title-mark h1 {
-    margin-left: 10px;
+    margin: 4px 0 0 18px;
+    font-size: clamp(1.1rem, 5.2vw, 1.55rem);
+  }
+
+  .menu-actions {
+    grid-column: 1;
+    grid-row: 3;
+    align-self: end;
+    width: min(100%, 430px);
+    gap: 10px;
+    margin-bottom: max(0px, env(safe-area-inset-bottom));
+  }
+
+  .menu-button {
+    min-height: 54px;
+    padding: 10px 6px;
+    font-size: 0.82rem;
+  }
+
+  .version-text {
+    top: max(10px, env(safe-area-inset-top));
+    right: max(10px, env(safe-area-inset-right));
+    padding: 4px 6px;
+    border-width: 2px;
+    font-size: 0.68rem;
+  }
+
+  .menu-path {
+    left: 6vw;
+    bottom: 90px;
+    width: min(82vw, 330px);
+    height: 112px;
+    border-width: 6px;
+  }
+
+  .menu-creature {
+    width: 52px;
+    height: 40px;
+    border-width: 4px;
+  }
+
+  .creature-a {
+    left: auto;
+    right: 34px;
+    bottom: 126px;
+    transform: rotate(-10deg) scale(0.86);
+  }
+
+  .creature-b {
+    left: auto;
+    right: 88px;
+    bottom: 98px;
+    transform: rotate(14deg) scale(0.72);
+  }
+
+  .menu-tower {
+    width: 32px;
+    height: 46px;
+    border-width: 3px;
+  }
+
+  .tower-a {
+    left: 48px;
+    bottom: 78px;
+  }
+
+  .tower-b {
+    left: 132px;
+    bottom: 72px;
+    transform: scale(0.72);
+  }
+
+  .cloud {
+    height: 14px;
+    box-shadow:
+      14px -6px 0 #eef9ff,
+      28px 0 0 #eef9ff,
+      42px -3px 0 #eef9ff;
+  }
+
+  .cloud-a {
+    width: 58px;
+    left: 56%;
+    top: 12%;
+  }
+
+  .cloud-b {
+    width: 46px;
+    left: 8%;
+    top: 22%;
+  }
+
+  .config-panel {
+    bottom: calc(82px + env(safe-area-inset-bottom));
+    width: calc(100vw - 24px);
+    max-height: calc(100dvh - 126px);
   }
 }
