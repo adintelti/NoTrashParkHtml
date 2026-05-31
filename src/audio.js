@@ -1,7 +1,8 @@
 (() => {
   const ntp = window.NTP = window.NTP || {};
-  const { musicTracks, sfxTracks, sfxVolumes } = ntp;
+  const { dom, musicTracks, sfxTracks, sfxVolumes } = ntp;
 
+  const SOUND_STORAGE_KEY = "ntp.soundSettings";
   const MUSIC_VOLUME = 0.42;
   const DEFAULT_SFX_VOLUME = 0.58;
   const SFX_POOL_SIZE = 5;
@@ -12,6 +13,12 @@
 
   const trackAudio = new Map();
   const sfxPools = new Map();
+  const soundSettings = {
+    bgmEnabled: true,
+    sfxEnabled: true,
+    bgmVolume: 1,
+    sfxVolume: 1
+  };
   let activeAudio;
   let activeTrack = "";
   let desiredTrack = "menu";
@@ -51,7 +58,11 @@
   }
 
   function getSfxVolume(sfx) {
-    return sfxVolumes?.[sfx] ?? DEFAULT_SFX_VOLUME;
+    return (sfxVolumes?.[sfx] ?? DEFAULT_SFX_VOLUME) * soundSettings.sfxVolume;
+  }
+
+  function getBgmVolume() {
+    return soundSettings.bgmEnabled ? MUSIC_VOLUME * soundSettings.bgmVolume : 0;
   }
 
   function preloadSfx() {
@@ -107,6 +118,12 @@
     if (!musicTracks[track]) return;
 
     desiredTrack = track;
+
+    if (!soundSettings.bgmEnabled || soundSettings.bgmVolume <= 0) {
+      stopActiveMusic();
+      return;
+    }
+
     const token = transitionId + 1;
     transitionId = token;
 
@@ -114,7 +131,7 @@
       pauseOtherTracks(activeAudio);
       const didPlay = await safelyPlay(activeAudio);
       if (!didPlay || token !== transitionId) return;
-      await fadeVolume(activeAudio, MUSIC_VOLUME, getFadeInDuration(track), token);
+      await fadeVolume(activeAudio, getBgmVolume(), getFadeInDuration(track), token);
       return;
     }
 
@@ -136,7 +153,17 @@
     const didPlay = await safelyPlay(activeAudio);
     if (!didPlay || token !== transitionId) return;
 
-    await fadeVolume(activeAudio, MUSIC_VOLUME, getFadeInDuration(track), token);
+    await fadeVolume(activeAudio, getBgmVolume(), getFadeInDuration(track), token);
+  }
+
+  function stopActiveMusic() {
+    transitionId += 1;
+    if (!activeAudio) return;
+    activeAudio.pause();
+    activeAudio.currentTime = 0;
+    activeAudio.volume = 0;
+    activeAudio = undefined;
+    activeTrack = "";
   }
 
   function getFadeInDuration(track) {
@@ -148,8 +175,10 @@
   }
 
   function initializeBackgroundMusic() {
+    loadSoundSettings();
     preloadMusic();
     preloadSfx();
+    syncSoundControls();
     playMusic("menu");
     bindUnlockEvents();
   }
@@ -171,7 +200,7 @@
   }
 
   function playSfx(sfx) {
-    if (!sfxTracks[sfx]) return;
+    if (!sfxTracks[sfx] || !soundSettings.sfxEnabled || soundSettings.sfxVolume <= 0) return;
 
     const sfxPool = getSfxPool(sfx);
     const audio = sfxPool.pool[sfxPool.index];
@@ -181,12 +210,126 @@
     safelyPlay(audio);
   }
 
+  function setBgmEnabled(enabled) {
+    soundSettings.bgmEnabled = Boolean(enabled);
+    saveSoundSettings();
+    syncSoundControls();
+
+    if (soundSettings.bgmEnabled) {
+      resumeDesiredMusic();
+      return;
+    }
+
+    stopActiveMusic();
+  }
+
+  function setSfxEnabled(enabled) {
+    soundSettings.sfxEnabled = Boolean(enabled);
+    saveSoundSettings();
+    syncSoundControls();
+  }
+
+  function setBgmMasterVolume(volume) {
+    soundSettings.bgmVolume = clampVolume(volume);
+    saveSoundSettings();
+    syncSoundControls();
+
+    if (activeAudio && soundSettings.bgmEnabled) {
+      activeAudio.volume = getBgmVolume();
+    } else if (soundSettings.bgmEnabled && soundSettings.bgmVolume > 0) {
+      resumeDesiredMusic();
+    }
+  }
+
+  function setSfxMasterVolume(volume) {
+    soundSettings.sfxVolume = clampVolume(volume);
+    saveSoundSettings();
+    syncSoundControls();
+  }
+
+  function getSoundSettings() {
+    return { ...soundSettings };
+  }
+
+  function isSoundVolumeInput(el) {
+    return Boolean(el?.dataset?.soundVolume);
+  }
+
+  function adjustSoundVolumeFromGamepad(input, direction) {
+    if (!isSoundVolumeInput(input)) return;
+
+    const step = Number(input.step || 5);
+    const currentValue = Number(input.value || 0);
+    const directionStep = direction.x || -direction.y;
+    if (!directionStep) return;
+
+    const nextValue = Math.max(
+      Number(input.min || 0),
+      Math.min(Number(input.max || 100), currentValue + directionStep * step)
+    );
+    input.value = String(nextValue);
+
+    if (input.dataset.soundVolume === "bgm") {
+      setBgmMasterVolume(nextValue / 100);
+      return;
+    }
+
+    setSfxMasterVolume(nextValue / 100);
+  }
+
+  function syncSoundControls() {
+    dom.bgmToggleButton.classList.toggle("is-active", soundSettings.bgmEnabled);
+    dom.bgmToggleButton.textContent = soundSettings.bgmEnabled ? "BGM On" : "BGM Off";
+    dom.sfxToggleButton.classList.toggle("is-active", soundSettings.sfxEnabled);
+    dom.sfxToggleButton.textContent = soundSettings.sfxEnabled ? "SFX On" : "SFX Off";
+
+    const bgmPercent = Math.round(soundSettings.bgmVolume * 100);
+    const sfxPercent = Math.round(soundSettings.sfxVolume * 100);
+    dom.bgmVolumeInput.value = String(bgmPercent);
+    dom.sfxVolumeInput.value = String(sfxPercent);
+    dom.bgmVolumeText.textContent = `${bgmPercent}%`;
+    dom.sfxVolumeText.textContent = `${sfxPercent}%`;
+  }
+
+  function loadSoundSettings() {
+    try {
+      const savedSettings = JSON.parse(window.localStorage.getItem(SOUND_STORAGE_KEY) || "{}");
+      if (typeof savedSettings.bgmEnabled === "boolean") {
+        soundSettings.bgmEnabled = savedSettings.bgmEnabled;
+      }
+      if (typeof savedSettings.sfxEnabled === "boolean") {
+        soundSettings.sfxEnabled = savedSettings.sfxEnabled;
+      }
+      if (Number.isFinite(savedSettings.bgmVolume)) {
+        soundSettings.bgmVolume = clampVolume(savedSettings.bgmVolume);
+      }
+      if (Number.isFinite(savedSettings.sfxVolume)) {
+        soundSettings.sfxVolume = clampVolume(savedSettings.sfxVolume);
+      }
+    } catch (error) {
+      // Keep defaults when local storage is unavailable or has stale data.
+    }
+  }
+
+  function saveSoundSettings() {
+    try {
+      window.localStorage.setItem(SOUND_STORAGE_KEY, JSON.stringify(soundSettings));
+    } catch (error) {
+      // Sound still works when local storage is unavailable.
+    }
+  }
+
+  function clampVolume(volume) {
+    return Math.max(0, Math.min(1, Number(volume) || 0));
+  }
+
   function getBackgroundMusicState() {
     return {
       activeTrack,
       desiredTrack,
       activePaused: activeAudio ? activeAudio.paused : true,
       activeVolume: activeAudio ? Number(activeAudio.volume.toFixed(2)) : 0,
+      settings: getSoundSettings(),
       playingTracks: Array.from(trackAudio.entries())
         .filter(([, audio]) => !audio.paused)
         .map(([track]) => track)
@@ -198,7 +341,15 @@
     playMenuMusic,
     playThemeMusic,
     playSfx,
+    setBgmEnabled,
+    setSfxEnabled,
+    setBgmMasterVolume,
+    setSfxMasterVolume,
+    getSoundSettings,
+    isSoundVolumeInput,
+    adjustSoundVolumeFromGamepad,
     resumeDesiredMusic,
+    syncSoundControls,
     getBackgroundMusicState
   });
 })();

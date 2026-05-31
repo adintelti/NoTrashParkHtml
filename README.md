@@ -21,6 +21,7 @@ later without changing the core gameplay loop.
 - Final victory message after protecting all biomes.
 - Windows/Xbox-style gamepad support through the browser Gamepad API.
 - On-screen gamepad key hints while a connected controller is active.
+- Menu sound controls for BGM/SFX toggles and master volumes.
 
 ## Run Locally
 
@@ -58,7 +59,7 @@ menu and during gameplay.
 
 - `D-pad` / left stick: move through menus or move the tile cursor.
 - `A` / `RT`: confirm or place the selected tower.
-- With the custom wave field focused, `D-pad` / left stick changes the number.
+- With a custom value or volume slider focused, `D-pad` / left stick changes the value.
 - `B`: close the config panel or leave the victory screen for the menu.
 - `LB` / `RB`: cycle tower selection.
 - `X` / `Start`: pause or resume.

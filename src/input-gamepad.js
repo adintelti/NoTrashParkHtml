@@ -2,6 +2,7 @@
   const ntp = window.NTP = window.NTP || {};
   const {
     adjustCustomWavesFromGamepad,
+    adjustSoundVolumeFromGamepad,
     clamp,
     COLS,
     cycleSelectedTower,
@@ -15,6 +16,7 @@
     isBuildableTile,
     isCustomWavesInput,
     isMenuVisible,
+    isSoundVolumeInput,
     isVictoryOpen,
     normalizeCustomWaves,
     placeTower,
@@ -333,6 +335,18 @@
   }
 
   function updateMenuGamepadInput(dt, direction, justPressed) {
+    if (isSoundVolumeInput(document.activeElement)) {
+      if (shouldRepeatDirection(direction, "navCooldown", "lastNavDirection", GAMEPAD_NAV_REPEAT, dt)) {
+        adjustSoundVolumeFromGamepad(document.activeElement, direction);
+      }
+
+      if (justPressed(gamepadButtons.a) || justPressed(gamepadButtons.b) || justPressed(gamepadButtons.start)) {
+        const soundToggle = dom.configPanel.querySelector(`[data-sound-toggle="${document.activeElement.dataset.soundVolume}"]`);
+        localFocusGamepadButton(soundToggle);
+      }
+      return;
+    }
+
     if (isCustomWavesInput(document.activeElement)) {
       if (shouldRepeatDirection(direction, "navCooldown", "lastNavDirection", GAMEPAD_NAV_REPEAT, dt)) {
         adjustCustomWavesFromGamepad(direction);

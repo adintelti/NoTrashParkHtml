@@ -56,7 +56,7 @@
           </div>
           <div class="hint-chip">
             <span class="pad-key pad-key-dpad" aria-hidden="true"></span>
-            <span>Ondas</span>
+            <span>Ajustar</span>
           </div>
         </div>
 
@@ -100,6 +100,26 @@
             <label class="waves-field" for="customWavesInput">
               <span>Ondas</span>
               <input id="customWavesInput" class="waves-input" type="text" inputmode="numeric" pattern="[0-9]*" value="20" aria-label="Custom wave count">
+            </label>
+          </div>
+
+          <div class="config-section">
+            <div class="config-title">Som</div>
+            <div class="sound-toggle-grid" role="group" aria-label="Sound toggles">
+              <button id="bgmToggleButton" class="seg-button is-active" data-sound-toggle="bgm" type="button">BGM On</button>
+              <button id="sfxToggleButton" class="seg-button is-active" data-sound-toggle="sfx" type="button">SFX On</button>
+            </div>
+
+            <label class="sound-row" for="bgmVolumeInput">
+              <span>BGM</span>
+              <input id="bgmVolumeInput" class="sound-slider" data-sound-volume="bgm" type="range" min="0" max="100" step="5" value="100" aria-label="BGM master volume">
+              <strong id="bgmVolumeText">100%</strong>
+            </label>
+
+            <label class="sound-row" for="sfxVolumeInput">
+              <span>SFX</span>
+              <input id="sfxVolumeInput" class="sound-slider" data-sound-volume="sfx" type="range" min="0" max="100" step="5" value="100" aria-label="SFX master volume">
+              <strong id="sfxVolumeText">100%</strong>
             </label>
           </div>
         </div>

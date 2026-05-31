@@ -14,9 +14,14 @@
     normalizeCustomWaves,
     placeTower,
     returnToMenu,
+    setBgmEnabled,
     setDifficulty,
+    setSfxEnabled,
+    setBgmMasterVolume,
+    setSfxMasterVolume,
     setTheme,
     settings,
+    getSoundSettings,
     showMenuNote,
     startGame,
     state,
@@ -88,6 +93,19 @@
     });
     dom.customWavesInput.addEventListener("change", normalizeCustomWaves);
     dom.customWavesInput.addEventListener("blur", normalizeCustomWaves);
+
+    dom.bgmToggleButton.addEventListener("click", () => {
+      setBgmEnabled(!getSoundSettings().bgmEnabled);
+    });
+    dom.sfxToggleButton.addEventListener("click", () => {
+      setSfxEnabled(!getSoundSettings().sfxEnabled);
+    });
+    dom.bgmVolumeInput.addEventListener("input", () => {
+      setBgmMasterVolume(Number(dom.bgmVolumeInput.value) / 100);
+    });
+    dom.sfxVolumeInput.addEventListener("input", () => {
+      setSfxMasterVolume(Number(dom.sfxVolumeInput.value) / 100);
+    });
 
     dom.towerShop.addEventListener("click", (event) => {
       const button = event.target.closest("[data-tower]");

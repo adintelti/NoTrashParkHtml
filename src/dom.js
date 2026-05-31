@@ -26,6 +26,12 @@
     speedButton: document.getElementById("speedButton"),
     restartButton: document.getElementById("restartButton"),
     towerShop: document.getElementById("towerShop"),
-    customWavesInput: document.getElementById("customWavesInput")
+    customWavesInput: document.getElementById("customWavesInput"),
+    bgmToggleButton: document.getElementById("bgmToggleButton"),
+    sfxToggleButton: document.getElementById("sfxToggleButton"),
+    bgmVolumeInput: document.getElementById("bgmVolumeInput"),
+    sfxVolumeInput: document.getElementById("sfxVolumeInput"),
+    bgmVolumeText: document.getElementById("bgmVolumeText"),
+    sfxVolumeText: document.getElementById("sfxVolumeText")
   };
 })();
