@@ -10,6 +10,7 @@
     hideVictory,
     isVictoryOpen,
     maps,
+    playSfx,
     resetState,
     setElementPosition,
     showMessage,
@@ -298,6 +299,7 @@
     state.nextProjectileId += 1;
     state.projectiles.push(projectile);
     setElementPosition(el, projectile.x, projectile.y);
+    playSfx("projectileThrow");
   }
 
   function updateProjectiles(dt) {
@@ -367,6 +369,7 @@
     }
     enemy.el?.remove();
     if (awardCoins) {
+      playSfx("enemyDeath");
       state.coins += enemy.reward;
     }
   }

@@ -22,6 +22,16 @@
     lava: "sound/bmg/level3-fire.ogg"
   };
 
+  ntp.sfxTracks = {
+    projectileThrow: "sound/sfx/tap_stone.wav",
+    enemyDeath: "sound/sfx/tail_whip.flac"
+  };
+
+  ntp.sfxVolumes = {
+    projectileThrow: 0.05,
+    enemyDeath: 1
+  };
+
   ntp.gamepadButtons = {
     a: 0,
     b: 1,

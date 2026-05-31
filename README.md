@@ -14,6 +14,8 @@ later without changing the core gameplay loop.
 - Tower placement on valid map tiles.
 - Enemy waves, projectiles, health bars, coins, lives, pause, and speed toggle.
 - Background music per screen and biome, with fade transitions.
+- Projectile throw sound effect when towers fire.
+- Enemy defeat sound effect when a tower kill happens.
 - Victory flow after a configurable number of waves.
 - Biome progression: Park -> Lagoon -> Fire.
 - Final victory message after protecting all biomes.
@@ -88,7 +90,7 @@ When the player wins:
 |-- styles/          Split CSS modules by UI responsibility
 |-- game.js          JavaScript entrypoint
 |-- src/             Split JavaScript scripts by game responsibility
-|-- sound/           Background music assets
+|-- sound/           Background music and sound effect assets
 |-- demo-preview.png Browser verification preview image
 ```
 
