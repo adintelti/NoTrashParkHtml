@@ -112,7 +112,7 @@
   .board {
     width: 100%;
     max-width: none;
-    height: min(58dvh, calc(100dvh - 310px), 560px);
+    height: 100%;
     aspect-ratio: auto;
   }
 
@@ -136,6 +136,7 @@
   }
 
   .shop-panel {
+    position: relative;
     min-height: 0;
     padding:
       8px
@@ -146,7 +147,8 @@
   }
 
   .shop-top {
-    margin-bottom: 4px;
+    min-height: 30px;
+    margin-bottom: 8px;
   }
 
   .money-readout {
@@ -178,10 +180,15 @@
   }
 
   .shop-title {
-    margin-bottom: 6px;
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    z-index: 1;
+    margin: 0;
     padding: 3px 7px;
     border-width: 3px;
     font-size: 1.1rem;
+    transform: translateX(-50%);
   }
 
   .tower-shop {
