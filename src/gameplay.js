@@ -7,6 +7,8 @@
     dom,
     enemyTypes,
     getConfiguredWaveLimit,
+    hideExitConfirm,
+    hideRestartConfirm,
     hideVictory,
     isVictoryOpen,
     maps,
@@ -38,6 +40,8 @@
     syncThemeButtons(theme);
     dom.menu.classList.add("is-hidden");
     dom.game.classList.remove("is-hidden");
+    hideRestartConfirm();
+    hideExitConfirm();
     hideVictory();
     buildBoard();
     gameplayHooks.afterStartGame();
@@ -47,6 +51,8 @@
 
   function returnToMenu() {
     state.running = false;
+    hideRestartConfirm();
+    hideExitConfirm();
     hideVictory();
     clearDynamicElements();
     dom.game.classList.add("is-hidden");

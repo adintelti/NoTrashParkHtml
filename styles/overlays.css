@@ -103,3 +103,51 @@
   outline: 5px solid #0a4d13;
   outline-offset: 6px;
 }
+
+.confirm-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: grid;
+  place-items: center;
+  padding: clamp(18px, 5vw, 42px);
+  background: rgba(8, 11, 13, 0.68);
+}
+
+.confirm-overlay[hidden] {
+  display: none;
+}
+
+.confirm-card {
+  width: min(92%, 460px);
+  display: grid;
+  gap: 22px;
+  padding: clamp(20px, 5vw, 34px);
+  color: #160b00;
+  background: #ffd35a;
+  border: 5px solid var(--outline);
+  box-shadow:
+    inset 4px 4px 0 #fff0a1,
+    inset -4px -4px 0 #b46600,
+    0 8px 0 rgba(0, 0, 0, 0.42);
+  text-align: center;
+}
+
+.confirm-card h2 {
+  margin: 0;
+  font-size: clamp(1.1rem, 3vw, 1.8rem);
+  line-height: 1.25;
+  letter-spacing: 0;
+}
+
+.confirm-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.confirm-button {
+  min-height: 54px;
+  padding: 10px 12px;
+  font-weight: 700;
+}

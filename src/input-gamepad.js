@@ -15,12 +15,13 @@
     getTileAt,
     isBuildableTile,
     isCustomWavesInput,
+    isExitConfirmOpen,
     isMenuVisible,
+    isRestartConfirmOpen,
     isSoundVolumeInput,
     isVictoryOpen,
     normalizeCustomWaves,
     placeTower,
-    returnToMenu,
     resumeDesiredMusic,
     ROWS,
     setDifficulty,
@@ -74,7 +75,7 @@
   }
 
   function moveGamepadCursor(dx, dy) {
-    if (!state.running || isVictoryOpen()) return;
+    if (!state.running || isVictoryOpen() || isRestartConfirmOpen() || isExitConfirmOpen()) return;
 
     const nextX = clamp(gamepadInput.cursorX + dx, 0, COLS - 1);
     const nextY = clamp(gamepadInput.cursorY + dy, 0, ROWS - 1);
@@ -118,7 +119,7 @@
       resumeDesiredMusic();
     }
 
-    if (isVictoryOpen() || isMenuVisible()) {
+    if (isVictoryOpen() || isRestartConfirmOpen() || isExitConfirmOpen() || isMenuVisible()) {
       updateMenuGamepadInput(dt, direction, justPressed);
     } else if (state.running) {
       updateGameplayGamepadInput(dt, direction, justPressed);
@@ -195,9 +196,13 @@
   function getGamepadFocusableButtons() {
     const root = isVictoryOpen()
       ? dom.victoryOverlay
-      : isMenuVisible()
-        ? dom.menu
-        : null;
+      : isRestartConfirmOpen()
+        ? dom.restartConfirmOverlay
+        : isExitConfirmOpen()
+          ? dom.exitConfirmOverlay
+        : isMenuVisible()
+          ? dom.menu
+          : null;
 
     if (!root) return [];
 
@@ -370,6 +375,10 @@
     if (justPressed(gamepadButtons.b)) {
       if (isVictoryOpen()) {
         dom.victoryMenuButton.click();
+      } else if (isRestartConfirmOpen()) {
+        dom.restartConfirmNoButton.click();
+      } else if (isExitConfirmOpen()) {
+        dom.exitConfirmNoButton.click();
       } else if (!dom.configPanel.hidden) {
         dom.configPanel.hidden = true;
         localFocusGamepadButton(dom.configButton);
@@ -405,7 +414,7 @@
     }
 
     if (justPressed(gamepadButtons.back)) {
-      returnToMenu();
+      dom.backToMenuButton.click();
     }
   }
 

@@ -8,7 +8,11 @@
     getNextTheme,
     handleGamepadConnected,
     handleGamepadDisconnected,
+    hideExitConfirm,
+    hideRestartConfirm,
     hideVictory,
+    isExitConfirmOpen,
+    isRestartConfirmOpen,
     markPointerInputActive,
     measureBoard,
     normalizeCustomWaves,
@@ -22,6 +26,8 @@
     setTheme,
     settings,
     getSoundSettings,
+    showExitConfirm,
+    showRestartConfirm,
     showMenuNote,
     startGame,
     state,
@@ -33,6 +39,46 @@
   } = ntp;
 
   let resizeObserver;
+  let restartConfirmPreviousPaused = false;
+  let exitConfirmPreviousPaused = false;
+
+  function openRestartConfirm() {
+    if (!state.running) return;
+    restartConfirmPreviousPaused = state.paused;
+    state.paused = true;
+    updateHud();
+    showRestartConfirm();
+  }
+
+  function closeRestartConfirm() {
+    hideRestartConfirm();
+    state.paused = restartConfirmPreviousPaused;
+    updateHud();
+  }
+
+  function confirmRestart() {
+    hideRestartConfirm();
+    startGame(state.theme);
+  }
+
+  function openExitConfirm() {
+    if (!state.running) return;
+    exitConfirmPreviousPaused = state.paused;
+    state.paused = true;
+    updateHud();
+    showExitConfirm();
+  }
+
+  function closeExitConfirm() {
+    hideExitConfirm();
+    state.paused = exitConfirmPreviousPaused;
+    updateHud();
+  }
+
+  function confirmExit() {
+    hideExitConfirm();
+    returnToMenu();
+  }
 
   function bindEvents() {
     dom.playButton.addEventListener("click", () => startGame(state.theme));
@@ -43,10 +89,24 @@
       dom.configPanel.hidden = true;
       showMenuNote("Demo pronta no navegador.");
     });
-    dom.backToMenuButton.addEventListener("click", returnToMenu);
+    dom.backToMenuButton.addEventListener("click", openExitConfirm);
     dom.pauseButton.addEventListener("click", togglePause);
     dom.speedButton.addEventListener("click", toggleSpeed);
-    dom.restartButton.addEventListener("click", () => startGame(state.theme));
+    dom.restartButton.addEventListener("click", openRestartConfirm);
+    dom.restartConfirmYesButton.addEventListener("click", confirmRestart);
+    dom.restartConfirmNoButton.addEventListener("click", closeRestartConfirm);
+    dom.restartConfirmOverlay.addEventListener("click", (event) => {
+      if (event.target === dom.restartConfirmOverlay) {
+        closeRestartConfirm();
+      }
+    });
+    dom.exitConfirmYesButton.addEventListener("click", confirmExit);
+    dom.exitConfirmNoButton.addEventListener("click", closeExitConfirm);
+    dom.exitConfirmOverlay.addEventListener("click", (event) => {
+      if (event.target === dom.exitConfirmOverlay) {
+        closeExitConfirm();
+      }
+    });
     dom.victoryContinueButton.addEventListener("click", () => {
       const nextTheme = getNextTheme(state.theme);
       if (nextTheme) {
@@ -126,7 +186,16 @@
       markPointerInputActive();
       clearGamepadButtonFocus();
     });
-    window.addEventListener("keydown", markPointerInputActive);
+    window.addEventListener("keydown", (event) => {
+      markPointerInputActive();
+      if (event.key === "Escape" && isRestartConfirmOpen()) {
+        event.preventDefault();
+        closeRestartConfirm();
+      } else if (event.key === "Escape" && isExitConfirmOpen()) {
+        event.preventDefault();
+        closeExitConfirm();
+      }
+    });
     window.addEventListener("resize", measureBoard);
 
     resizeObserver = new ResizeObserver(measureBoard);

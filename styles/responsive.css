@@ -167,16 +167,37 @@
     height: 30px;
   }
 
-  .icon-button::before,
-  .icon-button::after {
+  .shop-actions {
+    gap: 7px;
+  }
+
+  .menu-icon-button::before,
+  .menu-icon-button::after {
     left: 7px;
     right: 7px;
     height: 3px;
+  }
+
+  .menu-icon-button::before {
+    top: 7px;
     box-shadow: 0 7px 0 #1a0c00;
   }
 
-  .icon-button::before {
-    top: 7px;
+  .menu-icon-button::after {
+    top: 21px;
+  }
+
+  .restart-icon-button::before {
+    inset: 6px 7px 6px 6px;
+    border-width: 3px;
+  }
+
+  .restart-icon-button::after {
+    top: 4px;
+    right: 5px;
+    border-left-width: 7px;
+    border-top-width: 5px;
+    border-bottom-width: 5px;
   }
 
   .shop-title {
@@ -214,12 +235,6 @@
 
   .shop-button.wide {
     min-height: 44px;
-    font-size: 0.78rem;
-  }
-
-  .restart-button {
-    min-height: 48px;
-    margin-top: 8px;
     font-size: 0.78rem;
   }
 

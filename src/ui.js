@@ -45,6 +45,8 @@
 
   function showVictory() {
     const hasNextTheme = Boolean(getNextTheme(state.theme));
+    hideRestartConfirm();
+    hideExitConfirm();
     dom.victoryTitle.textContent = victoryTitles[state.theme] || "Vitoria!";
     dom.victoryContinueButton.hidden = !hasNextTheme;
     dom.victoryOverlay.classList.toggle("is-final-victory", !hasNextTheme);
@@ -57,6 +59,26 @@
     dom.victoryOverlay.hidden = true;
     dom.victoryContinueButton.hidden = false;
     dom.victoryOverlay.classList.remove("is-final-victory");
+  }
+
+  function showRestartConfirm() {
+    hideExitConfirm();
+    dom.restartConfirmOverlay.hidden = false;
+    dom.restartConfirmNoButton.focus({ preventScroll: true });
+  }
+
+  function hideRestartConfirm() {
+    dom.restartConfirmOverlay.hidden = true;
+  }
+
+  function showExitConfirm() {
+    hideRestartConfirm();
+    dom.exitConfirmOverlay.hidden = false;
+    dom.exitConfirmNoButton.focus({ preventScroll: true });
+  }
+
+  function hideExitConfirm() {
+    dom.exitConfirmOverlay.hidden = true;
   }
 
   function showMenuNote(text) {
@@ -87,6 +109,14 @@
     return !dom.victoryOverlay.hidden;
   }
 
+  function isRestartConfirmOpen() {
+    return !dom.restartConfirmOverlay.hidden;
+  }
+
+  function isExitConfirmOpen() {
+    return !dom.exitConfirmOverlay.hidden;
+  }
+
   Object.assign(ntp, {
     updateVersionText,
     updateHud,
@@ -94,9 +124,15 @@
     tickMessageTimer,
     showVictory,
     hideVictory,
+    showRestartConfirm,
+    hideRestartConfirm,
+    showExitConfirm,
+    hideExitConfirm,
     showMenuNote,
     syncThemeButtons,
     isMenuVisible,
-    isVictoryOpen
+    isVictoryOpen,
+    isRestartConfirmOpen,
+    isExitConfirmOpen
   });
 })();

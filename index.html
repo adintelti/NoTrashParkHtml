@@ -173,7 +173,10 @@
                 <span class="coin-icon" aria-hidden="true">$</span>
                 <span id="coinText">300</span>
               </div>
-              <button id="backToMenuButton" class="icon-button" title="Menu" aria-label="Menu" type="button"></button>
+              <div class="shop-actions" aria-label="Acoes">
+                <button id="restartButton" class="icon-button restart-icon-button" title="Reiniciar" aria-label="Reiniciar" type="button"></button>
+                <button id="backToMenuButton" class="icon-button menu-icon-button" title="Menu" aria-label="Menu" type="button"></button>
+              </div>
             </div>
 
             <div class="shop-title">SHOP</div>
@@ -227,9 +230,27 @@
               <button id="pauseButton" class="shop-button wide" type="button">Pause</button>
               <button id="speedButton" class="shop-button wide" type="button">1x</button>
             </div>
-
-            <button id="restartButton" class="pixel-button restart-button" type="button">Reiniciar</button>
           </aside>
+
+          <div id="restartConfirmOverlay" class="confirm-overlay" role="dialog" aria-modal="true" aria-labelledby="restartConfirmTitle" hidden>
+            <div class="confirm-card">
+              <h2 id="restartConfirmTitle">Deseja realmente reiniciar o jogo?</h2>
+              <div class="confirm-actions" aria-label="Confirmar reinicio">
+                <button id="restartConfirmYesButton" class="pixel-button confirm-button" type="button">Sim</button>
+                <button id="restartConfirmNoButton" class="pixel-button confirm-button" type="button">Não</button>
+              </div>
+            </div>
+          </div>
+
+          <div id="exitConfirmOverlay" class="confirm-overlay" role="dialog" aria-modal="true" aria-labelledby="exitConfirmTitle" hidden>
+            <div class="confirm-card">
+              <h2 id="exitConfirmTitle">Deseja realmente sair do jogo atual?</h2>
+              <div class="confirm-actions" aria-label="Confirmar saida">
+                <button id="exitConfirmYesButton" class="pixel-button confirm-button" type="button">Sim</button>
+                <button id="exitConfirmNoButton" class="pixel-button confirm-button" type="button">Não</button>
+              </div>
+            </div>
+          </div>
         </main>
       </section>
     </div>
