@@ -188,6 +188,11 @@
   transform: translateY(-50%);
 }
 
+.difficulty-panel {
+  right: 250px;
+  width: min(340px, calc(100vw - 32px));
+}
+
 .config-section + .config-section {
   margin-top: 12px;
 }
@@ -277,4 +282,18 @@
 .sound-slider.gamepad-focused {
   outline: 3px solid #fff0a1;
   outline-offset: 4px;
+}
+
+.difficulty-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.difficulty-action {
+  min-height: 48px;
+  padding: 8px 6px;
+  font-size: 0.8rem;
+  font-weight: 700;
 }

@@ -42,8 +42,8 @@ from `index.html`.
 
 ## Controls
 
-- Click `Jogar` to start.
-- Open `Config.` to choose the starting biome and wave difficulty.
+- Click `Jogar`, choose a difficulty, then press `Iniciar` to start.
+- Open `Config.` to adjust BGM/SFX toggles and master volumes.
 - Select a tower in the shop.
 - Click a valid terrain tile to place the selected tower.
 - Use `Pause` to pause or resume.
@@ -60,7 +60,7 @@ menu and during gameplay.
 - `D-pad` / left stick: move through menus or move the tile cursor.
 - `A` / `RT`: confirm or place the selected tower.
 - With a custom value or volume slider focused, `D-pad` / left stick changes the value.
-- `B`: close the config panel or leave the victory screen for the menu.
+- `B`: close the config or difficulty panel, or leave the victory screen for the menu.
 - `LB` / `RB`: cycle tower selection.
 - `X` / `Start`: pause or resume.
 - `Y`: toggle `1x` / `2x` speed.
@@ -68,12 +68,12 @@ menu and during gameplay.
 
 ## Victory And Progression
 
-The starting menu config controls how many waves must be cleared in each biome:
+The required difficulty step after `Jogar` controls how many waves must be cleared in each biome:
 
 - `Facil`: 5 waves.
 - `Medio`: 12 waves.
 - `Dificil`: 20 waves.
-- `Custom`: any typed value from 20 waves upward.
+- `Custom`: any typed value from 20 to 99 waves.
 
 When the player wins:
 

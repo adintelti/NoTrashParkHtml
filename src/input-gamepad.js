@@ -14,6 +14,8 @@
     gamepadButtons,
     getTileAt,
     hidePlacementPreview,
+    closeDifficultyPanel,
+    isDifficultyPanelOpen,
     isBuildableTile,
     isCustomWavesInput,
     isExitConfirmOpen,
@@ -208,9 +210,11 @@
         ? dom.restartConfirmOverlay
         : isExitConfirmOpen()
           ? dom.exitConfirmOverlay
-        : isMenuVisible()
-          ? dom.menu
-          : null;
+          : isDifficultyPanelOpen()
+            ? dom.difficultyPanel
+            : isMenuVisible()
+              ? dom.menu
+              : null;
 
     if (!root) return [];
 
@@ -367,7 +371,7 @@
 
       if (justPressed(gamepadButtons.a) || justPressed(gamepadButtons.b) || justPressed(gamepadButtons.start)) {
         normalizeCustomWaves();
-        localFocusGamepadButton(dom.configPanel.querySelector("[data-difficulty='custom']"));
+        localFocusGamepadButton(dom.difficultyPanel.querySelector("[data-difficulty='custom']"));
       }
       return;
     }
@@ -387,6 +391,9 @@
         dom.restartConfirmNoButton.click();
       } else if (isExitConfirmOpen()) {
         dom.exitConfirmNoButton.click();
+      } else if (isDifficultyPanelOpen()) {
+        closeDifficultyPanel();
+        localFocusGamepadButton(dom.playButton);
       } else if (!dom.configPanel.hidden) {
         dom.configPanel.hidden = true;
         localFocusGamepadButton(dom.configButton);

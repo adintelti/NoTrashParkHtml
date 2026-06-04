@@ -77,33 +77,6 @@
           </div> -->
 
           <div class="config-section">
-            <div class="config-title">Dificuldade</div>
-            <div class="difficulty-grid" role="group" aria-label="Difficulty">
-              <button class="seg-button" data-difficulty="easy" type="button">
-                <span>Facil</span>
-                <strong>5</strong>
-              </button>
-              <button class="seg-button is-active" data-difficulty="medium" type="button">
-                <span>Medio</span>
-                <strong>12</strong>
-              </button>
-              <button class="seg-button" data-difficulty="hard" type="button">
-                <span>Dificil</span>
-                <strong>20</strong>
-              </button>
-              <button class="seg-button" data-difficulty="custom" type="button">
-                <span>Custom</span>
-                <strong>20+</strong>
-              </button>
-            </div>
-
-            <label class="waves-field" for="customWavesInput">
-              <span>Ondas</span>
-              <input id="customWavesInput" class="waves-input" type="text" inputmode="numeric" pattern="[0-9]*" value="20" aria-label="Custom wave count">
-            </label>
-          </div>
-
-          <div class="config-section">
             <div class="config-title">Som</div>
             <div class="sound-toggle-grid" role="group" aria-label="Sound toggles">
               <button id="bgmToggleButton" class="seg-button is-active" data-sound-toggle="bgm" type="button">BGM On</button>
@@ -121,6 +94,40 @@
               <input id="sfxVolumeInput" class="sound-slider" data-sound-volume="sfx" type="range" min="0" max="100" step="5" value="100" aria-label="SFX master volume">
               <strong id="sfxVolumeText">100%</strong>
             </label>
+          </div>
+        </div>
+
+        <div id="difficultyPanel" class="config-panel difficulty-panel" role="dialog" aria-modal="true" aria-labelledby="difficultyTitle" hidden>
+          <div class="config-section">
+            <div id="difficultyTitle" class="config-title">Dificuldade</div>
+            <div class="difficulty-grid" role="group" aria-label="Difficulty">
+              <button class="seg-button" data-difficulty="easy" type="button">
+                <span>Facil</span>
+                <strong>5</strong>
+              </button>
+              <button class="seg-button" data-difficulty="medium" type="button">
+                <span>Medio</span>
+                <strong>12</strong>
+              </button>
+              <button class="seg-button" data-difficulty="hard" type="button">
+                <span>Dificil</span>
+                <strong>20</strong>
+              </button>
+              <button class="seg-button" data-difficulty="custom" type="button">
+                <span>Custom</span>
+                <strong>20-99</strong>
+              </button>
+            </div>
+
+            <label class="waves-field" for="customWavesInput">
+              <span>Ondas</span>
+              <input id="customWavesInput" class="waves-input" type="text" inputmode="numeric" pattern="[0-9]*" value="20" aria-label="Custom wave count">
+            </label>
+          </div>
+
+          <div class="difficulty-actions">
+            <button id="difficultyBackButton" class="pixel-button difficulty-action" type="button">Voltar</button>
+            <button id="startGameButton" class="pixel-button difficulty-action" type="button" disabled>Iniciar</button>
           </div>
         </div>
       </section>

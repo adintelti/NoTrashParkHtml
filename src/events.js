@@ -12,14 +12,18 @@
     hidePlacementPreview,
     hideRestartConfirm,
     hideVictory,
+    closeDifficultyPanel,
     isExitConfirmOpen,
+    isDifficultyPanelOpen,
     isRestartConfirmOpen,
     markPointerInputActive,
     measureBoard,
     normalizeCustomWaves,
+    openDifficultyPanel,
     placeTower,
     refreshPlacementPreview,
     returnToMenu,
+    sanitizeCustomWavesInput,
     setBgmEnabled,
     setDifficulty,
     setSfxEnabled,
@@ -84,12 +88,27 @@
   }
 
   function bindEvents() {
-    dom.playButton.addEventListener("click", () => startGame(state.theme));
+    dom.playButton.addEventListener("click", () => {
+      openDifficultyPanel();
+      focusGamepadButton(dom.difficultyPanel.querySelector("[data-difficulty]"));
+    });
+    dom.difficultyBackButton.addEventListener("click", () => {
+      closeDifficultyPanel();
+      focusGamepadButton(dom.playButton);
+    });
+    dom.startGameButton.addEventListener("click", () => {
+      if (dom.startGameButton.disabled) return;
+      normalizeCustomWaves();
+      closeDifficultyPanel();
+      startGame(state.theme);
+    });
     dom.configButton.addEventListener("click", () => {
+      closeDifficultyPanel();
       dom.configPanel.hidden = !dom.configPanel.hidden;
     });
     dom.exitButton.addEventListener("click", () => {
       dom.configPanel.hidden = true;
+      closeDifficultyPanel();
       showMenuNote("Demo pronta no navegador.");
     });
     dom.backToMenuButton.addEventListener("click", openExitConfirm);
@@ -147,10 +166,7 @@
 
     dom.customWavesInput.addEventListener("focus", () => setDifficulty("custom"));
     dom.customWavesInput.addEventListener("input", () => {
-      const digitsOnly = dom.customWavesInput.value.replace(/\D/g, "");
-      if (dom.customWavesInput.value !== digitsOnly) {
-        dom.customWavesInput.value = digitsOnly;
-      }
+      sanitizeCustomWavesInput();
       settings.difficulty = "custom";
       syncDifficultyButtons();
     });
@@ -207,6 +223,10 @@
       } else if (event.key === "Escape" && isExitConfirmOpen()) {
         event.preventDefault();
         closeExitConfirm();
+      } else if (event.key === "Escape" && isDifficultyPanelOpen()) {
+        event.preventDefault();
+        closeDifficultyPanel();
+        focusGamepadButton(dom.playButton);
       }
     });
     window.addEventListener("resize", measureBoard);

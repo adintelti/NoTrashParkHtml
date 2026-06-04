@@ -2,6 +2,7 @@
   const ntp = window.NTP = window.NTP || {};
   const {
     buildBoard,
+    closeDifficultyPanel,
     clearDynamicElements,
     coordKey,
     doesTowerReachPath,
@@ -43,6 +44,7 @@
     syncThemeButtons(theme);
     dom.menu.classList.add("is-hidden");
     dom.game.classList.remove("is-hidden");
+    closeDifficultyPanel();
     hideRestartConfirm();
     hideExitConfirm();
     hideVictory();

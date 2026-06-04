@@ -78,6 +78,16 @@ input {
   filter: brightness(1.08);
 }
 
+.pixel-button:disabled,
+.shop-button:disabled,
+.small-button:disabled,
+.seg-button:disabled,
+.icon-button:disabled {
+  cursor: not-allowed;
+  filter: grayscale(0.55) brightness(0.72);
+  opacity: 0.72;
+}
+
 .pixel-button.gamepad-focused,
 .shop-button.gamepad-focused,
 .small-button.gamepad-focused,
