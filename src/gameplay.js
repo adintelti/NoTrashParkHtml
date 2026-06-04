@@ -4,6 +4,7 @@
     buildBoard,
     clearDynamicElements,
     coordKey,
+    doesTowerReachPath,
     dom,
     enemyTypes,
     getConfiguredWaveLimit,
@@ -81,6 +82,10 @@
     }
     if (state.coins < towerDef.cost) {
       showMessage("Moedas insuficientes.");
+      return;
+    }
+    if (!doesTowerReachPath(x, y, towerDef.range)) {
+      showMessage("Torre não pode ser criada sem alcançar alvos");
       return;
     }
 

@@ -97,6 +97,10 @@
       && !state.occupied.has(key);
   }
 
+  function doesTowerReachPath(x, y, range) {
+    return getPathTilesInRange(x + 0.5, y + 0.5, range).length > 0;
+  }
+
   function getTileAt(x, y) {
     return dom.board.querySelector(`[data-x="${x}"][data-y="${y}"]`);
   }
@@ -171,7 +175,8 @@
     }
 
     const { x, y, rangeEl, ghostEl } = placementPreview;
-    const isAvailable = isBuildableTile(x, y) && state.coins >= towerDef.cost;
+    const reachesPath = doesTowerReachPath(x, y, towerDef.range);
+    const isAvailable = isBuildableTile(x, y) && state.coins >= towerDef.cost && reachesPath;
     const signature = [
       x,
       y,
@@ -179,7 +184,8 @@
       towerDef.range,
       state.cellW,
       state.cellH,
-      isAvailable
+      isAvailable,
+      reachesPath
     ].join("|");
 
     if (signature === lastPreviewSignature) return;
@@ -208,15 +214,18 @@
   function applyPreviewTileHighlights(centerX, centerY, range, isAvailable) {
     clearPreviewTileHighlights();
 
-    dom.board.querySelectorAll(".tile.path").forEach((tile) => {
-      const tileCenterX = Number(tile.dataset.x) + 0.5;
-      const tileCenterY = Number(tile.dataset.y) + 0.5;
-      const distance = Math.hypot(tileCenterX - centerX, tileCenterY - centerY);
-      if (distance > range) return;
-
+    getPathTilesInRange(centerX, centerY, range).forEach((tile) => {
       tile.classList.add("placement-preview-path");
       tile.classList.toggle("placement-preview-unavailable", !isAvailable);
       highlightedPreviewTiles.push(tile);
+    });
+  }
+
+  function getPathTilesInRange(centerX, centerY, range) {
+    return Array.from(dom.board.querySelectorAll(".tile.path")).filter((tile) => {
+      const tileCenterX = Number(tile.dataset.x) + 0.5;
+      const tileCenterY = Number(tile.dataset.y) + 0.5;
+      return Math.hypot(tileCenterX - centerX, tileCenterY - centerY) <= range;
     });
   }
 
@@ -236,6 +245,7 @@
     setElementPosition,
     renderAllPositions,
     isBuildableTile,
+    doesTowerReachPath,
     getTileAt,
     updatePlacementPreview,
     refreshPlacementPreview,
