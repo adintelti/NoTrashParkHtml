@@ -1,0 +1,91 @@
+name: Build and Release
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Package and publish release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Read game version
+        id: version
+        shell: bash
+        run: |
+          GAME_VERSION="$(node - <<'NODE'
+          const fs = require('fs');
+
+          const constants = fs.readFileSync('src/constants.js', 'utf8');
+          const match = constants.match(/GAME_VERSION\s*=\s*["']([^"']+)["']/);
+
+          if (!match) {
+            throw new Error('GAME_VERSION not found in src/constants.js');
+          }
+
+          console.log(match[1]);
+          NODE
+          )"
+
+          echo "game_version=${GAME_VERSION}" >> "${GITHUB_OUTPUT}"
+          echo "GAME_VERSION=${GAME_VERSION}" >> "${GITHUB_ENV}"
+
+      - name: Validate tag version
+        if: github.ref_type == 'tag'
+        shell: bash
+        run: |
+          TAG_VERSION="${GITHUB_REF_NAME#v}"
+
+          if [ "${TAG_VERSION}" != "${GAME_VERSION}" ]; then
+            echo "Tag version (${TAG_VERSION}) does not match GAME_VERSION (${GAME_VERSION})."
+            exit 1
+          fi
+
+      - name: Create release package
+        shell: bash
+        run: |
+          ZIP_NAME="NoTrashParkHtml-${GAME_VERSION}.zip"
+
+          zip -r "${ZIP_NAME}" \
+            sound \
+            src \
+            styles \
+            game.js \
+            index.html \
+            LICENSE \
+            styles.css
+
+          echo "ZIP_NAME=${ZIP_NAME}" >> "${GITHUB_ENV}"
+
+      - name: Upload workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: NoTrashParkHtml-${{ steps.version.outputs.game_version }}
+          path: NoTrashParkHtml-${{ steps.version.outputs.game_version }}.zip
+          if-no-files-found: error
+
+      - name: Create or update GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          TAG_NAME="v${GAME_VERSION}"
+          RELEASE_TITLE="NoTrashParkHtml ${GAME_VERSION}"
+
+          if gh release view "${TAG_NAME}" > /dev/null 2>&1; then
+            gh release upload "${TAG_NAME}" "${ZIP_NAME}" --clobber
+          else
+            gh release create "${TAG_NAME}" "${ZIP_NAME}" \
+              --target "${GITHUB_SHA}" \
+              --title "${RELEASE_TITLE}" \
+              --notes "Release ${GAME_VERSION}"
+          fi
