@@ -106,6 +106,10 @@
       closeDifficultyPanel();
       dom.configPanel.hidden = !dom.configPanel.hidden;
     });
+    dom.configBackButton.addEventListener("click", () => {
+      dom.configPanel.hidden = true;
+      focusGamepadButton(dom.configButton);
+    });
     dom.exitButton.addEventListener("click", () => {
       dom.configPanel.hidden = true;
       closeDifficultyPanel();

@@ -9,6 +9,7 @@
     versionText: document.getElementById("versionText"),
     playButton: document.getElementById("playButton"),
     configButton: document.getElementById("configButton"),
+    configBackButton: document.getElementById("configBackButton"),
     configPanel: document.getElementById("configPanel"),
     difficultyPanel: document.getElementById("difficultyPanel"),
     difficultyBackButton: document.getElementById("difficultyBackButton"),

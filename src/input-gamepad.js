@@ -395,8 +395,7 @@
         closeDifficultyPanel();
         localFocusGamepadButton(dom.playButton);
       } else if (!dom.configPanel.hidden) {
-        dom.configPanel.hidden = true;
-        localFocusGamepadButton(dom.configButton);
+        dom.configBackButton.click();
       }
     }
   }

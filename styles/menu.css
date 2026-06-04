@@ -284,6 +284,15 @@
   outline-offset: 4px;
 }
 
+.config-back-button {
+  width: 100%;
+  min-height: 48px;
+  margin-top: 12px;
+  padding: 8px 6px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
 .difficulty-actions {
   display: grid;
   grid-template-columns: 1fr 1fr;
