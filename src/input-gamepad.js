@@ -13,6 +13,7 @@
     GAMEPAD_NAV_REPEAT,
     gamepadButtons,
     getTileAt,
+    hidePlacementPreview,
     isBuildableTile,
     isCustomWavesInput,
     isExitConfirmOpen,
@@ -29,7 +30,8 @@
     showMessage,
     state,
     togglePause,
-    toggleSpeed
+    toggleSpeed,
+    updatePlacementPreview
   } = ntp;
 
   const gamepadInput = {
@@ -49,19 +51,25 @@
     return gamepadInput.connected;
   }
 
-  function clearGamepadCursor() {
+  function clearGamepadCursor(options = {}) {
     const currentTile = dom.board.querySelector(".gamepad-target");
     currentTile?.classList.remove("gamepad-target", "gamepad-unavailable");
+    if (!options.preservePlacementPreview) {
+      hidePlacementPreview();
+    }
   }
 
   function syncGamepadCursor() {
-    clearGamepadCursor();
+    clearGamepadCursor({ preservePlacementPreview: !gamepadInput.usingGamepad });
     if (!gamepadInput.connected || !state.running || dom.game.classList.contains("is-hidden")) return;
 
     const tile = getTileAt(gamepadInput.cursorX, gamepadInput.cursorY);
     if (tile) {
       tile.classList.add("gamepad-target");
       tile.classList.toggle("gamepad-unavailable", !isBuildableTile(gamepadInput.cursorX, gamepadInput.cursorY));
+      if (gamepadInput.usingGamepad) {
+        updatePlacementPreview(gamepadInput.cursorX, gamepadInput.cursorY);
+      }
     }
   }
 

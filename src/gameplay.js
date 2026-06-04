@@ -14,6 +14,7 @@
     maps,
     playSfx,
     resetState,
+    refreshPlacementPreview,
     setElementPosition,
     showMessage,
     showVictory,
@@ -159,6 +160,7 @@
 
     state.selectedTower = availableTowerKeys[nextIndex];
     updateHud();
+    refreshPlacementPreview();
   }
 
   function startNextWave() {

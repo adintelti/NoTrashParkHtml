@@ -9,6 +9,7 @@
     handleGamepadConnected,
     handleGamepadDisconnected,
     hideExitConfirm,
+    hidePlacementPreview,
     hideRestartConfirm,
     hideVictory,
     isExitConfirmOpen,
@@ -17,6 +18,7 @@
     measureBoard,
     normalizeCustomWaves,
     placeTower,
+    refreshPlacementPreview,
     returnToMenu,
     setBgmEnabled,
     setDifficulty,
@@ -35,6 +37,7 @@
     syncThemeButtons,
     togglePause,
     toggleSpeed,
+    updatePlacementPreview,
     updateHud
   } = ntp;
 
@@ -172,6 +175,16 @@
       if (!button || button.disabled) return;
       state.selectedTower = button.dataset.tower;
       updateHud();
+      refreshPlacementPreview();
+    });
+
+    dom.board.addEventListener("pointermove", previewPlacementFromEvent);
+    dom.board.addEventListener("pointerleave", hidePlacementPreview);
+    dom.board.addEventListener("focusin", previewPlacementFromEvent);
+    dom.board.addEventListener("focusout", (event) => {
+      if (!dom.board.contains(event.relatedTarget)) {
+        hidePlacementPreview();
+      }
     });
 
     dom.board.addEventListener("click", (event) => {
@@ -200,6 +213,21 @@
 
     resizeObserver = new ResizeObserver(measureBoard);
     resizeObserver.observe(dom.board);
+  }
+
+  function previewPlacementFromEvent(event) {
+    const tile = event.target.closest(".tile");
+    if (!tile) {
+      hidePlacementPreview();
+      return;
+    }
+
+    if (event.type === "pointermove") {
+      markPointerInputActive();
+      clearGamepadButtonFocus();
+    }
+
+    updatePlacementPreview(Number(tile.dataset.x), Number(tile.dataset.y));
   }
 
   Object.assign(ntp, {

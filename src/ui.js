@@ -27,6 +27,8 @@
       button.classList.toggle("is-active", towerKey === state.selectedTower);
       button.disabled = state.coins < towers[towerKey].cost;
     });
+
+    ntp.refreshPlacementPreview?.();
   }
 
   function showMessage(text) {

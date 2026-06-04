@@ -1,12 +1,50 @@
-.range-ring {
+.range-ring,
+.placement-range {
+  --preview-color: rgba(255, 247, 172, 0.82);
+  --preview-fill: rgba(255, 247, 172, 0.12);
   position: absolute;
   z-index: 3;
-  width: calc(var(--cell-size) * 4);
-  height: calc(var(--cell-size) * 4);
-  border: 3px dashed rgba(255, 247, 172, 0.7);
+  box-sizing: border-box;
+  border: 3px dashed var(--preview-color);
   border-radius: 50%;
+  background: radial-gradient(circle, var(--preview-fill) 0 58%, transparent 59% 100%);
+  box-shadow: 0 0 0 2px rgba(20, 12, 6, 0.2), 0 0 18px var(--preview-fill);
   transform: translate(-50%, -50%);
   pointer-events: none;
+}
+
+.range-ring {
+  width: calc(var(--cell-size) * 4);
+  height: calc(var(--cell-size) * 4);
+}
+
+.placement-range {
+  transition: width 120ms ease, height 120ms ease, border-color 120ms ease, background 120ms ease;
+}
+
+.placement-range[data-tower="sentinel"] {
+  --preview-color: rgba(255, 247, 172, 0.88);
+  --preview-fill: rgba(255, 247, 172, 0.14);
+}
+
+.placement-range[data-tower="slow"] {
+  --preview-color: rgba(126, 229, 255, 0.88);
+  --preview-fill: rgba(126, 229, 255, 0.14);
+}
+
+.placement-range[data-tower="splash"] {
+  --preview-color: rgba(231, 181, 98, 0.9);
+  --preview-fill: rgba(231, 181, 98, 0.14);
+}
+
+.placement-range[data-tower="flame"] {
+  --preview-color: rgba(255, 127, 48, 0.9);
+  --preview-fill: rgba(255, 127, 48, 0.15);
+}
+
+.placement-range.is-unavailable {
+  --preview-color: rgba(255, 102, 91, 0.88);
+  --preview-fill: rgba(255, 102, 91, 0.12);
 }
 
 .tower,
@@ -22,6 +60,22 @@
   width: calc(var(--cell-size) * 0.62);
   height: calc(var(--cell-size) * 0.82);
   transform: translate(-50%, -68%);
+}
+
+.placement-ghost {
+  z-index: 5;
+  opacity: 0.7;
+  filter: drop-shadow(0 0 8px rgba(255, 248, 178, 0.5));
+}
+
+.placement-ghost.is-unavailable {
+  opacity: 0.42;
+  filter: grayscale(0.55) drop-shadow(0 0 7px rgba(255, 102, 91, 0.58));
+}
+
+.placement-ghost.is-unavailable::before,
+.placement-ghost.is-unavailable::after {
+  border-color: #4a120f;
 }
 
 .tower::before {

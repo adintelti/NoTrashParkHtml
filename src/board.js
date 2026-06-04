@@ -1,6 +1,10 @@
 (() => {
   const ntp = window.NTP = window.NTP || {};
-  const { COLS, ROWS, coordKey, dom, maps, state } = ntp;
+  const { COLS, ROWS, coordKey, dom, maps, state, towers } = ntp;
+
+  let placementPreview = null;
+  let highlightedPreviewTiles = [];
+  let lastPreviewSignature = "";
 
   function buildBoard() {
     const map = maps[state.theme];
@@ -33,10 +37,15 @@
 
     state.pathSet = pathSet;
     state.blockedSet = blockedSet;
+    placementPreview = null;
+    highlightedPreviewTiles = [];
+    lastPreviewSignature = "";
+    createPlacementPreviewElements();
     measureBoard();
   }
 
   function clearDynamicElements() {
+    hidePlacementPreview();
     state.enemies.forEach((enemy) => enemy.el?.remove());
     state.placedTowers.forEach((tower) => tower.el?.remove());
     state.projectiles.forEach((projectile) => projectile.el?.remove());
@@ -77,6 +86,7 @@
     state.enemies.forEach((enemy) => setElementPosition(enemy.el, enemy.x, enemy.y));
     state.projectiles.forEach((projectile) => setElementPosition(projectile.el, projectile.x, projectile.y));
     state.impacts.forEach((impact) => setElementPosition(impact.el, impact.x, impact.y));
+    renderPlacementPreview();
   }
 
   function isBuildableTile(x, y) {
@@ -91,6 +101,132 @@
     return dom.board.querySelector(`[data-x="${x}"][data-y="${y}"]`);
   }
 
+  function createPlacementPreviewElements() {
+    const rangeEl = document.createElement("div");
+    rangeEl.className = "placement-range";
+    rangeEl.setAttribute("aria-hidden", "true");
+    rangeEl.hidden = true;
+
+    const ghostEl = document.createElement("div");
+    ghostEl.className = "tower placement-ghost";
+    ghostEl.setAttribute("aria-hidden", "true");
+    ghostEl.hidden = true;
+
+    dom.board.append(rangeEl, ghostEl);
+    placementPreview = {
+      x: null,
+      y: null,
+      rangeEl,
+      ghostEl,
+      visible: false
+    };
+  }
+
+  function updatePlacementPreview(x, y) {
+    if (!placementPreview) createPlacementPreviewElements();
+    if (!state.running || state.paused || state.gameOver || !Number.isFinite(x) || !Number.isFinite(y)) {
+      hidePlacementPreview();
+      return;
+    }
+
+    const towerDef = towers[state.selectedTower];
+    if (!towerDef) {
+      hidePlacementPreview();
+      return;
+    }
+
+    placementPreview.x = x;
+    placementPreview.y = y;
+    placementPreview.visible = true;
+    renderPlacementPreview();
+  }
+
+  function refreshPlacementPreview() {
+    if (!placementPreview?.visible) return;
+    renderPlacementPreview();
+  }
+
+  function hidePlacementPreview() {
+    if (!placementPreview) return;
+    placementPreview.x = null;
+    placementPreview.y = null;
+    placementPreview.visible = false;
+    placementPreview.rangeEl.hidden = true;
+    placementPreview.ghostEl.hidden = true;
+    clearPreviewTileHighlights();
+    lastPreviewSignature = "";
+  }
+
+  function renderPlacementPreview() {
+    if (!placementPreview?.visible || !state.cellW || !state.cellH) return;
+    if (!state.running || state.paused || state.gameOver || state.victoryPending) {
+      hidePlacementPreview();
+      return;
+    }
+
+    const towerDef = towers[state.selectedTower];
+    if (!towerDef) {
+      hidePlacementPreview();
+      return;
+    }
+
+    const { x, y, rangeEl, ghostEl } = placementPreview;
+    const isAvailable = isBuildableTile(x, y) && state.coins >= towerDef.cost;
+    const signature = [
+      x,
+      y,
+      state.selectedTower,
+      towerDef.range,
+      state.cellW,
+      state.cellH,
+      isAvailable
+    ].join("|");
+
+    if (signature === lastPreviewSignature) return;
+    lastPreviewSignature = signature;
+
+    const centerX = x + 0.5;
+    const centerY = y + 0.5;
+    const rangeDiameter = towerDef.range * 2;
+
+    rangeEl.hidden = false;
+    rangeEl.dataset.tower = state.selectedTower;
+    rangeEl.style.width = `${rangeDiameter * state.cellW}px`;
+    rangeEl.style.height = `${rangeDiameter * state.cellH}px`;
+    rangeEl.classList.toggle("is-unavailable", !isAvailable);
+    setElementPosition(rangeEl, centerX, centerY);
+
+    ghostEl.hidden = false;
+    ghostEl.className = `tower placement-ghost ${towerDef.className}`;
+    ghostEl.dataset.tower = state.selectedTower;
+    ghostEl.classList.toggle("is-unavailable", !isAvailable);
+    setElementPosition(ghostEl, centerX, centerY);
+
+    applyPreviewTileHighlights(centerX, centerY, towerDef.range, isAvailable);
+  }
+
+  function applyPreviewTileHighlights(centerX, centerY, range, isAvailable) {
+    clearPreviewTileHighlights();
+
+    dom.board.querySelectorAll(".tile.path").forEach((tile) => {
+      const tileCenterX = Number(tile.dataset.x) + 0.5;
+      const tileCenterY = Number(tile.dataset.y) + 0.5;
+      const distance = Math.hypot(tileCenterX - centerX, tileCenterY - centerY);
+      if (distance > range) return;
+
+      tile.classList.add("placement-preview-path");
+      tile.classList.toggle("placement-preview-unavailable", !isAvailable);
+      highlightedPreviewTiles.push(tile);
+    });
+  }
+
+  function clearPreviewTileHighlights() {
+    highlightedPreviewTiles.forEach((tile) => {
+      tile.classList.remove("placement-preview-path", "placement-preview-unavailable");
+    });
+    highlightedPreviewTiles = [];
+  }
+
   Object.assign(ntp, {
     buildBoard,
     clearDynamicElements,
@@ -100,6 +236,9 @@
     setElementPosition,
     renderAllPositions,
     isBuildableTile,
-    getTileAt
+    getTileAt,
+    updatePlacementPreview,
+    refreshPlacementPreview,
+    hidePlacementPreview
   });
 })();
