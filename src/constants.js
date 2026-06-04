@@ -3,7 +3,7 @@
 
   ntp.COLS = 12;
   ntp.ROWS = 9;
-  ntp.GAME_VERSION = "1.5.0";
+  ntp.GAME_VERSION = "1.5.1";
   ntp.MIN_CUSTOM_WAVES = 20;
   ntp.GAMEPAD_DEADZONE = 0.35;
   ntp.GAMEPAD_MOVE_REPEAT = 0.16;
@@ -16,15 +16,15 @@
   };
 
   ntp.musicTracks = {
-    menu: "sound/bmg/menu.ogg",
-    park: "sound/bmg/level1-park.ogg",
-    lagoon: "sound/bmg/level2-water.ogg",
-    lava: "sound/bmg/level3-fire.ogg"
+    menu: "sound/bmg/menu.mp3",
+    park: "sound/bmg/level1-park.mp3",
+    lagoon: "sound/bmg/level2-water.mp3",
+    lava: "sound/bmg/level3-fire.mp3"
   };
 
   ntp.sfxTracks = {
-    projectileThrow: "sound/sfx/tap_stone.wav",
-    enemyDeath: "sound/sfx/tail_whip.flac"
+    projectileThrow: "sound/sfx/tap_stone.mp3",
+    enemyDeath: "sound/sfx/tail_whip.mp3"
   };
 
   ntp.sfxVolumes = {
