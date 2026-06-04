@@ -17,6 +17,7 @@
     resetState,
     refreshPlacementPreview,
     setElementPosition,
+    showGameOver,
     showMessage,
     showVictory,
     state,
@@ -111,9 +112,10 @@
     updateHud();
   }
 
-  function update(dt) {
+  function update(dt, rawDt = dt) {
     if (!state.running || state.paused || state.gameOver || state.victoryPending) return;
 
+    state.sessionTime += rawDt;
     state.simTime += dt;
 
     if (state.spawnRemaining <= 0 && state.enemies.length === 0) {
@@ -256,7 +258,8 @@
 
     leaked.forEach((enemy) => {
       removeEnemy(enemy, false);
-      state.lives -= 1;
+      if (state.gameOver) return;
+      state.lives = Math.max(0, state.lives - 1);
       if (state.lives <= 0) endGame();
     });
   }
@@ -421,10 +424,11 @@
   }
 
   function endGame() {
+    if (state.gameOver) return;
     state.gameOver = true;
     hideVictory();
     state.lives = 0;
-    showMessage(`Fim de jogo. Onda ${state.wave}.`);
+    showGameOver();
     updateHud();
   }
 

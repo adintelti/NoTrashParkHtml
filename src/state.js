@@ -28,6 +28,7 @@
       gameOver: false,
       victoryShown: false,
       victoryPending: false,
+      sessionTime: 0,
       simTime: 0,
       nextEnemyId: 1,
       nextProjectileId: 1

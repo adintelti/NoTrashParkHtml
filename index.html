@@ -137,6 +137,10 @@
                 <span>Wave</span>
                 <strong id="waveText">0</strong>
               </div>
+              <div class="stat-pill">
+                <span>Tempo</span>
+                <strong id="sessionTimeText">00:00</strong>
+              </div>
             </div>
 
             <div id="board" class="board theme-park" data-testid="board"></div>
@@ -158,7 +162,18 @@
             <div id="victoryOverlay" class="victory-overlay" role="dialog" aria-modal="true" aria-labelledby="victoryTitle" hidden>
               <div class="victory-card">
                 <h2 id="victoryTitle">Parque Protegido!</h2>
-                <div class="victory-actions" aria-label="Victory options">
+                <p id="victorySummary" class="victory-summary"></p>
+                <div class="victory-stats" aria-label="Resumo da sessao">
+                  <div class="victory-stat">
+                    <span>Tempo</span>
+                    <strong id="victoryTimeText">00:00</strong>
+                  </div>
+                  <div class="victory-stat">
+                    <span>Onda</span>
+                    <strong id="victoryWaveText">0/0</strong>
+                  </div>
+                </div>
+                <div class="victory-actions" aria-label="Opcoes de resultado">
                   <button id="victoryContinueButton" class="victory-choice" type="button">Continuar</button>
                   <button id="victoryRestartButton" class="victory-choice" type="button">Jogar novamente!</button>
                   <button id="victoryMenuButton" class="victory-choice" type="button">Menu</button>

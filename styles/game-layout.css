@@ -52,6 +52,10 @@
   font-weight: 700;
 }
 
+.stat-pill strong {
+  white-space: nowrap;
+}
+
 .heart-stack {
   display: flex;
   gap: 2px;

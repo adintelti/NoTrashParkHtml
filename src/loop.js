@@ -14,7 +14,7 @@
 
     tickMessageTimer(rawDt);
     updateGamepadInput(rawDt);
-    update(rawDt * state.speed);
+    update(rawDt * state.speed, rawDt);
     requestAnimationFrame(tick);
   }
 

@@ -1,8 +1,25 @@
 (() => {
   const ntp = window.NTP = window.NTP || {};
-  const { dom, GAME_VERSION, getNextTheme, state, towers, victoryTitles } = ntp;
+  const { dom, GAME_VERSION, getNextTheme, maps, state, towers, victoryTitles } = ntp;
 
   let messageTimer = 0;
+
+  function formatSessionTime(totalSeconds = 0) {
+    const safeSeconds = Math.max(0, Math.floor(totalSeconds));
+    const seconds = String(safeSeconds % 60).padStart(2, "0");
+    const minutes = Math.floor(safeSeconds / 60) % 60;
+    const hours = Math.floor(safeSeconds / 3600);
+
+    if (hours > 0) {
+      return `${hours}:${String(minutes).padStart(2, "0")}:${seconds}`;
+    }
+
+    return `${String(minutes).padStart(2, "0")}:${seconds}`;
+  }
+
+  function getWaveProgressText() {
+    return `${state.wave}/${state.waveLimit}`;
+  }
 
   function updateVersionText() {
     dom.versionText.textContent = `Versao ${GAME_VERSION}`;
@@ -11,7 +28,8 @@
   function updateHud() {
     dom.coinText.textContent = String(state.coins);
     dom.livesText.textContent = String(state.lives);
-    dom.waveText.textContent = `${state.wave}/${state.waveLimit}`;
+    dom.waveText.textContent = getWaveProgressText();
+    dom.sessionTimeText.textContent = formatSessionTime(state.sessionTime);
     dom.pauseButton.textContent = state.paused ? "Retomar" : "Pause";
     dom.speedButton.textContent = `${state.speed}x`;
     dom.heartStack.innerHTML = "";
@@ -50,17 +68,41 @@
     hideRestartConfirm();
     hideExitConfirm();
     dom.victoryTitle.textContent = victoryTitles[state.theme] || "Vitoria!";
+    updateResultDetails(`Você conseguiu em ${formatSessionTime(state.sessionTime)}.`);
     dom.victoryContinueButton.hidden = !hasNextTheme;
     dom.victoryOverlay.classList.toggle("is-final-victory", !hasNextTheme);
+    dom.victoryOverlay.classList.remove("is-game-over");
     dom.victoryOverlay.hidden = false;
     dom.floatingMessage.classList.remove("is-visible");
     messageTimer = 0;
   }
 
+  function showGameOver() {
+    const levelName = maps[state.theme]?.name || "Fase";
+    hideRestartConfirm();
+    hideExitConfirm();
+    dom.victoryTitle.textContent = `Fim de jogo, ${levelName} destruído(a)`;
+    updateResultDetails("");
+    dom.victoryContinueButton.hidden = true;
+    dom.victoryOverlay.classList.remove("is-final-victory");
+    dom.victoryOverlay.classList.add("is-game-over");
+    dom.victoryOverlay.hidden = false;
+    dom.floatingMessage.classList.remove("is-visible");
+    messageTimer = 0;
+  }
+
+  function updateResultDetails(summary) {
+    dom.victorySummary.textContent = summary;
+    dom.victorySummary.hidden = !summary;
+    dom.victoryTimeText.textContent = formatSessionTime(state.sessionTime);
+    dom.victoryWaveText.textContent = getWaveProgressText();
+  }
+
   function hideVictory() {
     dom.victoryOverlay.hidden = true;
+    dom.victorySummary.hidden = false;
     dom.victoryContinueButton.hidden = false;
-    dom.victoryOverlay.classList.remove("is-final-victory");
+    dom.victoryOverlay.classList.remove("is-final-victory", "is-game-over");
   }
 
   function showRestartConfirm() {
@@ -125,7 +167,9 @@
     showMessage,
     tickMessageTimer,
     showVictory,
+    showGameOver,
     hideVictory,
+    formatSessionTime,
     showRestartConfirm,
     hideRestartConfirm,
     showExitConfirm,
