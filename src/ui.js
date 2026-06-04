@@ -68,7 +68,6 @@
     hideRestartConfirm();
     hideExitConfirm();
     dom.victoryTitle.textContent = victoryTitles[state.theme] || "Vitoria!";
-    updateResultDetails("");
     dom.victoryContinueButton.hidden = !hasNextTheme;
     dom.victoryOverlay.classList.toggle("is-final-victory", !hasNextTheme);
     dom.victoryOverlay.classList.remove("is-game-over");
@@ -82,7 +81,6 @@
     hideRestartConfirm();
     hideExitConfirm();
     dom.victoryTitle.textContent = `Fim de jogo, ${levelName} destruído(a)`;
-    updateResultDetails("");
     dom.victoryContinueButton.hidden = true;
     dom.victoryOverlay.classList.remove("is-final-victory");
     dom.victoryOverlay.classList.add("is-game-over");

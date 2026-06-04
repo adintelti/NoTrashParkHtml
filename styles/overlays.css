@@ -236,6 +236,14 @@
     font-size: clamp(1.22rem, 5.6vw, 1.9rem);
   }
 
+  .victory-overlay:not(.is-game-over) .victory-card h2 {
+    max-width: calc(100% - 64px);
+    margin: 0 auto;
+    font-size: clamp(1rem, 4.2vw, 1.3rem);
+    line-height: 1.18;
+    text-align: center;
+  }
+
   .victory-summary {
     font-size: 0.78rem;
   }
