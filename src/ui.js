@@ -68,7 +68,7 @@
     hideRestartConfirm();
     hideExitConfirm();
     dom.victoryTitle.textContent = victoryTitles[state.theme] || "Vitoria!";
-    updateResultDetails(`Você conseguiu em ${formatSessionTime(state.sessionTime)}.`);
+    updateResultDetails("");
     dom.victoryContinueButton.hidden = !hasNextTheme;
     dom.victoryOverlay.classList.toggle("is-final-victory", !hasNextTheme);
     dom.victoryOverlay.classList.remove("is-game-over");
