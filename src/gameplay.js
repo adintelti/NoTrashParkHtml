@@ -11,7 +11,9 @@
     getConfiguredWaveLimit,
     hideExitConfirm,
     hideRestartConfirm,
+    hideWaveTransition,
     hideVictory,
+    isTowerUnlocked,
     isVictoryOpen,
     maps,
     playSfx,
@@ -20,12 +22,14 @@
     setElementPosition,
     showGameOver,
     showMessage,
+    showWaveTransition,
     showVictory,
     state,
     syncThemeButtons,
     towerOrder,
     towers,
-    updateHud
+    updateHud,
+    ensureSelectedTowerUnlocked
   } = ntp;
 
   const gameplayHooks = {
@@ -34,12 +38,16 @@
     afterTowerPlaced() {}
   };
 
+  const WAVE_TRANSITION_DURATION = 1.25;
+  let waveTransitionCallback = null;
+
   function configureGameplayHooks(hooks) {
     Object.assign(gameplayHooks, hooks);
   }
 
   function startGame(theme = state.theme) {
     resetState(theme, getConfiguredWaveLimit());
+    ensureSelectedTowerUnlocked();
     state.running = true;
     syncThemeButtons(theme);
     dom.menu.classList.add("is-hidden");
@@ -47,7 +55,9 @@
     closeDifficultyPanel();
     hideRestartConfirm();
     hideExitConfirm();
+    hideWaveTransition();
     hideVictory();
+    waveTransitionCallback = null;
     buildBoard();
     gameplayHooks.afterStartGame();
     updateHud();
@@ -58,7 +68,9 @@
     state.running = false;
     hideRestartConfirm();
     hideExitConfirm();
+    hideWaveTransition();
     hideVictory();
+    waveTransitionCallback = null;
     clearDynamicElements();
     dom.game.classList.add("is-hidden");
     dom.menu.classList.remove("is-hidden");
@@ -79,6 +91,10 @@
 
     const key = coordKey(x, y);
     const towerDef = towers[state.selectedTower];
+    if (!towerDef || !isTowerUnlocked(state.selectedTower, state.theme)) {
+      showMessage("Torre bloqueada neste bioma.");
+      return;
+    }
     if (state.pathSet.has(key) || state.blockedSet.has(key) || state.occupied.has(key)) {
       showMessage("Espaco bloqueado.");
       return;
@@ -120,7 +136,19 @@
     state.sessionTime += rawDt;
     state.simTime += dt;
 
+    if (state.waveTransitionActive) {
+      updateWaveTransition(rawDt);
+      updateHud();
+      return;
+    }
+
     if (state.spawnRemaining <= 0 && state.enemies.length === 0) {
+      if (state.waveInProgress) {
+        completeCurrentWave();
+        updateHud();
+        return;
+      }
+
       state.waveCooldown -= dt;
       if (state.waveCooldown <= 0) {
         state.waveCooldown = 2.4;
@@ -157,11 +185,10 @@
   }
 
   function cycleSelectedTower(step) {
-    const enabledTowerKeys = towerOrder.filter((towerKey) => {
-      const button = dom.towerShop.querySelector(`[data-tower="${towerKey}"]`);
-      return !button?.disabled;
-    });
-    const availableTowerKeys = enabledTowerKeys.length ? enabledTowerKeys : towerOrder;
+    const unlockedTowerKeys = towerOrder.filter((towerKey) => isTowerUnlocked(towerKey, state.theme));
+    const affordableTowerKeys = unlockedTowerKeys.filter((towerKey) => state.coins >= towers[towerKey].cost);
+    const availableTowerKeys = affordableTowerKeys.length ? affordableTowerKeys : unlockedTowerKeys;
+    if (!availableTowerKeys.length) return;
     const currentIndex = availableTowerKeys.indexOf(state.selectedTower);
     const nextIndex = currentIndex >= 0
       ? (currentIndex + step + availableTowerKeys.length) % availableTowerKeys.length
@@ -186,11 +213,64 @@
   }
 
   function beginWaveSpawn() {
+    state.waveDefeated = 0;
+    state.waveComboVisible = false;
+    state.waveInProgress = true;
     state.spawnRemaining = 6 + state.wave * 2;
     state.spawnTimer = 0;
     state.victoryPending = false;
     showMessage(`Onda ${state.wave}`);
     updateHud();
+  }
+
+  function completeCurrentWave() {
+    const finishedWave = state.wave;
+    const defeatedThisWave = state.waveDefeated;
+    state.waveInProgress = false;
+    state.sessionDefeated += defeatedThisWave;
+    state.waveDefeated = 0;
+    state.waveComboVisible = false;
+
+    const steps = [`Fim da onda ${finishedWave}\nDerrotados: ${defeatedThisWave}`];
+    if (finishedWave < state.waveLimit) {
+      steps.push(`Início da onda ${finishedWave + 1}`);
+    }
+
+    startWaveTransition(steps, startNextWave);
+  }
+
+  function startWaveTransition(steps, callback) {
+    state.waveTransitionActive = true;
+    state.waveTransitionSteps = steps;
+    state.waveTransitionIndex = 0;
+    state.waveTransitionTimer = WAVE_TRANSITION_DURATION;
+    waveTransitionCallback = callback;
+    showWaveTransition(steps[0]);
+  }
+
+  function updateWaveTransition(dt) {
+    state.waveTransitionTimer -= dt;
+    if (state.waveTransitionTimer > 0) return;
+
+    state.waveTransitionIndex += 1;
+    if (state.waveTransitionIndex < state.waveTransitionSteps.length) {
+      state.waveTransitionTimer = WAVE_TRANSITION_DURATION;
+      showWaveTransition(state.waveTransitionSteps[state.waveTransitionIndex]);
+      return;
+    }
+
+    finishWaveTransition();
+  }
+
+  function finishWaveTransition() {
+    const callback = waveTransitionCallback;
+    state.waveTransitionActive = false;
+    state.waveTransitionSteps = [];
+    state.waveTransitionIndex = 0;
+    state.waveTransitionTimer = 0;
+    waveTransitionCallback = null;
+    hideWaveTransition();
+    if (callback) callback();
   }
 
   function spawnEnemy() {
@@ -370,6 +450,9 @@
   }
 
   function damageEnemy(enemy, amount) {
+    if (state.waveInProgress) {
+      state.waveComboVisible = true;
+    }
     enemy.hp -= Math.max(1, amount);
     const bar = enemy.el.querySelector(".health span");
     if (bar) {
@@ -388,6 +471,7 @@
     enemy.el?.remove();
     if (awardCoins) {
       playSfx("enemyDeath");
+      state.waveDefeated += 1;
       state.coins += enemy.reward;
     }
   }
@@ -428,6 +512,7 @@
   function endGame() {
     if (state.gameOver) return;
     state.gameOver = true;
+    state.waveComboVisible = false;
     hideVictory();
     state.lives = 0;
     showGameOver();

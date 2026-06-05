@@ -25,6 +25,7 @@
     returnToMenu,
     sanitizeCustomWavesInput,
     setBgmEnabled,
+    setControllerLayout,
     setDifficulty,
     setSfxEnabled,
     setBgmMasterVolume,
@@ -182,6 +183,9 @@
     });
     dom.sfxToggleButton.addEventListener("click", () => {
       setSfxEnabled(!getSoundSettings().sfxEnabled);
+    });
+    document.querySelectorAll("[data-controller-layout]").forEach((button) => {
+      button.addEventListener("click", () => setControllerLayout(button.dataset.controllerLayout));
     });
     dom.bgmVolumeInput.addEventListener("input", () => {
       setBgmMasterVolume(Number(dom.bgmVolumeInput.value) / 100);

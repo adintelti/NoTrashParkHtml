@@ -28,6 +28,7 @@
     resumeDesiredMusic,
     ROWS,
     setDifficulty,
+    settings,
     showMenuNote,
     showMessage,
     state,
@@ -203,8 +204,8 @@
       && style.display !== "none";
   }
 
-  function getGamepadFocusableButtons() {
-    const root = isVictoryOpen()
+  function getGamepadFocusRoot() {
+    return isVictoryOpen()
       ? dom.victoryOverlay
       : isRestartConfirmOpen()
         ? dom.restartConfirmOverlay
@@ -212,17 +213,51 @@
           ? dom.exitConfirmOverlay
           : isDifficultyPanelOpen()
             ? dom.difficultyPanel
-            : isMenuVisible()
-              ? dom.menu
-              : null;
+            : !dom.configPanel.hidden
+              ? dom.configPanel
+              : isMenuVisible()
+                ? dom.menu
+                : null;
+  }
+
+  function getGamepadFocusableButtons() {
+    const root = getGamepadFocusRoot();
 
     if (!root) return [];
 
     return Array.from(root.querySelectorAll("button, input"))
-      .filter((el) => !el.disabled && !el.hidden && isElementVisible(el));
+      .filter(isGamepadFocusableElement);
+  }
+
+  function isGamepadFocusableElement(el) {
+    if (el.disabled || el.hidden || !isElementVisible(el)) return false;
+
+    if (isCustomWavesInput(el) && settings.difficulty !== "custom" && document.activeElement !== el) {
+      return false;
+    }
+
+    return true;
+  }
+
+  function isHorizontalDirection(direction) {
+    return Math.abs(direction.x) >= Math.abs(direction.y) && direction.x !== 0;
+  }
+
+  function isVerticalDirection(direction) {
+    return Math.abs(direction.y) > Math.abs(direction.x) && direction.y !== 0;
   }
 
   function moveGamepadButtonFocus(direction) {
+    if (!dom.configPanel.hidden) {
+      moveConfigGamepadFocus(direction);
+      return;
+    }
+
+    if (isDifficultyPanelOpen()) {
+      moveDifficultyGamepadFocus(direction);
+      return;
+    }
+
     const buttons = getGamepadFocusableButtons();
     if (!buttons.length) return;
 
@@ -262,6 +297,152 @@
     localFocusGamepadButton(buttons[fallbackIndex]);
   }
 
+  function moveConfigGamepadFocus(direction) {
+    const buttons = [
+      dom.xboxLayoutButton,
+      dom.switchLayoutButton,
+      dom.bgmToggleButton,
+      dom.sfxToggleButton,
+      dom.bgmVolumeInput,
+      dom.sfxVolumeInput,
+      dom.configBackButton
+    ].filter(isGamepadFocusableElement);
+
+    if (!buttons.length) return;
+
+    const current = buttons.includes(document.activeElement) ? document.activeElement : null;
+    if (!current) {
+      localFocusGamepadButton(buttons[0]);
+      return;
+    }
+
+    const step = direction.x > 0 || direction.y > 0 ? 1 : -1;
+    const currentIndex = buttons.indexOf(current);
+    const nextIndex = (currentIndex + step + buttons.length) % buttons.length;
+    localFocusGamepadButton(buttons[nextIndex]);
+  }
+
+  function moveDifficultyGamepadFocus(direction) {
+    const easyButton = dom.difficultyPanel.querySelector("[data-difficulty='easy']");
+    const mediumButton = dom.difficultyPanel.querySelector("[data-difficulty='medium']");
+    const hardButton = dom.difficultyPanel.querySelector("[data-difficulty='hard']");
+    const customButton = dom.difficultyPanel.querySelector("[data-difficulty='custom']");
+    const buttons = [
+      easyButton,
+      mediumButton,
+      hardButton,
+      customButton,
+      dom.customWavesInput,
+      dom.difficultyBackButton,
+      dom.startGameButton
+    ].filter(isGamepadFocusableElement);
+
+    if (!buttons.length) return;
+
+    const current = buttons.includes(document.activeElement) ? document.activeElement : null;
+    if (!current) {
+      localFocusGamepadButton(buttons[0]);
+      return;
+    }
+
+    if (current === easyButton) {
+      if (isHorizontalDirection(direction) && direction.x > 0) {
+        focusFirstGamepadButton(mediumButton);
+        return;
+      }
+      if (isVerticalDirection(direction) && direction.y > 0) {
+        focusFirstGamepadButton(hardButton);
+        return;
+      }
+    }
+
+    if (current === mediumButton) {
+      if (isHorizontalDirection(direction) && direction.x < 0) {
+        focusFirstGamepadButton(easyButton);
+        return;
+      }
+      if (isVerticalDirection(direction) && direction.y > 0) {
+        focusFirstGamepadButton(customButton);
+        return;
+      }
+    }
+
+    if (current === hardButton) {
+      if (isHorizontalDirection(direction) && direction.x > 0) {
+        focusFirstGamepadButton(customButton);
+        return;
+      }
+      if (isVerticalDirection(direction) && direction.y < 0) {
+        focusFirstGamepadButton(easyButton);
+        return;
+      }
+      if (isVerticalDirection(direction) && direction.y > 0) {
+        focusFirstGamepadButton(dom.customWavesInput, dom.difficultyBackButton);
+        return;
+      }
+    }
+
+    if (current === customButton) {
+      if (isHorizontalDirection(direction) && direction.x < 0) {
+        focusFirstGamepadButton(hardButton);
+        return;
+      }
+      if (isVerticalDirection(direction) && direction.y < 0) {
+        focusFirstGamepadButton(mediumButton);
+        return;
+      }
+      if (isVerticalDirection(direction) && direction.y > 0) {
+        focusFirstGamepadButton(dom.customWavesInput, dom.startGameButton, dom.difficultyBackButton);
+        return;
+      }
+    }
+
+    if (current === dom.customWavesInput) {
+      if (isVerticalDirection(direction) && direction.y < 0) {
+        focusFirstGamepadButton(customButton);
+        return;
+      }
+      if (isVerticalDirection(direction) && direction.y > 0) {
+        focusFirstGamepadButton(dom.difficultyBackButton);
+        return;
+      }
+    }
+
+    if (current === dom.difficultyBackButton) {
+      if (isHorizontalDirection(direction) && direction.x > 0) {
+        focusFirstGamepadButton(dom.startGameButton);
+        return;
+      }
+      if (isVerticalDirection(direction) && direction.y < 0) {
+        focusFirstGamepadButton(dom.customWavesInput, hardButton);
+        return;
+      }
+    }
+
+    if (current === dom.startGameButton) {
+      if (isHorizontalDirection(direction) && direction.x < 0) {
+        focusFirstGamepadButton(dom.difficultyBackButton);
+        return;
+      }
+      if (isVerticalDirection(direction) && direction.y < 0) {
+        focusFirstGamepadButton(dom.customWavesInput, customButton);
+        return;
+      }
+    }
+
+    const step = direction.x > 0 || direction.y > 0 ? 1 : -1;
+    const currentIndex = buttons.indexOf(current);
+    const nextIndex = (currentIndex + step + buttons.length) % buttons.length;
+    localFocusGamepadButton(buttons[nextIndex]);
+  }
+
+  function focusFirstGamepadButton(...buttons) {
+    const button = buttons.find(isGamepadFocusableElement);
+    if (!button) return false;
+    localFocusGamepadButton(button);
+    return true;
+  }
+
   function getRectCenter(rect) {
     return {
       x: rect.left + rect.width / 2,
@@ -289,7 +470,8 @@
     activeButton.click();
 
     if (activeButton === dom.configButton && !dom.configPanel.hidden) {
-      const firstConfigButton = dom.configPanel.querySelector("button");
+      const firstConfigButton = dom.configPanel.querySelector("[data-controller-layout].is-active")
+        || dom.configPanel.querySelector("button");
       localFocusGamepadButton(firstConfigButton);
     }
   }
@@ -354,7 +536,11 @@
   function updateMenuGamepadInput(dt, direction, justPressed) {
     if (isSoundVolumeInput(document.activeElement)) {
       if (shouldRepeatDirection(direction, "navCooldown", "lastNavDirection", GAMEPAD_NAV_REPEAT, dt)) {
-        adjustSoundVolumeFromGamepad(document.activeElement, direction);
+        if (isHorizontalDirection(direction)) {
+          adjustSoundVolumeFromGamepad(document.activeElement, direction);
+        } else if (isVerticalDirection(direction)) {
+          moveGamepadButtonFocus(direction);
+        }
       }
 
       if (justPressed(gamepadButtons.a) || justPressed(gamepadButtons.b) || justPressed(gamepadButtons.start)) {
@@ -366,7 +552,11 @@
 
     if (isCustomWavesInput(document.activeElement)) {
       if (shouldRepeatDirection(direction, "navCooldown", "lastNavDirection", GAMEPAD_NAV_REPEAT, dt)) {
-        adjustCustomWavesFromGamepad(direction);
+        if (isHorizontalDirection(direction)) {
+          adjustCustomWavesFromGamepad(direction);
+        } else if (isVerticalDirection(direction)) {
+          moveGamepadButtonFocus(direction);
+        }
       }
 
       if (justPressed(gamepadButtons.a) || justPressed(gamepadButtons.b) || justPressed(gamepadButtons.start)) {

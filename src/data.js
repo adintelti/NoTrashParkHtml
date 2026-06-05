@@ -85,6 +85,11 @@
 
   const themeOrder = ["park", "lagoon", "lava"];
   const towerOrder = Object.keys(towers);
+  const towerUnlocksByTheme = {
+    park: ["sentinel", "slow"],
+    lagoon: ["sentinel", "slow", "splash"],
+    lava: towerOrder
+  };
   const victoryTitles = {
     park: "Parque Protegido!",
     lagoon: "Lagoa Protegida!",
@@ -96,12 +101,22 @@
     return index >= 0 ? themeOrder[index + 1] : undefined;
   }
 
+  function getUnlockedTowerKeys(theme) {
+    return towerUnlocksByTheme[theme] || towerOrder;
+  }
+
+  function isTowerUnlocked(towerKey, theme) {
+    return getUnlockedTowerKeys(theme).includes(towerKey);
+  }
+
   Object.assign(ntp, {
     towers,
     maps,
     enemyTypes,
     themeOrder,
     towerOrder,
+    getUnlockedTowerKeys,
+    isTowerUnlocked,
     victoryTitles,
     getNextTheme
   });

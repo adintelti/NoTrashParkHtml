@@ -56,6 +56,10 @@
   white-space: nowrap;
 }
 
+.defeated-pill {
+  min-width: 118px;
+}
+
 .heart-stack {
   display: flex;
   gap: 2px;
@@ -198,6 +202,26 @@
 .shop-button[disabled] {
   opacity: 0.58;
   cursor: not-allowed;
+}
+
+.shop-button.is-locked {
+  opacity: 0.86;
+  color: #f4d5a4;
+  background:
+    repeating-linear-gradient(
+      -45deg,
+      rgba(26, 12, 0, 0.34) 0 8px,
+      rgba(26, 12, 0, 0.12) 8px 16px
+    ),
+    #5b4638;
+  box-shadow:
+    inset 3px 3px 0 rgba(255, 231, 107, 0.18),
+    inset -3px -3px 0 rgba(22, 11, 0, 0.54),
+    0 4px 0 #351d0b;
+}
+
+.shop-button.is-locked strong {
+  color: #ffe76b;
 }
 
 .theme-controls {

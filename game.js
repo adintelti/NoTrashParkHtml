@@ -14,6 +14,7 @@
     resetGamepadCursor,
     startLoop,
     state,
+    syncControllerLayout,
     syncDifficultyButtons,
     syncGamepadCursor,
     updateHud,
@@ -40,6 +41,7 @@
 
   bindEvents();
   buildBoard();
+  syncControllerLayout();
   syncDifficultyButtons();
   updateVersionText();
   updateHud();

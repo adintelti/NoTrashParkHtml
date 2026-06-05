@@ -119,6 +119,7 @@
   .top-hud {
     top: max(6px, env(safe-area-inset-top));
     gap: 6px;
+    max-width: calc(100% - 12px);
   }
 
   .stat-pill {
@@ -128,6 +129,10 @@
     border-width: 2px;
     box-shadow: 0 2px 0 #51301a;
     font-size: 0.75rem;
+  }
+
+  .defeated-pill {
+    min-width: 94px;
   }
 
   .heart-dot {
@@ -263,6 +268,24 @@
     min-height: 30px;
     padding: 6px 9px;
     font-size: 0.72rem;
+  }
+
+  .combo-counter {
+    top: calc(42px + env(safe-area-inset-top));
+    right: 7px;
+    min-width: 46px;
+    min-height: 32px;
+    padding: 5px 7px;
+    border-width: 2px;
+    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.34);
+    font-size: 0.82rem;
+  }
+
+  .wave-transition {
+    min-width: min(88%, 330px);
+    padding: 13px 15px;
+    border-width: 4px;
+    font-size: clamp(1rem, 5.2vw, 1.45rem);
   }
 
   .tower {

@@ -102,6 +102,11 @@
   background: #f0c12f;
 }
 
+.app[data-controller-layout="switch"] .pad-key-face {
+  color: #f8fbff;
+  background: #2d323b;
+}
+
 .menu-controller-hints {
   position: absolute;
   left: 50%;

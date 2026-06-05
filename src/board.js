@@ -1,6 +1,6 @@
 (() => {
   const ntp = window.NTP = window.NTP || {};
-  const { COLS, ROWS, coordKey, dom, maps, state, towers } = ntp;
+  const { COLS, ROWS, coordKey, dom, isTowerUnlocked, maps, state, towers } = ntp;
 
   let placementPreview = null;
   let highlightedPreviewTiles = [];
@@ -176,7 +176,10 @@
 
     const { x, y, rangeEl, ghostEl } = placementPreview;
     const reachesPath = doesTowerReachPath(x, y, towerDef.range);
-    const isAvailable = isBuildableTile(x, y) && state.coins >= towerDef.cost && reachesPath;
+    const isAvailable = isTowerUnlocked(state.selectedTower, state.theme)
+      && isBuildableTile(x, y)
+      && state.coins >= towerDef.cost
+      && reachesPath;
     const signature = [
       x,
       y,

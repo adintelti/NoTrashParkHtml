@@ -21,6 +21,70 @@
   opacity: 1;
 }
 
+.combo-counter {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  z-index: 7;
+  min-width: 58px;
+  min-height: 42px;
+  display: grid;
+  place-items: center;
+  padding: 6px 10px;
+  color: #fff7cc;
+  background: rgba(22, 11, 0, 0.82);
+  border: 3px solid #ffe76b;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.34);
+  font-size: 1.15rem;
+  font-weight: 900;
+  line-height: 1;
+  pointer-events: none;
+}
+
+.combo-counter.is-active {
+  color: #ffe76b;
+}
+
+.combo-counter[hidden] {
+  display: none;
+}
+
+.wave-transition {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 11;
+  min-width: min(82%, 430px);
+  padding: 18px 22px;
+  color: #160b00;
+  background: #ffe76b;
+  border: 5px solid var(--outline);
+  box-shadow:
+    inset 4px 4px 0 #fff6b8,
+    inset -4px -4px 0 #b46600,
+    0 8px 0 rgba(0, 0, 0, 0.38);
+  transform: translate(-50%, -50%) scale(0.94);
+  opacity: 0;
+  transition:
+    opacity 150ms ease,
+    transform 150ms ease;
+  text-align: center;
+  font-size: clamp(1.2rem, 3.8vw, 2.6rem);
+  font-weight: 900;
+  line-height: 1.15;
+  white-space: pre-line;
+  pointer-events: none;
+}
+
+.wave-transition.is-visible {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.wave-transition[hidden] {
+  display: none;
+}
+
 .victory-overlay {
   position: absolute;
   inset: 0;
@@ -103,7 +167,7 @@
   width: min(100%, 430px);
   margin: 0 auto;
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
 }
 
