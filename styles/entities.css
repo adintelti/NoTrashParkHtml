@@ -78,6 +78,16 @@
   border-color: #4a120f;
 }
 
+.tower.is-removable {
+  filter: drop-shadow(0 0 8px rgba(255, 211, 90, 0.78));
+}
+
+.tower.is-delete-target {
+  filter:
+    drop-shadow(0 0 9px rgba(255, 98, 78, 0.95))
+    drop-shadow(0 0 3px rgba(255, 247, 204, 0.8));
+}
+
 .tower::before {
   content: "";
   position: absolute;

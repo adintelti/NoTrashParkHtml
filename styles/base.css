@@ -33,6 +33,15 @@ input {
   font: inherit;
 }
 
+button {
+  -webkit-tap-highlight-color: transparent;
+}
+
+input {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
 .app {
   min-height: 100vh;
   display: grid;
@@ -40,6 +49,9 @@ input {
   background:
     linear-gradient(180deg, rgba(4, 21, 36, 0.25), rgba(6, 5, 10, 0.65)),
     #15568f;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 .screen {
