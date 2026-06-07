@@ -262,6 +262,17 @@
               </button>
             </div>
 
+            <div class="shop-tools" aria-label="Ferramentas">
+              <button id="undoTowerButton" class="shop-button shop-tool-button undo-tool-button" type="button" hidden>
+                <span>Desfazer</span>
+                <strong>5s</strong>
+              </button>
+              <button id="deleteTowerButton" class="shop-button shop-tool-button delete-tool-button" type="button" aria-pressed="false">
+                <span>Excluir</span>
+                <strong>Selecionar</strong>
+              </button>
+            </div>
+
             <!-- <div class="theme-controls" role="group" aria-label="Level theme">
               <button class="small-button is-active" data-theme="park" type="button">Parque</button>
               <button class="small-button" data-theme="lagoon" type="button">Lagoa</button>
@@ -290,6 +301,16 @@
               <div class="confirm-actions" aria-label="Confirmar saida">
                 <button id="exitConfirmYesButton" class="pixel-button confirm-button" type="button">Sim</button>
                 <button id="exitConfirmNoButton" class="pixel-button confirm-button" type="button">Não</button>
+              </div>
+            </div>
+          </div>
+
+          <div id="towerDeleteConfirmOverlay" class="confirm-overlay" role="dialog" aria-modal="true" aria-labelledby="towerDeleteConfirmTitle" hidden>
+            <div class="confirm-card">
+              <h2 id="towerDeleteConfirmTitle">Remover esta torre?</h2>
+              <div class="confirm-actions" aria-label="Confirmar remocao">
+                <button id="towerDeleteConfirmYesButton" class="pixel-button confirm-button" type="button">Remover</button>
+                <button id="towerDeleteConfirmNoButton" class="pixel-button confirm-button" type="button">Cancelar</button>
               </div>
             </div>
           </div>

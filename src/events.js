@@ -2,7 +2,9 @@
   const ntp = window.NTP = window.NTP || {};
   const {
     beginWaveSpawn,
+    cancelTowerDelete,
     clearGamepadButtonFocus,
+    confirmTowerDelete,
     dom,
     focusGamepadButton,
     getNextTheme,
@@ -16,16 +18,19 @@
     isExitConfirmOpen,
     isDifficultyPanelOpen,
     isRestartConfirmOpen,
+    isTowerDeleteConfirmOpen,
     markPointerInputActive,
     measureBoard,
     normalizeCustomWaves,
     openDifficultyPanel,
     placeTower,
     refreshPlacementPreview,
+    requestTowerDeleteAt,
     returnToMenu,
     sanitizeCustomWavesInput,
     setBgmEnabled,
     setControllerLayout,
+    setDeleteMode,
     setDifficulty,
     setSfxEnabled,
     setBgmMasterVolume,
@@ -41,7 +46,9 @@
     syncDifficultyButtons,
     syncThemeButtons,
     togglePause,
+    toggleDeleteMode,
     toggleSpeed,
+    undoLastTowerPlacement,
     updatePlacementPreview,
     updateHud
   } = ntp;
@@ -49,9 +56,12 @@
   let resizeObserver;
   let restartConfirmPreviousPaused = false;
   let exitConfirmPreviousPaused = false;
+  let touchPreviewSignature = "";
+  let suppressBoardClickUntil = 0;
 
   function openRestartConfirm() {
     if (!state.running) return;
+    setDeleteMode(false, { silent: true });
     restartConfirmPreviousPaused = state.paused;
     state.paused = true;
     updateHud();
@@ -71,6 +81,7 @@
 
   function openExitConfirm() {
     if (!state.running) return;
+    setDeleteMode(false, { silent: true });
     exitConfirmPreviousPaused = state.paused;
     state.paused = true;
     updateHud();
@@ -119,6 +130,11 @@
     dom.backToMenuButton.addEventListener("click", openExitConfirm);
     dom.pauseButton.addEventListener("click", togglePause);
     dom.speedButton.addEventListener("click", toggleSpeed);
+    dom.undoTowerButton.addEventListener("click", undoLastTowerPlacement);
+    dom.deleteTowerButton.addEventListener("click", () => {
+      resetTouchPreviewSelection();
+      toggleDeleteMode();
+    });
     dom.restartButton.addEventListener("click", openRestartConfirm);
     dom.restartConfirmYesButton.addEventListener("click", confirmRestart);
     dom.restartConfirmNoButton.addEventListener("click", closeRestartConfirm);
@@ -132,6 +148,13 @@
     dom.exitConfirmOverlay.addEventListener("click", (event) => {
       if (event.target === dom.exitConfirmOverlay) {
         closeExitConfirm();
+      }
+    });
+    dom.towerDeleteConfirmYesButton.addEventListener("click", confirmTowerDelete);
+    dom.towerDeleteConfirmNoButton.addEventListener("click", cancelTowerDelete);
+    dom.towerDeleteConfirmOverlay.addEventListener("click", (event) => {
+      if (event.target === dom.towerDeleteConfirmOverlay) {
+        cancelTowerDelete();
       }
     });
     dom.victoryContinueButton.addEventListener("click", () => {
@@ -197,25 +220,26 @@
     dom.towerShop.addEventListener("click", (event) => {
       const button = event.target.closest("[data-tower]");
       if (!button || button.disabled) return;
+      setDeleteMode(false, { silent: true });
       state.selectedTower = button.dataset.tower;
+      resetTouchPreviewSelection();
       updateHud();
       refreshPlacementPreview();
     });
 
+    dom.board.addEventListener("pointerdown", handleBoardPointerDown);
     dom.board.addEventListener("pointermove", previewPlacementFromEvent);
-    dom.board.addEventListener("pointerleave", hidePlacementPreview);
+    dom.board.addEventListener("pointerleave", handleBoardPointerLeave);
     dom.board.addEventListener("focusin", previewPlacementFromEvent);
     dom.board.addEventListener("focusout", (event) => {
       if (!dom.board.contains(event.relatedTarget)) {
+        resetTouchPreviewSelection();
         hidePlacementPreview();
       }
     });
 
-    dom.board.addEventListener("click", (event) => {
-      const tile = event.target.closest(".tile");
-      if (!tile) return;
-      placeTower(Number(tile.dataset.x), Number(tile.dataset.y));
-    });
+    dom.board.addEventListener("click", handleBoardClick);
+    dom.board.addEventListener("contextmenu", preventBoardContextMenu);
 
     window.addEventListener("gamepadconnected", (event) => handleGamepadConnected(event.gamepad));
     window.addEventListener("gamepaddisconnected", handleGamepadDisconnected);
@@ -225,7 +249,13 @@
     });
     window.addEventListener("keydown", (event) => {
       markPointerInputActive();
-      if (event.key === "Escape" && isRestartConfirmOpen()) {
+      if (event.key === "Escape" && isTowerDeleteConfirmOpen()) {
+        event.preventDefault();
+        cancelTowerDelete();
+      } else if (event.key === "Escape" && state.deleteMode) {
+        event.preventDefault();
+        setDeleteMode(false);
+      } else if (event.key === "Escape" && isRestartConfirmOpen()) {
         event.preventDefault();
         closeRestartConfirm();
       } else if (event.key === "Escape" && isExitConfirmOpen()) {
@@ -243,10 +273,88 @@
     resizeObserver.observe(dom.board);
   }
 
+  function handleBoardClick(event) {
+    if (shouldSuppressBoardClick()) {
+      event.preventDefault();
+      return;
+    }
+
+    const tile = event.target.closest(".tile");
+    if (!tile) return;
+
+    const x = Number(tile.dataset.x);
+    const y = Number(tile.dataset.y);
+    resetTouchPreviewSelection();
+    if (state.deleteMode) {
+      requestTowerDeleteAt(x, y);
+      return;
+    }
+
+    placeTower(x, y);
+  }
+
+  function handleBoardPointerDown(event) {
+    const tile = event.target.closest(".tile");
+
+    if (!isDirectPointer(event)) {
+      if (tile && !state.deleteMode) {
+        updatePlacementPreview(Number(tile.dataset.x), Number(tile.dataset.y));
+      }
+      return;
+    }
+
+    if (event.cancelable) {
+      event.preventDefault();
+    }
+
+    suppressNextBoardClick();
+    markPointerInputActive();
+    clearGamepadButtonFocus();
+
+    if (!tile) {
+      resetTouchPreviewSelection();
+      hidePlacementPreview();
+      return;
+    }
+
+    const x = Number(tile.dataset.x);
+    const y = Number(tile.dataset.y);
+    if (state.deleteMode) {
+      resetTouchPreviewSelection();
+      requestTowerDeleteAt(x, y);
+      return;
+    }
+
+    updatePlacementPreview(x, y);
+
+    const signature = getTouchPreviewSignature(x, y);
+    if (touchPreviewSignature === signature) {
+      resetTouchPreviewSelection();
+      placeTower(x, y);
+      return;
+    }
+
+    touchPreviewSignature = signature;
+  }
+
+  function handleBoardPointerLeave(event) {
+    if (isDirectPointer(event)) return;
+    resetTouchPreviewSelection();
+    hidePlacementPreview();
+  }
+
+  function preventBoardContextMenu(event) {
+    event.preventDefault();
+  }
+
   function previewPlacementFromEvent(event) {
     const tile = event.target.closest(".tile");
     if (!tile) {
       hidePlacementPreview();
+      return;
+    }
+
+    if (event.type === "pointermove" && isDirectPointer(event)) {
       return;
     }
 
@@ -255,7 +363,40 @@
       clearGamepadButtonFocus();
     }
 
+    if (state.deleteMode) {
+      hidePlacementPreview();
+      return;
+    }
+
     updatePlacementPreview(Number(tile.dataset.x), Number(tile.dataset.y));
+  }
+
+  function isDirectPointer(event) {
+    return event.pointerType === "touch" || event.pointerType === "pen";
+  }
+
+  function getTouchPreviewSignature(x, y) {
+    return `${x}|${y}|${state.selectedTower}`;
+  }
+
+  function resetTouchPreviewSelection() {
+    touchPreviewSignature = "";
+  }
+
+  function getInteractionNow() {
+    return window.performance?.now?.() || Date.now();
+  }
+
+  function suppressNextBoardClick() {
+    suppressBoardClickUntil = getInteractionNow() + 700;
+  }
+
+  function shouldSuppressBoardClick() {
+    if (!suppressBoardClickUntil) return false;
+
+    const shouldSuppress = getInteractionNow() <= suppressBoardClickUntil;
+    suppressBoardClickUntil = 0;
+    return shouldSuppress;
   }
 
   Object.assign(ntp, {

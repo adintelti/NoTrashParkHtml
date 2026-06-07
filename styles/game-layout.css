@@ -185,6 +185,13 @@
   gap: 10px;
 }
 
+.shop-tools {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 14px;
+}
+
 .shop-button {
   min-height: 62px;
   padding: 7px;
@@ -197,6 +204,32 @@
 
 .shop-button strong {
   font-size: 0.8rem;
+}
+
+.shop-tool-button {
+  min-height: 52px;
+}
+
+.shop-tool-button[hidden] {
+  display: none;
+}
+
+.undo-tool-button {
+  background: #8bdc65;
+  box-shadow:
+    inset 3px 3px 0 #ceffb7,
+    inset -3px -3px 0 #3a8d2d,
+    0 4px 0 #1b3d18;
+}
+
+.delete-tool-button.is-active {
+  color: #fff7cc;
+  background: #b92f2f;
+  outline-color: #ffd35a;
+  box-shadow:
+    inset 3px 3px 0 #ff8a75,
+    inset -3px -3px 0 #671415,
+    0 4px 0 #35100d;
 }
 
 .shop-button[disabled] {
