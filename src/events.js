@@ -5,6 +5,7 @@
     clearGamepadButtonFocus,
     dom,
     focusGamepadButton,
+    getFirstTheme,
     getNextTheme,
     handleGamepadConnected,
     handleGamepadDisconnected,
@@ -101,7 +102,7 @@
       if (dom.startGameButton.disabled) return;
       normalizeCustomWaves();
       closeDifficultyPanel();
-      startGame(state.theme);
+      startGame(getFirstTheme());
     });
     dom.configButton.addEventListener("click", () => {
       closeDifficultyPanel();

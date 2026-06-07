@@ -101,6 +101,10 @@
     return index >= 0 ? themeOrder[index + 1] : undefined;
   }
 
+  function getFirstTheme() {
+    return themeOrder[0] || "park";
+  }
+
   function getUnlockedTowerKeys(theme) {
     return towerUnlocksByTheme[theme] || towerOrder;
   }
@@ -118,6 +122,7 @@
     getUnlockedTowerKeys,
     isTowerUnlocked,
     victoryTitles,
-    getNextTheme
+    getNextTheme,
+    getFirstTheme
   });
 })();

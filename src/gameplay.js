@@ -9,6 +9,7 @@
     dom,
     enemyTypes,
     getConfiguredWaveLimit,
+    getFirstTheme,
     hideExitConfirm,
     hideRestartConfirm,
     hideWaveTransition,
@@ -72,6 +73,8 @@
     hideVictory();
     waveTransitionCallback = null;
     clearDynamicElements();
+    state.theme = getFirstTheme();
+    syncThemeButtons(state.theme);
     dom.game.classList.add("is-hidden");
     dom.menu.classList.remove("is-hidden");
     gameplayHooks.afterReturnToMenu();
