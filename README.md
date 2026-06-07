@@ -11,6 +11,8 @@ characters, towers, projectiles, and obstacles.
 - Menu version label driven by `GAME_VERSION` in `src/constants.js`.
 - Three themed biomes: Park, Lagoon, and Fire.
 - Tower placement on valid map tiles.
+- Five-second undo window after placing a tower.
+- Shop delete mode for selecting and removing placed towers.
 - Enemy waves, projectiles, health bars, coins, lives, pause, and speed toggle.
 - Background music per screen and biome, with fade transitions.
 - Projectile throw sound effect when towers fire.
@@ -45,6 +47,8 @@ from `index.html`.
 - Open `Config.` to adjust BGM/SFX toggles and master volumes.
 - Select a tower in the shop.
 - Click a valid terrain tile to place the selected tower.
+- Use `Desfazer` within 5 seconds to remove the last placed tower and recover its cost.
+- Use `Excluir` to enter removal mode, click a placed tower, then confirm. Click `Excluir` again to cancel removal mode.
 - Use `Pause` to pause or resume.
 - Use `1x` / `2x` to change game speed.
 - Use biome buttons to switch the current test map.

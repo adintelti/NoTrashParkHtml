@@ -46,6 +46,8 @@
 
   function clearDynamicElements() {
     hidePlacementPreview();
+    ntp.clearUndoPlacement?.();
+    ntp.setDeleteMode?.(false, { silent: true });
     state.enemies.forEach((enemy) => enemy.el?.remove());
     state.placedTowers.forEach((tower) => tower.el?.remove());
     state.projectiles.forEach((projectile) => projectile.el?.remove());
@@ -128,7 +130,7 @@
 
   function updatePlacementPreview(x, y) {
     if (!placementPreview) createPlacementPreviewElements();
-    if (!state.running || state.paused || state.gameOver || !Number.isFinite(x) || !Number.isFinite(y)) {
+    if (!state.running || state.paused || state.gameOver || state.deleteMode || !Number.isFinite(x) || !Number.isFinite(y)) {
       hidePlacementPreview();
       return;
     }
@@ -163,7 +165,7 @@
 
   function renderPlacementPreview() {
     if (!placementPreview?.visible || !state.cellW || !state.cellH) return;
-    if (!state.running || state.paused || state.gameOver || state.victoryPending) {
+    if (!state.running || state.paused || state.gameOver || state.victoryPending || state.deleteMode) {
       hidePlacementPreview();
       return;
     }

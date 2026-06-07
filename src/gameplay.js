@@ -11,7 +11,9 @@
     getConfiguredWaveLimit,
     getFirstTheme,
     hideExitConfirm,
+    hidePlacementPreview,
     hideRestartConfirm,
+    hideTowerDeleteConfirm,
     hideWaveTransition,
     hideVictory,
     isTowerUnlocked,
@@ -23,6 +25,7 @@
     setElementPosition,
     showGameOver,
     showMessage,
+    showTowerDeleteConfirm,
     showWaveTransition,
     showVictory,
     state,
@@ -40,7 +43,9 @@
   };
 
   const WAVE_TRANSITION_DURATION = 1.25;
+  const UNDO_PLACEMENT_WINDOW_MS = 5000;
   let waveTransitionCallback = null;
+  let undoHideTimer = 0;
 
   function configureGameplayHooks(hooks) {
     Object.assign(gameplayHooks, hooks);
@@ -48,6 +53,7 @@
 
   function startGame(theme = state.theme) {
     resetState(theme, getConfiguredWaveLimit());
+    clearUndoPlacement();
     ensureSelectedTowerUnlocked();
     state.running = true;
     syncThemeButtons(theme);
@@ -56,6 +62,7 @@
     closeDifficultyPanel();
     hideRestartConfirm();
     hideExitConfirm();
+    hideTowerDeleteConfirm();
     hideWaveTransition();
     hideVictory();
     waveTransitionCallback = null;
@@ -69,6 +76,7 @@
     state.running = false;
     hideRestartConfirm();
     hideExitConfirm();
+    hideTowerDeleteConfirm();
     hideWaveTransition();
     hideVictory();
     waveTransitionCallback = null;
@@ -91,6 +99,10 @@
 
   function placeTower(x, y) {
     if (!state.running || state.paused || state.gameOver) return;
+    if (state.deleteMode) {
+      showMessage("Cancele Excluir para construir.");
+      return;
+    }
 
     const key = coordKey(x, y);
     const towerDef = towers[state.selectedTower];
@@ -120,16 +132,205 @@
     dom.board.appendChild(el);
 
     const tower = {
+      id: state.nextTowerId,
       x: x + 0.5,
       y: y + 0.5,
+      tileX: x,
+      tileY: y,
       type: state.selectedTower,
+      cost: towerDef.cost,
       cooldown: 0,
       el
     };
 
+    state.nextTowerId += 1;
     state.placedTowers.push(tower);
     setElementPosition(el, tower.x, tower.y);
+    startUndoPlacement(tower);
     gameplayHooks.afterTowerPlaced();
+    updateHud();
+  }
+
+  function getInteractionNow() {
+    return window.performance?.now?.() || Date.now();
+  }
+
+  function clearUndoTimer() {
+    if (!undoHideTimer) return;
+    window.clearTimeout(undoHideTimer);
+    undoHideTimer = 0;
+  }
+
+  function startUndoPlacement(tower) {
+    clearUndoTimer();
+    state.lastPlacedTower = tower;
+    state.undoExpiresAt = getInteractionNow() + UNDO_PLACEMENT_WINDOW_MS;
+    undoHideTimer = window.setTimeout(expireUndoPlacement, UNDO_PLACEMENT_WINDOW_MS);
+  }
+
+  function expireUndoPlacement() {
+    undoHideTimer = 0;
+    if (!isUndoPlacementAvailable()) {
+      clearUndoPlacement();
+      updateHud();
+    }
+  }
+
+  function clearUndoPlacement() {
+    clearUndoTimer();
+    state.lastPlacedTower = null;
+    state.undoExpiresAt = 0;
+  }
+
+  function isUndoPlacementAvailable() {
+    return Boolean(
+      state.lastPlacedTower
+      && state.running
+      && !state.gameOver
+      && !state.victoryPending
+      && state.placedTowers.includes(state.lastPlacedTower)
+      && getInteractionNow() < state.undoExpiresAt
+    );
+  }
+
+  function getUndoPlacementSecondsRemaining() {
+    if (!isUndoPlacementAvailable()) return 0;
+    return Math.max(1, Math.ceil((state.undoExpiresAt - getInteractionNow()) / 1000));
+  }
+
+  function undoLastTowerPlacement() {
+    if (!isUndoPlacementAvailable()) {
+      clearUndoPlacement();
+      updateHud();
+      return;
+    }
+
+    const tower = state.lastPlacedTower;
+    const refund = tower.cost ?? towers[tower.type]?.cost ?? 0;
+    if (removeTower(tower, { refund })) {
+      showMessage("Torre desfeita.");
+    }
+    clearUndoPlacement();
+    updateHud();
+  }
+
+  function getTowerAtTile(x, y) {
+    return state.placedTowers.find((tower) => {
+      const tileX = tower.tileX ?? Math.floor(tower.x);
+      const tileY = tower.tileY ?? Math.floor(tower.y);
+      return tileX === x && tileY === y;
+    });
+  }
+
+  function removeTower(tower, options = {}) {
+    const index = state.placedTowers.indexOf(tower);
+    if (index < 0) return false;
+
+    const tileX = tower.tileX ?? Math.floor(tower.x);
+    const tileY = tower.tileY ?? Math.floor(tower.y);
+    state.placedTowers.splice(index, 1);
+    state.occupied.delete(coordKey(tileX, tileY));
+
+    state.projectiles.slice().forEach((projectile) => {
+      if (projectile.sourceTowerId === tower.id) {
+        removeProjectile(projectile);
+      }
+    });
+
+    tower.el?.remove();
+
+    if (state.lastPlacedTower === tower) {
+      clearUndoPlacement();
+    }
+    if (state.pendingDeleteTower === tower) {
+      state.pendingDeleteTower = null;
+    }
+
+    if (Number.isFinite(options.refund) && options.refund > 0) {
+      state.coins += Math.round(options.refund);
+    }
+
+    refreshPlacementPreview();
+    ntp.syncGamepadCursor?.();
+    return true;
+  }
+
+  function setDeleteMode(active, options = {}) {
+    const nextDeleteMode = Boolean(active);
+    if (nextDeleteMode && (!state.running || state.gameOver || state.victoryPending)) return false;
+
+    state.deleteMode = nextDeleteMode;
+    if (nextDeleteMode) {
+      state.pendingDeleteTower = null;
+      hidePlacementPreview();
+      if (!options.silent) {
+        showMessage("Selecione uma torre para remover.");
+      }
+    } else {
+      state.pendingDeleteTower = null;
+      hideTowerDeleteConfirm();
+      refreshPlacementPreview();
+      if (!options.silent) {
+        showMessage("Modo de construcao retomado.");
+      }
+    }
+
+    updateHud();
+    ntp.syncGamepadCursor?.();
+    return state.deleteMode;
+  }
+
+  function toggleDeleteMode() {
+    return setDeleteMode(!state.deleteMode);
+  }
+
+  function requestTowerDelete(tower) {
+    if (!state.deleteMode || !tower || !state.placedTowers.includes(tower)) {
+      showMessage("Selecione uma torre.");
+      return false;
+    }
+
+    state.pendingDeleteTower = tower;
+    state.deleteConfirmPreviousPaused = state.paused;
+    state.paused = true;
+    hidePlacementPreview();
+    showTowerDeleteConfirm();
+    updateHud();
+    return true;
+  }
+
+  function requestTowerDeleteAt(x, y) {
+    const tower = getTowerAtTile(x, y);
+    if (!tower) {
+      showMessage("Selecione uma torre.");
+      return false;
+    }
+    return requestTowerDelete(tower);
+  }
+
+  function confirmTowerDelete() {
+    const tower = state.pendingDeleteTower;
+    const previousPaused = state.deleteConfirmPreviousPaused;
+    hideTowerDeleteConfirm();
+
+    if (tower && removeTower(tower)) {
+      showMessage("Torre removida.");
+    } else {
+      showMessage("Torre nao encontrada.");
+    }
+
+    state.paused = previousPaused;
+    setDeleteMode(false, { silent: true });
+    updateHud();
+  }
+
+  function cancelTowerDelete() {
+    const previousPaused = state.deleteConfirmPreviousPaused;
+    hideTowerDeleteConfirm();
+    state.pendingDeleteTower = null;
+    state.paused = previousPaused;
+    setDeleteMode(false, { silent: true });
+    showMessage("Modo de construcao retomado.");
     updateHud();
   }
 
@@ -205,6 +406,8 @@
   function startNextWave() {
     if (state.gameOver) return;
     if (state.wave >= state.waveLimit && !state.victoryShown) {
+      setDeleteMode(false, { silent: true });
+      clearUndoPlacement();
       state.victoryShown = true;
       state.victoryPending = true;
       showVictory();
@@ -386,6 +589,7 @@
 
     const projectile = {
       id: state.nextProjectileId,
+      sourceTowerId: tower.id,
       x: tower.x,
       y: tower.y - 0.15,
       targetId: target.id,
@@ -516,6 +720,8 @@
     if (state.gameOver) return;
     state.gameOver = true;
     state.waveComboVisible = false;
+    setDeleteMode(false, { silent: true });
+    clearUndoPlacement();
     hideVictory();
     state.lives = 0;
     showGameOver();
@@ -528,6 +734,18 @@
     returnToMenu,
     setTheme,
     placeTower,
+    removeTower,
+    getTowerAtTile,
+    undoLastTowerPlacement,
+    clearUndoPlacement,
+    isUndoPlacementAvailable,
+    getUndoPlacementSecondsRemaining,
+    setDeleteMode,
+    toggleDeleteMode,
+    requestTowerDelete,
+    requestTowerDeleteAt,
+    confirmTowerDelete,
+    cancelTowerDelete,
     update,
     togglePause,
     toggleSpeed,

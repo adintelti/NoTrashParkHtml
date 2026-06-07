@@ -3,6 +3,7 @@
   const {
     adjustCustomWavesFromGamepad,
     adjustSoundVolumeFromGamepad,
+    cancelTowerDelete,
     clamp,
     COLS,
     cycleSelectedTower,
@@ -13,6 +14,7 @@
     GAMEPAD_NAV_REPEAT,
     gamepadButtons,
     getTileAt,
+    getTowerAtTile,
     hidePlacementPreview,
     closeDifficultyPanel,
     isDifficultyPanelOpen,
@@ -22,11 +24,14 @@
     isMenuVisible,
     isRestartConfirmOpen,
     isSoundVolumeInput,
+    isTowerDeleteConfirmOpen,
     isVictoryOpen,
     normalizeCustomWaves,
     placeTower,
+    requestTowerDeleteAt,
     resumeDesiredMusic,
     ROWS,
+    setDeleteMode,
     setDifficulty,
     settings,
     showMenuNote,
@@ -68,10 +73,15 @@
 
     const tile = getTileAt(gamepadInput.cursorX, gamepadInput.cursorY);
     if (tile) {
+      const isUnavailable = state.deleteMode
+        ? !getTowerAtTile(gamepadInput.cursorX, gamepadInput.cursorY)
+        : !isBuildableTile(gamepadInput.cursorX, gamepadInput.cursorY);
       tile.classList.add("gamepad-target");
-      tile.classList.toggle("gamepad-unavailable", !isBuildableTile(gamepadInput.cursorX, gamepadInput.cursorY));
-      if (gamepadInput.usingGamepad) {
+      tile.classList.toggle("gamepad-unavailable", isUnavailable);
+      if (gamepadInput.usingGamepad && !state.deleteMode) {
         updatePlacementPreview(gamepadInput.cursorX, gamepadInput.cursorY);
+      } else if (state.deleteMode) {
+        hidePlacementPreview();
       }
     }
   }
@@ -130,7 +140,7 @@
       resumeDesiredMusic();
     }
 
-    if (isVictoryOpen() || isRestartConfirmOpen() || isExitConfirmOpen() || isMenuVisible()) {
+    if (isVictoryOpen() || isRestartConfirmOpen() || isExitConfirmOpen() || isTowerDeleteConfirmOpen() || isMenuVisible()) {
       updateMenuGamepadInput(dt, direction, justPressed);
     } else if (state.running) {
       updateGameplayGamepadInput(dt, direction, justPressed);
@@ -211,13 +221,15 @@
         ? dom.restartConfirmOverlay
         : isExitConfirmOpen()
           ? dom.exitConfirmOverlay
-          : isDifficultyPanelOpen()
-            ? dom.difficultyPanel
-            : !dom.configPanel.hidden
-              ? dom.configPanel
-              : isMenuVisible()
-                ? dom.menu
-                : null;
+          : isTowerDeleteConfirmOpen()
+            ? dom.towerDeleteConfirmOverlay
+            : isDifficultyPanelOpen()
+              ? dom.difficultyPanel
+              : !dom.configPanel.hidden
+                ? dom.configPanel
+                : isMenuVisible()
+                  ? dom.menu
+                  : null;
   }
 
   function getGamepadFocusableButtons() {
@@ -581,6 +593,8 @@
         dom.restartConfirmNoButton.click();
       } else if (isExitConfirmOpen()) {
         dom.exitConfirmNoButton.click();
+      } else if (isTowerDeleteConfirmOpen()) {
+        cancelTowerDelete();
       } else if (isDifficultyPanelOpen()) {
         closeDifficultyPanel();
         localFocusGamepadButton(dom.playButton);
@@ -598,7 +612,15 @@
     }
 
     if (justPressed(gamepadButtons.a) || justPressed(gamepadButtons.rt)) {
-      placeTower(gamepadInput.cursorX, gamepadInput.cursorY);
+      if (state.deleteMode) {
+        requestTowerDeleteAt(gamepadInput.cursorX, gamepadInput.cursorY);
+      } else {
+        placeTower(gamepadInput.cursorX, gamepadInput.cursorY);
+      }
+    }
+
+    if (justPressed(gamepadButtons.b) && state.deleteMode) {
+      setDeleteMode(false);
     }
 
     if (justPressed(gamepadButtons.lb)) {

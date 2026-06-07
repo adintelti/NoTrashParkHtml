@@ -44,6 +44,11 @@
       projectiles: [],
       impacts: [],
       occupied: new Set(),
+      lastPlacedTower: null,
+      undoExpiresAt: 0,
+      deleteMode: false,
+      pendingDeleteTower: null,
+      deleteConfirmPreviousPaused: false,
       spawnRemaining: 0,
       spawnTimer: 0,
       waveCooldown: 1.2,
@@ -60,6 +65,7 @@
       sessionTime: 0,
       simTime: 0,
       nextEnemyId: 1,
+      nextTowerId: 1,
       nextProjectileId: 1
     };
   }

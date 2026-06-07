@@ -98,7 +98,50 @@
       }
     });
 
+    syncTowerActionUi();
     ntp.refreshPlacementPreview?.();
+  }
+
+  function syncTowerActionUi() {
+    const canUndo = Boolean(ntp.isUndoPlacementAvailable?.());
+    const undoSecondsRemaining = ntp.getUndoPlacementSecondsRemaining?.() || 0;
+    dom.undoTowerButton.hidden = !canUndo;
+    dom.undoTowerButton.disabled = !canUndo;
+    if (canUndo) {
+      const secondsLabel = `${undoSecondsRemaining}s`;
+      const priceEl = dom.undoTowerButton.querySelector("strong");
+      dom.undoTowerButton.setAttribute("aria-label", `Desfazer ultima torre ${secondsLabel}`);
+      if (priceEl) {
+        priceEl.textContent = secondsLabel;
+      }
+    }
+
+    dom.deleteTowerButton.classList.toggle("is-active", state.deleteMode);
+    dom.deleteTowerButton.setAttribute("aria-pressed", String(state.deleteMode));
+    const deleteLabel = dom.deleteTowerButton.querySelector("strong");
+    if (deleteLabel) {
+      deleteLabel.textContent = state.deleteMode ? "Cancelar" : "Selecionar";
+    }
+
+    syncTowerDeleteHighlights();
+  }
+
+  function syncTowerDeleteHighlights() {
+    dom.board.classList.toggle("is-delete-mode", state.deleteMode);
+    dom.board.querySelectorAll(".tile.delete-candidate, .tile.delete-target").forEach((tile) => {
+      tile.classList.remove("delete-candidate", "delete-target");
+    });
+
+    state.placedTowers.forEach((tower) => {
+      const isPending = tower === state.pendingDeleteTower;
+      tower.el?.classList.toggle("is-removable", state.deleteMode);
+      tower.el?.classList.toggle("is-delete-target", isPending);
+      if (!state.deleteMode) return;
+
+      const tile = ntp.getTileAt?.(tower.tileX, tower.tileY);
+      if (!tile) return;
+      tile.classList.add(isPending ? "delete-target" : "delete-candidate");
+    });
   }
 
   function ensureSelectedTowerUnlocked() {
@@ -165,6 +208,7 @@
     const hasNextTheme = Boolean(getNextTheme(state.theme));
     hideRestartConfirm();
     hideExitConfirm();
+    hideTowerDeleteConfirm();
     dom.victoryTitle.textContent = victoryTitles[state.theme] || "Vitoria!";
     updateResultDetails();
     dom.victoryContinueButton.hidden = !hasNextTheme;
@@ -179,6 +223,7 @@
     const levelName = maps[state.theme]?.name || "Fase";
     hideRestartConfirm();
     hideExitConfirm();
+    hideTowerDeleteConfirm();
     dom.victoryTitle.textContent = `Fim de jogo, ${levelName} destruído(a)`;
     updateResultDetails();
     dom.victoryContinueButton.hidden = true;
@@ -204,6 +249,7 @@
 
   function showRestartConfirm() {
     hideExitConfirm();
+    hideTowerDeleteConfirm();
     dom.restartConfirmOverlay.hidden = false;
     dom.restartConfirmNoButton.focus({ preventScroll: true });
   }
@@ -214,12 +260,24 @@
 
   function showExitConfirm() {
     hideRestartConfirm();
+    hideTowerDeleteConfirm();
     dom.exitConfirmOverlay.hidden = false;
     dom.exitConfirmNoButton.focus({ preventScroll: true });
   }
 
   function hideExitConfirm() {
     dom.exitConfirmOverlay.hidden = true;
+  }
+
+  function showTowerDeleteConfirm() {
+    hideRestartConfirm();
+    hideExitConfirm();
+    dom.towerDeleteConfirmOverlay.hidden = false;
+    dom.towerDeleteConfirmNoButton.focus({ preventScroll: true });
+  }
+
+  function hideTowerDeleteConfirm() {
+    dom.towerDeleteConfirmOverlay.hidden = true;
   }
 
   function showMenuNote(text) {
@@ -258,6 +316,10 @@
     return !dom.exitConfirmOverlay.hidden;
   }
 
+  function isTowerDeleteConfirmOpen() {
+    return !dom.towerDeleteConfirmOverlay.hidden;
+  }
+
   Object.assign(ntp, {
     updateVersionText,
     updateHud,
@@ -276,11 +338,14 @@
     hideRestartConfirm,
     showExitConfirm,
     hideExitConfirm,
+    showTowerDeleteConfirm,
+    hideTowerDeleteConfirm,
     showMenuNote,
     syncThemeButtons,
     isMenuVisible,
     isVictoryOpen,
     isRestartConfirmOpen,
-    isExitConfirmOpen
+    isExitConfirmOpen,
+    isTowerDeleteConfirmOpen
   });
 })();
