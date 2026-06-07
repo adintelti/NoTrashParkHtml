@@ -2,8 +2,7 @@
 
 No Trash Park is a browser-based 2D tower-defense demo inspired by pixel-art
 path defense games. The current build uses geometric CSS placeholders for
-characters, towers, projectiles, and obstacles so final sprite art can be added
-later without changing the core gameplay loop.
+characters, towers, projectiles, and obstacles.
 
 ## Features
 
@@ -95,7 +94,7 @@ When the player wins:
 |-- demo-preview.png Browser verification preview image
 ```
 
-## Sprite Replacement Notes
+## Visual Placeholder Notes
 
 Current entities are CSS placeholders:
 
@@ -105,5 +104,4 @@ Current entities are CSS placeholders:
 - Tile theme classes live under `.theme-park`, `.theme-lagoon`, and
   `.theme-lava`.
 
-When final sprites are ready, these classes are the best places to replace
-geometric shapes with image assets or sprite-sheet backgrounds.
+These classes define the current geometric shapes and theme-specific visuals.
