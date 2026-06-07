@@ -152,24 +152,6 @@
     #65d5ed;
 }
 
-.theme-lagoon .tile.terrain.detail-a {
-  background: url("../assets/sprites/tile-lagoon-terrain-1.png") center / 100% 100% no-repeat;
-}
-
-.theme-lagoon .tile.terrain.detail-b {
-  background: url("../assets/sprites/tile-lagoon-terrain-2.png") center / 100% 100% no-repeat;
-}
-
-.theme-lagoon .tile.terrain.detail-c {
-  background: url("../assets/sprites/tile-lagoon-terrain-3.png") center / 100% 100% no-repeat;
-}
-
-.theme-lagoon .tile.terrain.detail-a::after,
-.theme-lagoon .tile.terrain.detail-b::after,
-.theme-lagoon .tile.terrain.detail-c::after {
-  content: none;
-}
-
 .theme-lagoon .tile.path {
   color: #0d2b22;
   background:
@@ -181,12 +163,9 @@
 }
 
 .theme-lagoon .tile.terrain.blocked {
-  background: url("../assets/sprites/folhalago-small.png") center / 100% 100% no-repeat;
-  border-color: #0b6f84;
-}
-
-.theme-lagoon .tile.terrain.blocked::after {
-  content: none;
+  background:
+    radial-gradient(circle at 50% 50%, #219444 0 26%, transparent 27%),
+    #65d5ed;
 }
 
 .theme-lava .tile.terrain {
@@ -207,10 +186,7 @@
 }
 
 .theme-lava .tile.terrain.blocked {
-  background: url("../assets/sprites/fogochao-small.png") center / 100% 100% no-repeat;
-  border-color: #3a231b;
-}
-
-.theme-lava .tile.terrain.blocked::after {
-  content: none;
+  background:
+    radial-gradient(circle at 52% 52%, #ffb12e 0 20%, #e54b16 21% 32%, transparent 33%),
+    #8a3f1e;
 }
