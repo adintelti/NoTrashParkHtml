@@ -48,9 +48,13 @@
 
   const WAVE_TRANSITION_DURATION = 1.25;
   const UNDO_PLACEMENT_WINDOW_MS = 5000;
-  const CARD_ELIGIBLE_DIFFICULTIES = new Set(["medium", "hard", "custom"]);
+  const CARD_OFFER_INTERVALS = {
+    easy: 2,
+    medium: 3,
+    hard: 4,
+    custom: 5
+  };
   const CARD_EFFECT_DURATION_WAVES = 1;
-  const CARD_FIRST_OFFER_WAVE = 5;
   const CARD_COIN_GAIN = 100;
   const CARD_COIN_LOSS = 70;
   let waveTransitionCallback = null;
@@ -456,22 +460,14 @@
   }
 
   function shouldOfferCardChoice(finishedWave) {
+    const offerInterval = CARD_OFFER_INTERVALS[settings.difficulty];
     return finishedWave < state.waveLimit
-      && CARD_ELIGIBLE_DIFFICULTIES.has(settings.difficulty)
-      && isCardOfferWave(finishedWave);
-  }
-
-  function isCardOfferWave(finishedWave) {
-    if (finishedWave < CARD_FIRST_OFFER_WAVE) return false;
-    let offerWave = CARD_FIRST_OFFER_WAVE;
-    while (offerWave < finishedWave) {
-      offerWave *= 2;
-    }
-    return offerWave === finishedWave;
+      && Number.isFinite(offerInterval)
+      && finishedWave % offerInterval === 0;
   }
 
   function startCardChoice(callback) {
-    if (!CARD_ELIGIBLE_DIFFICULTIES.has(settings.difficulty)) {
+    if (!CARD_OFFER_INTERVALS[settings.difficulty]) {
       if (callback) callback();
       return;
     }

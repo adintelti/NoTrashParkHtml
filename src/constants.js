@@ -3,7 +3,7 @@
 
   ntp.COLS = 12;
   ntp.ROWS = 9;
-  ntp.GAME_VERSION = "1.10.3";
+  ntp.GAME_VERSION = "1.10.4";
   ntp.MIN_CUSTOM_WAVES = 20;
   ntp.MAX_CUSTOM_WAVES = 99;
   ntp.GAMEPAD_DEADZONE = 0.35;
