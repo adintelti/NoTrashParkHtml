@@ -15,6 +15,11 @@
   } = ntp;
 
   const GAMEPAD_FACE_CLASSES = ["is-a", "is-b", "is-x", "is-y"];
+  const CARD_KIND_LABELS = {
+    neutral: "Neutro",
+    boon: "Ajuda",
+    bane: "Risco"
+  };
   const controllerLayoutLabels = {
     xbox: {
       faceSouth: { text: "A", faceClass: "is-a" },
@@ -196,6 +201,93 @@
     dom.waveTransition.textContent = "";
   }
 
+  function appendCardText(parent, tagName, className, text) {
+    const el = document.createElement(tagName);
+    el.className = className;
+    el.textContent = text;
+    parent.appendChild(el);
+    return el;
+  }
+
+  function renderCardChoiceCard(card, index) {
+    const isRevealed = state.cardChoice.revealed;
+    const isSelected = state.cardChoice.selectedCardId === card.id;
+    const button = document.createElement("button");
+    button.className = `card-choice-card is-${card.kind}`;
+    button.type = "button";
+    button.dataset.cardChoice = card.id;
+    button.disabled = isRevealed;
+    button.classList.toggle("is-revealed", isRevealed && isSelected);
+    button.classList.toggle("is-dimmed", isRevealed && !isSelected);
+    button.setAttribute("aria-label", isRevealed && isSelected ? card.title : `Carta ${index + 1}`);
+
+    if (isRevealed && isSelected) {
+      appendCardText(button, "span", "card-choice-kind", CARD_KIND_LABELS[card.kind] || "Carta");
+      appendCardText(button, "strong", "card-choice-name", card.title);
+      appendCardText(button, "span", "card-choice-description", card.description);
+      return button;
+    }
+
+    appendCardText(button, "span", "card-choice-back", "?");
+    appendCardText(button, "span", "card-choice-index", `Carta ${index + 1}`);
+    return button;
+  }
+
+  function renderCardChoice() {
+    dom.cardChoiceCards.textContent = "";
+    dom.cardChoiceCards.classList.toggle("is-revealed", state.cardChoice.revealed);
+    state.cardChoice.cards.forEach((card, index) => {
+      dom.cardChoiceCards.appendChild(renderCardChoiceCard(card, index));
+    });
+
+    const hasResult = Boolean(state.cardChoice.revealed && state.cardChoice.resultText);
+    dom.cardChoiceResult.hidden = !hasResult;
+    dom.cardChoiceResult.textContent = hasResult ? state.cardChoice.resultText : "";
+    dom.cardChoiceContinueButton.hidden = !state.cardChoice.revealed;
+  }
+
+  function showCardChoice() {
+    hideRestartConfirm();
+    hideExitConfirm();
+    hideTowerDeleteConfirm();
+    renderCardChoice();
+    dom.cardChoiceOverlay.hidden = false;
+    dom.floatingMessage.classList.remove("is-visible");
+    messageTimer = 0;
+
+    const focusTarget = state.cardChoice.revealed
+      ? dom.cardChoiceContinueButton
+      : dom.cardChoiceCards.querySelector("button");
+    focusCardChoiceTarget(focusTarget);
+  }
+
+  function focusCardChoiceTarget(focusTarget) {
+    if (!focusTarget) return;
+
+    window.requestAnimationFrame(() => {
+      ntp.clearGamepadButtonFocus?.();
+
+      if (dom.app.classList.contains("using-gamepad")) {
+        ntp.focusGamepadButton?.(focusTarget);
+        return;
+      }
+
+      focusTarget.focus({ preventScroll: true });
+    });
+  }
+
+  function hideCardChoice() {
+    dom.cardChoiceOverlay.hidden = true;
+    dom.cardChoiceCards.textContent = "";
+    dom.cardChoiceResult.textContent = "";
+    dom.cardChoiceResult.hidden = true;
+    dom.cardChoiceContinueButton.hidden = true;
+  }
+
+  function isCardChoiceOpen() {
+    return !dom.cardChoiceOverlay.hidden;
+  }
+
   function tickMessageTimer(rawDt) {
     if (messageTimer <= 0) return;
     messageTimer -= rawDt;
@@ -209,6 +301,7 @@
     hideRestartConfirm();
     hideExitConfirm();
     hideTowerDeleteConfirm();
+    hideCardChoice();
     dom.victoryTitle.textContent = victoryTitles[state.theme] || "Vitoria!";
     updateResultDetails();
     dom.victoryContinueButton.hidden = !hasNextTheme;
@@ -224,6 +317,7 @@
     hideRestartConfirm();
     hideExitConfirm();
     hideTowerDeleteConfirm();
+    hideCardChoice();
     dom.victoryTitle.textContent = `Fim de jogo, ${levelName} destruído(a)`;
     updateResultDetails();
     dom.victoryContinueButton.hidden = true;
@@ -329,6 +423,9 @@
     showMessage,
     showWaveTransition,
     hideWaveTransition,
+    showCardChoice,
+    hideCardChoice,
+    isCardChoiceOpen,
     tickMessageTimer,
     showVictory,
     showGameOver,

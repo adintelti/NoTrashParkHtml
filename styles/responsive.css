@@ -301,6 +301,78 @@
     font-size: clamp(1rem, 5.2vw, 1.45rem);
   }
 
+  .card-choice-overlay {
+    padding: 8px;
+  }
+
+  .card-choice-panel {
+    width: calc(100vw - 18px);
+    max-height: calc(100% - 12px);
+    gap: 8px;
+    padding: 12px;
+    border-width: 4px;
+    overflow: auto;
+  }
+
+  .card-choice-kicker {
+    border-width: 2px;
+    font-size: 0.58rem;
+  }
+
+  .card-choice-panel h2 {
+    font-size: clamp(1rem, 5.2vw, 1.35rem);
+  }
+
+  .card-choice-grid {
+    gap: 6px;
+  }
+
+  .card-choice-card {
+    min-height: 118px;
+    gap: 5px;
+    padding: 8px 5px;
+    border-width: 3px;
+    box-shadow:
+      inset 3px 3px 0 rgba(255, 255, 255, 0.15),
+      inset -3px -3px 0 rgba(0, 0, 0, 0.35),
+      0 4px 0 rgba(0, 0, 0, 0.36);
+  }
+
+  .card-choice-card.is-revealed {
+    min-height: 116px;
+  }
+
+  .card-choice-back {
+    border-width: 3px;
+    font-size: clamp(1.7rem, 8vw, 2.4rem);
+  }
+
+  .card-choice-index,
+  .card-choice-kind {
+    font-size: 0.58rem;
+  }
+
+  .card-choice-name {
+    font-size: clamp(0.92rem, 5vw, 1.2rem);
+  }
+
+  .card-choice-description {
+    max-width: 32ch;
+    font-size: 0.72rem;
+  }
+
+  .card-choice-result {
+    min-height: 28px;
+    padding: 6px;
+    border-width: 2px;
+    font-size: 0.68rem;
+  }
+
+  .card-choice-continue {
+    min-height: 42px;
+    font-size: 0.76rem;
+  }
+
   .tower {
     width: calc(var(--cell-size) * 0.78);
     height: calc(var(--cell-size) * 1.02);

@@ -85,6 +85,213 @@
   display: none;
 }
 
+.card-choice-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 14;
+  display: grid;
+  place-items: center;
+  padding: clamp(14px, 4vw, 34px);
+  background: rgba(6, 13, 18, 0.72);
+}
+
+.card-choice-overlay[hidden] {
+  display: none;
+}
+
+.card-choice-panel {
+  width: min(92%, 620px);
+  display: grid;
+  gap: clamp(12px, 2.4vw, 18px);
+  padding: clamp(18px, 4.2vw, 30px);
+  color: #160b00;
+  background: #ffe07a;
+  border: 5px solid var(--outline);
+  box-shadow:
+    inset 4px 4px 0 #fff5b8,
+    inset -4px -4px 0 #9b5a17,
+    0 10px 0 rgba(0, 0, 0, 0.42);
+  text-align: center;
+}
+
+.card-choice-kicker {
+  width: fit-content;
+  margin: 0 auto;
+  padding: 4px 8px;
+  color: #fff5c7;
+  background: #172a35;
+  border: 3px solid #160b00;
+  font-size: 0.78rem;
+  font-weight: 900;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.card-choice-panel h2 {
+  margin: 0;
+  font-size: clamp(1.25rem, 3.5vw, 2.35rem);
+  line-height: 1;
+  letter-spacing: 0;
+}
+
+.card-choice-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(8px, 2vw, 14px);
+}
+
+.card-choice-card {
+  min-width: 0;
+  min-height: 188px;
+  aspect-ratio: 0.72;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 8px;
+  padding: clamp(10px, 2.5vw, 16px);
+  color: #fff7d1;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.14) 0 12%, transparent 12% 100%),
+    repeating-linear-gradient(
+      -45deg,
+      rgba(255, 231, 107, 0.18) 0 8px,
+      rgba(255, 231, 107, 0.05) 8px 16px
+    ),
+    #183547;
+  border: 5px solid #120b07;
+  box-shadow:
+    inset 4px 4px 0 rgba(255, 255, 255, 0.15),
+    inset -4px -4px 0 rgba(0, 0, 0, 0.35),
+    0 6px 0 rgba(0, 0, 0, 0.36);
+  cursor: pointer;
+  font-family: inherit;
+  font-weight: 900;
+  line-height: 1.1;
+  text-align: center;
+  transition:
+    transform 150ms ease,
+    filter 150ms ease;
+}
+
+.card-choice-card:focus-visible,
+.app.using-gamepad .card-choice-card.gamepad-focused {
+  outline: 5px solid #ffe76b;
+  outline-offset: 4px;
+  transform: translateY(-4px);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .card-choice-card:hover {
+    outline: 5px solid #ffe76b;
+    outline-offset: 4px;
+    transform: translateY(-4px);
+  }
+}
+
+.card-choice-card:disabled {
+  cursor: default;
+}
+
+.card-choice-card.is-revealed {
+  grid-column: 1 / -1;
+  min-height: 164px;
+  aspect-ratio: auto;
+  color: #160b00;
+  cursor: default;
+}
+
+.card-choice-card.is-revealed:focus-visible,
+.app.using-gamepad .card-choice-card.is-revealed.gamepad-focused {
+  outline: none;
+  transform: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .card-choice-card.is-revealed:hover {
+    outline: none;
+    transform: none;
+  }
+}
+
+.card-choice-card.is-dimmed {
+  display: none;
+}
+
+.card-choice-card.is-neutral.is-revealed {
+  background: #f3f0d2;
+}
+
+.card-choice-card.is-boon.is-revealed {
+  background: #9fe36f;
+}
+
+.card-choice-card.is-bane.is-revealed {
+  color: #fff0d8;
+  background: #a63c32;
+}
+
+.card-choice-back {
+  width: clamp(48px, 10vw, 70px);
+  height: clamp(48px, 10vw, 70px);
+  display: grid;
+  place-items: center;
+  color: #172a35;
+  background: #ffe76b;
+  border: 4px solid #120b07;
+  box-shadow: inset -3px -3px 0 #b66b15;
+  font-size: clamp(2rem, 7vw, 3.6rem);
+  line-height: 1;
+}
+
+.card-choice-index,
+.card-choice-kind {
+  font-size: clamp(0.72rem, 1.8vw, 0.92rem);
+  text-transform: uppercase;
+}
+
+.card-choice-name {
+  display: block;
+  max-width: 100%;
+  font-size: clamp(1.12rem, 3.2vw, 1.8rem);
+  line-height: 1.05;
+}
+
+.card-choice-description {
+  max-width: 42ch;
+  font-size: clamp(0.8rem, 1.9vw, 1rem);
+  font-weight: 800;
+  line-height: 1.28;
+}
+
+.card-choice-result {
+  min-height: 34px;
+  margin: 0;
+  display: grid;
+  place-items: center;
+  padding: 8px 10px;
+  color: #fff7cc;
+  background: #172a35;
+  border: 3px solid #160b00;
+  font-size: clamp(0.76rem, 1.7vw, 0.98rem);
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.card-choice-result[hidden] {
+  display: none;
+}
+
+.card-choice-continue {
+  width: min(100%, 300px);
+  min-height: 54px;
+  margin: 0 auto;
+  font-weight: 900;
+}
+
+.card-choice-continue[hidden] {
+  display: none;
+}
+
 .victory-overlay {
   position: absolute;
   inset: 0;

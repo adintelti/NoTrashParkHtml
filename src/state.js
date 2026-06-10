@@ -33,6 +33,7 @@
       waveLimit,
       selectedTower: "sentinel",
       coins: 300,
+      maxLives: 10,
       lives: 10,
       sessionDefeated: 0,
       waveDefeated: 0,
@@ -62,6 +63,18 @@
       gameOver: false,
       victoryShown: false,
       victoryPending: false,
+      cardChoice: {
+        active: false,
+        revealed: false,
+        cards: [],
+        selectedCardId: "",
+        resultText: "",
+        previousPaused: false
+      },
+      cardEffects: {
+        towerBuffs: [],
+        enemyModifiers: []
+      },
       sessionTime: 0,
       simTime: 0,
       nextEnemyId: 1,

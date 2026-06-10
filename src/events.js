@@ -4,6 +4,7 @@
     beginWaveSpawn,
     cancelTowerDelete,
     clearGamepadButtonFocus,
+    continueCardChoice,
     confirmTowerDelete,
     dom,
     focusGamepadButton,
@@ -16,6 +17,7 @@
     hideRestartConfirm,
     hideVictory,
     closeDifficultyPanel,
+    isCardChoiceOpen,
     isExitConfirmOpen,
     isDifficultyPanelOpen,
     isRestartConfirmOpen,
@@ -29,6 +31,7 @@
     requestTowerDeleteAt,
     returnToMenu,
     sanitizeCustomWavesInput,
+    selectCardChoice,
     setBgmEnabled,
     setControllerLayout,
     setDeleteMode,
@@ -158,6 +161,12 @@
         cancelTowerDelete();
       }
     });
+    dom.cardChoiceCards.addEventListener("click", (event) => {
+      const button = event.target.closest("[data-card-choice]");
+      if (!button || button.disabled) return;
+      selectCardChoice(button.dataset.cardChoice);
+    });
+    dom.cardChoiceContinueButton.addEventListener("click", continueCardChoice);
     dom.victoryContinueButton.addEventListener("click", () => {
       const nextTheme = getNextTheme(state.theme);
       if (nextTheme) {
@@ -250,7 +259,9 @@
     });
     window.addEventListener("keydown", (event) => {
       markPointerInputActive();
-      if (event.key === "Escape" && isTowerDeleteConfirmOpen()) {
+      if (event.key === "Escape" && isCardChoiceOpen()) {
+        event.preventDefault();
+      } else if (event.key === "Escape" && isTowerDeleteConfirmOpen()) {
         event.preventDefault();
         cancelTowerDelete();
       } else if (event.key === "Escape" && state.deleteMode) {

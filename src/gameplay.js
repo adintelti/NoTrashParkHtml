@@ -10,6 +10,8 @@
     enemyTypes,
     getConfiguredWaveLimit,
     getFirstTheme,
+    getUnlockedTowerKeys,
+    hideCardChoice,
     hideExitConfirm,
     hidePlacementPreview,
     hideRestartConfirm,
@@ -23,6 +25,8 @@
     resetState,
     refreshPlacementPreview,
     setElementPosition,
+    settings,
+    showCardChoice,
     showGameOver,
     showMessage,
     showTowerDeleteConfirm,
@@ -44,7 +48,13 @@
 
   const WAVE_TRANSITION_DURATION = 1.25;
   const UNDO_PLACEMENT_WINDOW_MS = 5000;
+  const CARD_ELIGIBLE_DIFFICULTIES = new Set(["medium", "hard", "custom"]);
+  const CARD_EFFECT_DURATION_WAVES = 1;
+  const CARD_FIRST_OFFER_WAVE = 5;
+  const CARD_COIN_GAIN = 100;
+  const CARD_COIN_LOSS = 70;
   let waveTransitionCallback = null;
+  let cardChoiceCallback = null;
   let undoHideTimer = 0;
 
   function configureGameplayHooks(hooks) {
@@ -63,9 +73,11 @@
     hideRestartConfirm();
     hideExitConfirm();
     hideTowerDeleteConfirm();
+    hideCardChoice();
     hideWaveTransition();
     hideVictory();
     waveTransitionCallback = null;
+    cardChoiceCallback = null;
     buildBoard();
     gameplayHooks.afterStartGame();
     updateHud();
@@ -77,9 +89,12 @@
     hideRestartConfirm();
     hideExitConfirm();
     hideTowerDeleteConfirm();
+    hideCardChoice();
     hideWaveTransition();
     hideVictory();
     waveTransitionCallback = null;
+    cardChoiceCallback = null;
+    resetCardChoiceState();
     clearDynamicElements();
     state.theme = getFirstTheme();
     syncThemeButtons(state.theme);
@@ -377,13 +392,13 @@
   }
 
   function togglePause() {
-    if (!state.running || state.gameOver || isVictoryOpen()) return;
+    if (!state.running || state.gameOver || state.cardChoice.active || isVictoryOpen()) return;
     state.paused = !state.paused;
     updateHud();
   }
 
   function toggleSpeed() {
-    if (!state.running || state.gameOver || isVictoryOpen()) return;
+    if (!state.running || state.gameOver || state.cardChoice.active || isVictoryOpen()) return;
     state.speed = state.speed === 1 ? 2 : 1;
     updateHud();
   }
@@ -429,6 +444,326 @@
     updateHud();
   }
 
+  function resetCardChoiceState() {
+    Object.assign(state.cardChoice, {
+      active: false,
+      revealed: false,
+      cards: [],
+      selectedCardId: "",
+      resultText: "",
+      previousPaused: false
+    });
+  }
+
+  function shouldOfferCardChoice(finishedWave) {
+    return finishedWave < state.waveLimit
+      && CARD_ELIGIBLE_DIFFICULTIES.has(settings.difficulty)
+      && isCardOfferWave(finishedWave);
+  }
+
+  function isCardOfferWave(finishedWave) {
+    if (finishedWave < CARD_FIRST_OFFER_WAVE) return false;
+    let offerWave = CARD_FIRST_OFFER_WAVE;
+    while (offerWave < finishedWave) {
+      offerWave *= 2;
+    }
+    return offerWave === finishedWave;
+  }
+
+  function startCardChoice(callback) {
+    if (!CARD_ELIGIBLE_DIFFICULTIES.has(settings.difficulty)) {
+      if (callback) callback();
+      return;
+    }
+
+    cardChoiceCallback = callback;
+    setDeleteMode(false, { silent: true });
+    clearUndoPlacement();
+    state.cardChoice.active = true;
+    state.cardChoice.revealed = false;
+    state.cardChoice.cards = createCardChoices();
+    state.cardChoice.selectedCardId = "";
+    state.cardChoice.resultText = "";
+    state.cardChoice.previousPaused = state.paused;
+    state.paused = true;
+    showCardChoice();
+    updateHud();
+  }
+
+  function selectCardChoice(cardId) {
+    if (!state.cardChoice.active || state.cardChoice.revealed) return false;
+
+    const card = state.cardChoice.cards.find((candidate) => candidate.id === cardId);
+    if (!card) return false;
+
+    state.cardChoice.selectedCardId = card.id;
+    state.cardChoice.revealed = true;
+    state.cardChoice.resultText = applyCardEffect(card);
+    showCardChoice();
+    updateHud();
+    return true;
+  }
+
+  function continueCardChoice() {
+    if (!state.cardChoice.active || !state.cardChoice.revealed) return false;
+
+    const callback = cardChoiceCallback;
+    const previousPaused = state.cardChoice.previousPaused;
+    cardChoiceCallback = null;
+    resetCardChoiceState();
+    hideCardChoice();
+    state.paused = previousPaused;
+    updateHud();
+    if (callback) callback();
+    return true;
+  }
+
+  function createCardChoices() {
+    return shuffleCards([
+      createNeutralCard(),
+      createBoonCard(),
+      createBaneCard()
+    ]);
+  }
+
+  function createNeutralCard() {
+    return buildCard("neutral", {
+      title: "Nada mudou",
+      description: "A proxima onda segue normal.",
+      result: "Nada acontece. A proxima onda vem no ritmo normal.",
+      effect: { type: "none" }
+    });
+  }
+
+  function createBoonCard() {
+    const towerKey = getRandomUnlockedTowerKey();
+    const towerDef = towers[towerKey];
+    const cards = [
+      {
+        title: `${towerDef.label} reforcada`,
+        description: `${towerDef.label}: +30% dano permanente.`,
+        result: `${towerDef.label} ganhou +30% de dano permanente.`,
+        effect: {
+          type: "towerBuff",
+          towerType: towerKey,
+          stat: "damage",
+          multiplier: 1.3,
+          permanent: true
+        }
+      },
+      {
+        title: `${towerDef.label} ampliada`,
+        description: `${towerDef.label}: +25% raio permanente.`,
+        result: `${towerDef.label} ganhou +25% de raio permanente.`,
+        effect: {
+          type: "towerBuff",
+          towerType: towerKey,
+          stat: "range",
+          multiplier: 1.25,
+          permanent: true
+        }
+      },
+      {
+        title: "Coleta premiada",
+        description: `Ganhe ${CARD_COIN_GAIN} moedas agora.`,
+        result: `Voce ganhou ${CARD_COIN_GAIN} moedas.`,
+        effect: {
+          type: "coins",
+          amount: CARD_COIN_GAIN
+        }
+      }
+    ];
+
+    if (state.lives < state.maxLives) {
+      cards.push({
+        title: "Folego extra",
+        description: "Recupere 1 HP agora.",
+        result: "Voce recuperou 1 HP.",
+        effect: {
+          type: "heal",
+          amount: 1
+        }
+      });
+    }
+
+    return buildCard("boon", randomItem(cards));
+  }
+
+  function createBaneCard() {
+    const cards = [
+      {
+        title: "Lixo reforcado",
+        description: "Inimigos: +18% HP na proxima onda.",
+        result: "Inimigos terao +18% HP na proxima onda.",
+        effect: {
+          type: "enemyModifier",
+          stat: "hp",
+          multiplier: 1.18,
+          durationWaves: CARD_EFFECT_DURATION_WAVES
+        }
+      },
+      {
+        title: "Correria toxica",
+        description: "Inimigos: +15% velocidade na proxima onda.",
+        result: "Inimigos terao +15% de velocidade na proxima onda.",
+        effect: {
+          type: "enemyModifier",
+          stat: "speed",
+          multiplier: 1.15,
+          durationWaves: CARD_EFFECT_DURATION_WAVES
+        }
+      },
+      {
+        title: "Pedagio de limpeza",
+        description: `Perca ate ${CARD_COIN_LOSS} moedas agora.`,
+        result: `Voce perdeu ${CARD_COIN_LOSS} moedas.`,
+        effect: {
+          type: "coins",
+          amount: -CARD_COIN_LOSS
+        }
+      },
+      {
+        title: "Confisco total",
+        description: "Perca todas as moedas agora.",
+        result: "Voce perdeu todas as moedas.",
+        effect: {
+          type: "coinsAll"
+        }
+      }
+    ];
+
+    return buildCard("bane", randomItem(cards));
+  }
+
+  function buildCard(kind, config) {
+    return {
+      id: `${kind}-${state.wave}-${Math.random().toString(36).slice(2, 8)}`,
+      kind,
+      ...config
+    };
+  }
+
+  function getRandomUnlockedTowerKey() {
+    const unlockedTowerKeys = getUnlockedTowerKeys(state.theme).filter((towerKey) => towers[towerKey]);
+    return randomItem(unlockedTowerKeys.length ? unlockedTowerKeys : towerOrder);
+  }
+
+  function randomItem(items) {
+    return items[Math.floor(Math.random() * items.length)];
+  }
+
+  function shuffleCards(cards) {
+    return cards
+      .map((card) => ({ card, sort: Math.random() }))
+      .sort((a, b) => a.sort - b.sort)
+      .map((entry) => entry.card);
+  }
+
+  function applyCardEffect(card) {
+    const effect = card.effect || {};
+    if (effect.type === "heal") {
+      const previousLives = state.lives;
+      state.lives = Math.min(state.maxLives, state.lives + effect.amount);
+      return state.lives > previousLives ? card.result : "Vida ja estava cheia. Nada mudou.";
+    }
+
+    if (effect.type === "coins") {
+      const previousCoins = state.coins;
+      state.coins = Math.max(0, state.coins + effect.amount);
+      const coinDifference = state.coins - previousCoins;
+
+      if (coinDifference > 0) {
+        return `Voce ganhou ${coinDifference} moedas.`;
+      }
+
+      if (coinDifference < 0) {
+        return `Voce perdeu ${Math.abs(coinDifference)} moedas.`;
+      }
+
+      return "Sem moedas para alterar. Nada mudou.";
+    }
+
+    if (effect.type === "coinsAll") {
+      const previousCoins = state.coins;
+      state.coins = 0;
+      return previousCoins > 0
+        ? `Voce perdeu ${previousCoins} moedas.`
+        : "Sem moedas para perder. Nada mudou.";
+    }
+
+    if (effect.type === "towerBuff") {
+      addTowerBuff(effect);
+      return card.result;
+    }
+
+    if (effect.type === "enemyModifier") {
+      addEnemyModifier(effect);
+      return card.result;
+    }
+
+    return card.result;
+  }
+
+  function getCardEffectExpirationWave(effect) {
+    if (effect.permanent) return Infinity;
+    return state.wave + (effect.durationWaves || CARD_EFFECT_DURATION_WAVES);
+  }
+
+  function addTowerBuff(effect) {
+    state.cardEffects.towerBuffs.push({
+      towerType: effect.towerType,
+      stat: effect.stat,
+      multiplier: effect.multiplier,
+      permanent: Boolean(effect.permanent),
+      expiresAfterWave: getCardEffectExpirationWave(effect)
+    });
+  }
+
+  function addEnemyModifier(effect) {
+    state.cardEffects.enemyModifiers = state.cardEffects.enemyModifiers.filter((modifier) => {
+      return modifier.stat !== effect.stat;
+    });
+    state.cardEffects.enemyModifiers.push({
+      stat: effect.stat,
+      multiplier: effect.multiplier,
+      expiresAfterWave: getCardEffectExpirationWave(effect)
+    });
+  }
+
+  function clearExpiredCardEffects(finishedWave) {
+    state.cardEffects.towerBuffs = state.cardEffects.towerBuffs.filter((buff) => {
+      return buff.expiresAfterWave > finishedWave;
+    });
+    state.cardEffects.enemyModifiers = state.cardEffects.enemyModifiers.filter((modifier) => {
+      return modifier.expiresAfterWave > finishedWave;
+    });
+  }
+
+  function isCardEffectActive(effect) {
+    return effect.expiresAfterWave >= state.wave;
+  }
+
+  function getTowerCombatStats(towerType) {
+    const towerDef = towers[towerType];
+    const stats = { ...towerDef };
+    state.cardEffects.towerBuffs
+      .filter((buff) => buff.towerType === towerType && isCardEffectActive(buff))
+      .forEach((buff) => {
+        if (buff.stat === "damage") {
+          stats.damage = Math.max(1, Math.round(stats.damage * buff.multiplier));
+        } else if (buff.stat === "range") {
+          stats.range *= buff.multiplier;
+        }
+      });
+    return stats;
+  }
+
+  function getEnemyModifierMultiplier(stat) {
+    return state.cardEffects.enemyModifiers
+      .filter((modifier) => modifier.stat === stat && isCardEffectActive(modifier))
+      .reduce((multiplier, modifier) => multiplier * modifier.multiplier, 1);
+  }
+
   function completeCurrentWave() {
     const finishedWave = state.wave;
     const defeatedThisWave = state.waveDefeated;
@@ -436,8 +771,14 @@
     state.sessionDefeated += defeatedThisWave;
     state.waveDefeated = 0;
     state.waveComboVisible = false;
+    clearExpiredCardEffects(finishedWave);
 
     const steps = [`Fim da onda ${finishedWave}\nDerrotados: ${defeatedThisWave}`];
+    if (shouldOfferCardChoice(finishedWave)) {
+      startWaveTransition(steps, () => startCardChoice(startNextWave));
+      return;
+    }
+
     if (finishedWave < state.waveLimit) {
       steps.push(`Início da onda ${finishedWave + 1}`);
     }
@@ -487,7 +828,7 @@
         ? 1
         : 0;
     const type = enemyTypes[tier];
-    const maxHp = Math.round(type.hp * (1 + state.wave * 0.12));
+    const maxHp = Math.round(type.hp * (1 + state.wave * 0.12) * getEnemyModifierMultiplier("hp"));
     const el = document.createElement("div");
     el.className = `enemy ${type.className}`;
     el.innerHTML = '<div class="health"><span></span></div>';
@@ -500,7 +841,7 @@
       pathIndex: 0,
       maxHp,
       hp: maxHp,
-      speed: type.speed * (1 + Math.min(state.wave, 8) * 0.025),
+      speed: type.speed * (1 + Math.min(state.wave, 8) * 0.025) * getEnemyModifierMultiplier("speed"),
       reward: type.reward,
       slowUntil: 0,
       slowFactor: 1,
@@ -554,7 +895,7 @@
 
   function updateTowers(dt) {
     state.placedTowers.forEach((tower) => {
-      const towerDef = towers[tower.type];
+      const towerDef = getTowerCombatStats(tower.type);
       tower.cooldown -= dt;
       if (tower.cooldown > 0) return;
 
@@ -746,6 +1087,8 @@
     requestTowerDeleteAt,
     confirmTowerDelete,
     cancelTowerDelete,
+    selectCardChoice,
+    continueCardChoice,
     update,
     togglePause,
     toggleSpeed,

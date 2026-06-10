@@ -17,6 +17,7 @@
     getTowerAtTile,
     hidePlacementPreview,
     closeDifficultyPanel,
+    isCardChoiceOpen,
     isDifficultyPanelOpen,
     isBuildableTile,
     isCustomWavesInput,
@@ -96,7 +97,7 @@
   }
 
   function moveGamepadCursor(dx, dy) {
-    if (!state.running || isVictoryOpen() || isRestartConfirmOpen() || isExitConfirmOpen()) return;
+    if (!state.running || isCardChoiceOpen() || isVictoryOpen() || isRestartConfirmOpen() || isExitConfirmOpen()) return;
 
     const nextX = clamp(gamepadInput.cursorX + dx, 0, COLS - 1);
     const nextY = clamp(gamepadInput.cursorY + dy, 0, ROWS - 1);
@@ -140,7 +141,7 @@
       resumeDesiredMusic();
     }
 
-    if (isVictoryOpen() || isRestartConfirmOpen() || isExitConfirmOpen() || isTowerDeleteConfirmOpen() || isMenuVisible()) {
+    if (isCardChoiceOpen() || isVictoryOpen() || isRestartConfirmOpen() || isExitConfirmOpen() || isTowerDeleteConfirmOpen() || isMenuVisible()) {
       updateMenuGamepadInput(dt, direction, justPressed);
     } else if (state.running) {
       updateGameplayGamepadInput(dt, direction, justPressed);
@@ -215,21 +216,23 @@
   }
 
   function getGamepadFocusRoot() {
-    return isVictoryOpen()
-      ? dom.victoryOverlay
-      : isRestartConfirmOpen()
-        ? dom.restartConfirmOverlay
-        : isExitConfirmOpen()
-          ? dom.exitConfirmOverlay
-          : isTowerDeleteConfirmOpen()
-            ? dom.towerDeleteConfirmOverlay
-            : isDifficultyPanelOpen()
-              ? dom.difficultyPanel
-              : !dom.configPanel.hidden
-                ? dom.configPanel
-                : isMenuVisible()
-                  ? dom.menu
-                  : null;
+    return isCardChoiceOpen()
+      ? dom.cardChoiceOverlay
+      : isVictoryOpen()
+        ? dom.victoryOverlay
+        : isRestartConfirmOpen()
+          ? dom.restartConfirmOverlay
+          : isExitConfirmOpen()
+            ? dom.exitConfirmOverlay
+            : isTowerDeleteConfirmOpen()
+              ? dom.towerDeleteConfirmOverlay
+              : isDifficultyPanelOpen()
+                ? dom.difficultyPanel
+                : !dom.configPanel.hidden
+                  ? dom.configPanel
+                  : isMenuVisible()
+                    ? dom.menu
+                    : null;
   }
 
   function getGamepadFocusableButtons() {
@@ -587,7 +590,9 @@
     }
 
     if (justPressed(gamepadButtons.b)) {
-      if (isVictoryOpen()) {
+      if (isCardChoiceOpen()) {
+        return;
+      } else if (isVictoryOpen()) {
         dom.victoryMenuButton.click();
       } else if (isRestartConfirmOpen()) {
         dom.restartConfirmNoButton.click();
