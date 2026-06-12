@@ -133,7 +133,8 @@
       showMessage(t("messages.notEnoughCoins"));
       return;
     }
-    if (!doesTowerReachPath(x, y, towerDef.range)) {
+    const towerStats = getTowerCombatStats(state.selectedTower);
+    if (!doesTowerReachPath(x, y, towerStats.range)) {
       showMessage(t("messages.towerNoTargets"));
       return;
     }
@@ -516,7 +517,7 @@
   function createCardChoices() {
     return shuffleCards([
       createNeutralCard(),
-      createBoonCard(),
+      ...createBoonCards(2),
       createBaneCard()
     ]);
   }
@@ -530,10 +531,16 @@
     });
   }
 
-  function createBoonCard() {
+  function createBoonCards(count = 2) {
+    return shuffleCards(createBoonCardConfigs())
+      .slice(0, count)
+      .map((config) => buildCard("boon", config));
+  }
+
+  function createBoonCardConfigs() {
     const towerKey = getRandomUnlockedTowerKey();
     const towerLabel = getTowerLabel(towerKey);
-    const cards = [
+    const configs = [
       {
         title: t("cards.damage.title", { tower: towerLabel }),
         description: t("cards.damage.description", { tower: towerLabel }),
@@ -554,7 +561,7 @@
           type: "towerBuff",
           towerType: towerKey,
           stat: "range",
-          multiplier: 1.5,
+          multiplier: 1.25,
           permanent: true
         }
       },
@@ -570,7 +577,7 @@
     ];
 
     if (state.lives < state.maxLives) {
-      cards.push({
+      configs.push({
         title: t("cards.heal.title"),
         description: t("cards.heal.description"),
         result: t("cards.heal.result"),
@@ -581,7 +588,7 @@
       });
     }
 
-    return buildCard("boon", randomItem(cards));
+    return configs;
   }
 
   function createBaneCard() {
@@ -740,6 +747,7 @@
 
   function getTowerCombatStats(towerType) {
     const towerDef = towers[towerType];
+    if (!towerDef) return null;
     const stats = { ...towerDef };
     state.cardEffects.towerBuffs
       .filter((buff) => buff.towerType === towerType && isCardEffectActive(buff))
@@ -892,6 +900,7 @@
   function updateTowers(dt) {
     state.placedTowers.forEach((tower) => {
       const towerDef = getTowerCombatStats(tower.type);
+      if (!towerDef) return;
       tower.cooldown -= dt;
       if (tower.cooldown > 0) return;
 
@@ -1085,6 +1094,7 @@
     cancelTowerDelete,
     selectCardChoice,
     continueCardChoice,
+    getTowerCombatStats,
     update,
     togglePause,
     toggleSpeed,

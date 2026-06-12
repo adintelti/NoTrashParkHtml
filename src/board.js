@@ -103,6 +103,10 @@
     return getPathTilesInRange(x + 0.5, y + 0.5, range).length > 0;
   }
 
+  function getSelectedTowerPlacementStats() {
+    return ntp.getTowerCombatStats?.(state.selectedTower) || towers[state.selectedTower];
+  }
+
   function getTileAt(x, y) {
     return dom.board.querySelector(`[data-x="${x}"][data-y="${y}"]`);
   }
@@ -135,7 +139,7 @@
       return;
     }
 
-    const towerDef = towers[state.selectedTower];
+    const towerDef = getSelectedTowerPlacementStats();
     if (!towerDef) {
       hidePlacementPreview();
       return;
@@ -170,14 +174,15 @@
       return;
     }
 
-    const towerDef = towers[state.selectedTower];
+    const towerDef = getSelectedTowerPlacementStats();
     if (!towerDef) {
       hidePlacementPreview();
       return;
     }
 
     const { x, y, rangeEl, ghostEl } = placementPreview;
-    const reachesPath = doesTowerReachPath(x, y, towerDef.range);
+    const placementRange = towerDef.range;
+    const reachesPath = doesTowerReachPath(x, y, placementRange);
     const isAvailable = isTowerUnlocked(state.selectedTower, state.theme)
       && isBuildableTile(x, y)
       && state.coins >= towerDef.cost
@@ -186,7 +191,7 @@
       x,
       y,
       state.selectedTower,
-      towerDef.range,
+      placementRange,
       state.cellW,
       state.cellH,
       isAvailable,
@@ -198,7 +203,7 @@
 
     const centerX = x + 0.5;
     const centerY = y + 0.5;
-    const rangeDiameter = towerDef.range * 2;
+    const rangeDiameter = placementRange * 2;
 
     rangeEl.hidden = false;
     rangeEl.dataset.tower = state.selectedTower;
@@ -213,7 +218,7 @@
     ghostEl.classList.toggle("is-unavailable", !isAvailable);
     setElementPosition(ghostEl, centerX, centerY);
 
-    applyPreviewTileHighlights(centerX, centerY, towerDef.range, isAvailable);
+    applyPreviewTileHighlights(centerX, centerY, placementRange, isAvailable);
   }
 
   function applyPreviewTileHighlights(centerX, centerY, range, isAvailable) {

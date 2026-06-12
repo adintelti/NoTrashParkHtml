@@ -162,8 +162,8 @@
         },
         range: {
           title: "{tower} ampliada",
-          description: "{tower}: +50% raio permanente.",
-          result: "{tower} ganhou +50% de raio permanente."
+          description: "{tower}: +25% raio permanente.",
+          result: "{tower} ganhou +25% de raio permanente."
         },
         coinsGain: {
           title: "Coleta premiada",
@@ -378,8 +378,8 @@
         },
         range: {
           title: "{tower} expanded",
-          description: "{tower}: +50% permanent range.",
-          result: "{tower} gained +50% permanent range."
+          description: "{tower}: +25% permanent range.",
+          result: "{tower} gained +25% permanent range."
         },
         coinsGain: {
           title: "Prize collection",
@@ -594,8 +594,8 @@
         },
         range: {
           title: "{tower} ampliada",
-          description: "{tower}: +50% alcance permanente.",
-          result: "{tower} gano +50% de alcance permanente."
+          description: "{tower}: +25% alcance permanente.",
+          result: "{tower} gano +25% de alcance permanente."
         },
         coinsGain: {
           title: "Recoleccion premiada",

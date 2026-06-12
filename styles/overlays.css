@@ -100,7 +100,7 @@
 }
 
 .card-choice-panel {
-  width: min(92%, 620px);
+  width: min(94%, 760px);
   display: grid;
   gap: clamp(12px, 2.4vw, 18px);
   padding: clamp(18px, 4.2vw, 30px);
@@ -136,7 +136,7 @@
 
 .card-choice-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: clamp(8px, 2vw, 14px);
 }
 
