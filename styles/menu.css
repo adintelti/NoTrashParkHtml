@@ -258,6 +258,12 @@
   gap: 6px;
 }
 
+.language-toggle-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+
 .sound-row {
   display: grid;
   grid-template-columns: 40px minmax(0, 1fr) 48px;

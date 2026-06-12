@@ -18,6 +18,7 @@
     hideVictory,
     closeDifficultyPanel,
     isCardChoiceOpen,
+    isCardFrequencyInput,
     isExitConfirmOpen,
     isDifficultyPanelOpen,
     isRestartConfirmOpen,
@@ -32,10 +33,12 @@
     returnToMenu,
     sanitizeCustomWavesInput,
     selectCardChoice,
+    setCardFrequency,
     setBgmEnabled,
     setControllerLayout,
     setDeleteMode,
     setDifficulty,
+    setLanguage,
     setSfxEnabled,
     setBgmMasterVolume,
     setSfxMasterVolume,
@@ -49,6 +52,7 @@
     state,
     syncDifficultyButtons,
     syncThemeButtons,
+    t,
     togglePause,
     toggleDeleteMode,
     toggleSpeed,
@@ -129,7 +133,7 @@
     dom.exitButton.addEventListener("click", () => {
       dom.configPanel.hidden = true;
       closeDifficultyPanel();
-      showMenuNote("Demo pronta no navegador.");
+      showMenuNote(t("menu.demoReady"));
     });
     dom.backToMenuButton.addEventListener("click", openExitConfirm);
     dom.pauseButton.addEventListener("click", togglePause);
@@ -210,6 +214,9 @@
     });
     dom.customWavesInput.addEventListener("change", normalizeCustomWaves);
     dom.customWavesInput.addEventListener("blur", normalizeCustomWaves);
+    dom.cardFrequencyInput.addEventListener("input", () => {
+      setCardFrequency(Number(dom.cardFrequencyInput.value));
+    });
 
     dom.bgmToggleButton.addEventListener("click", () => {
       setBgmEnabled(!getSoundSettings().bgmEnabled);
@@ -219,6 +226,9 @@
     });
     document.querySelectorAll("[data-controller-layout]").forEach((button) => {
       button.addEventListener("click", () => setControllerLayout(button.dataset.controllerLayout));
+    });
+    document.querySelectorAll("[data-language]").forEach((button) => {
+      button.addEventListener("click", () => setLanguage(button.dataset.language));
     });
     dom.bgmVolumeInput.addEventListener("input", () => {
       setBgmMasterVolume(Number(dom.bgmVolumeInput.value) / 100);
@@ -259,7 +269,9 @@
     });
     window.addEventListener("keydown", (event) => {
       markPointerInputActive();
-      if (event.key === "Escape" && isCardChoiceOpen()) {
+      if (isCardFrequencyInput(document.activeElement)) {
+        return;
+      } else if (event.key === "Escape" && isCardChoiceOpen()) {
         event.preventDefault();
       } else if (event.key === "Escape" && isTowerDeleteConfirmOpen()) {
         event.preventDefault();

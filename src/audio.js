@@ -1,6 +1,6 @@
 (() => {
   const ntp = window.NTP = window.NTP || {};
-  const { dom, musicTracks, sfxTracks, sfxVolumes } = ntp;
+  const { dom, musicTracks, sfxTracks, sfxVolumes, t } = ntp;
 
   const SOUND_STORAGE_KEY = "ntp.soundSettings";
   const MUSIC_VOLUME = 0.42;
@@ -447,9 +447,9 @@
 
   function syncSoundControls() {
     dom.bgmToggleButton.classList.toggle("is-active", soundSettings.bgmEnabled);
-    dom.bgmToggleButton.textContent = soundSettings.bgmEnabled ? "BGM On" : "BGM Off";
+    dom.bgmToggleButton.textContent = `BGM ${t(soundSettings.bgmEnabled ? "sound.on" : "sound.off")}`;
     dom.sfxToggleButton.classList.toggle("is-active", soundSettings.sfxEnabled);
-    dom.sfxToggleButton.textContent = soundSettings.sfxEnabled ? "SFX On" : "SFX Off";
+    dom.sfxToggleButton.textContent = `SFX ${t(soundSettings.sfxEnabled ? "sound.on" : "sound.off")}`;
 
     const bgmPercent = Math.round(soundSettings.bgmVolume * 100);
     const sfxPercent = Math.round(soundSettings.sfxVolume * 100);

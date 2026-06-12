@@ -3,23 +3,21 @@
   const {
     dom,
     GAME_VERSION,
+    getMapName,
     getNextTheme,
+    getTowerLabel,
     getUnlockedTowerKeys,
+    getVictoryTitle,
     isTowerUnlocked,
     maps,
     saveControllerLayout,
     settings,
     state,
-    towers,
-    victoryTitles
+    t,
+    towers
   } = ntp;
 
   const GAMEPAD_FACE_CLASSES = ["is-a", "is-b", "is-x", "is-y"];
-  const CARD_KIND_LABELS = {
-    neutral: "Neutro",
-    boon: "Ajuda",
-    bane: "Risco"
-  };
   const controllerLayoutLabels = {
     xbox: {
       faceSouth: { text: "A", faceClass: "is-a" },
@@ -65,7 +63,7 @@
   }
 
   function updateVersionText() {
-    dom.versionText.textContent = `Versao ${GAME_VERSION}`;
+    dom.versionText.textContent = t("version.label", { version: GAME_VERSION });
   }
 
   function updateHud() {
@@ -77,7 +75,7 @@
     dom.comboCounter.textContent = `${state.waveDefeated}X`;
     dom.comboCounter.hidden = !state.waveComboVisible;
     dom.comboCounter.classList.toggle("is-active", state.waveDefeated > 0);
-    dom.pauseButton.textContent = state.paused ? "Retomar" : "Pause";
+    dom.pauseButton.textContent = state.paused ? t("actions.resume") : t("actions.pause");
     dom.speedButton.textContent = `${state.speed}x`;
     dom.heartStack.innerHTML = "";
     const shownLives = Math.min(5, state.lives);
@@ -90,16 +88,26 @@
     document.querySelectorAll(".shop-button[data-tower]").forEach((button) => {
       const towerKey = button.dataset.tower;
       const towerDef = towers[towerKey];
+      const towerLabel = getTowerLabel(towerKey);
       const isUnlocked = isTowerUnlocked(towerKey, state.theme);
       const isActive = isUnlocked && towerKey === state.selectedTower;
+      const labelEl = button.querySelector("span");
       const priceEl = button.querySelector("strong");
       button.classList.toggle("is-active", isActive);
       button.classList.toggle("is-locked", !isUnlocked);
       button.disabled = !isUnlocked || state.coins < towerDef.cost;
-      button.title = isUnlocked ? "" : "Bloqueada neste bioma";
-      button.setAttribute("aria-label", `${towerDef.label} ${isUnlocked ? `$${towerDef.cost}` : "bloqueada"}`);
+      button.title = isUnlocked ? "" : t("shop.lockedBiome");
+      button.setAttribute(
+        "aria-label",
+        isUnlocked
+          ? t("shop.towerAria", { tower: towerLabel, price: towerDef.cost })
+          : t("shop.towerLockedAria", { tower: towerLabel })
+      );
+      if (labelEl) {
+        labelEl.textContent = towerLabel;
+      }
       if (priceEl) {
-        priceEl.textContent = isUnlocked ? `$${towerDef.cost}` : "Bloq.";
+        priceEl.textContent = isUnlocked ? `$${towerDef.cost}` : t("shop.lockedShort");
       }
     });
 
@@ -115,7 +123,7 @@
     if (canUndo) {
       const secondsLabel = `${undoSecondsRemaining}s`;
       const priceEl = dom.undoTowerButton.querySelector("strong");
-      dom.undoTowerButton.setAttribute("aria-label", `Desfazer ultima torre ${secondsLabel}`);
+      dom.undoTowerButton.setAttribute("aria-label", t("shop.undoAria", { seconds: secondsLabel }));
       if (priceEl) {
         priceEl.textContent = secondsLabel;
       }
@@ -125,7 +133,7 @@
     dom.deleteTowerButton.setAttribute("aria-pressed", String(state.deleteMode));
     const deleteLabel = dom.deleteTowerButton.querySelector("strong");
     if (deleteLabel) {
-      deleteLabel.textContent = state.deleteMode ? "Cancelar" : "Selecionar";
+      deleteLabel.textContent = state.deleteMode ? t("common.cancel") : t("shop.select");
     }
 
     syncTowerDeleteHighlights();
@@ -219,17 +227,17 @@
     button.disabled = isRevealed;
     button.classList.toggle("is-revealed", isRevealed && isSelected);
     button.classList.toggle("is-dimmed", isRevealed && !isSelected);
-    button.setAttribute("aria-label", isRevealed && isSelected ? card.title : `Carta ${index + 1}`);
+    button.setAttribute("aria-label", isRevealed && isSelected ? card.title : t("cards.cardAria", { index: index + 1 }));
 
     if (isRevealed && isSelected) {
-      appendCardText(button, "span", "card-choice-kind", CARD_KIND_LABELS[card.kind] || "Carta");
+      appendCardText(button, "span", "card-choice-kind", t(`cards.kind.${card.kind}`, {}, t("cards.defaultKind")));
       appendCardText(button, "strong", "card-choice-name", card.title);
       appendCardText(button, "span", "card-choice-description", card.description);
       return button;
     }
 
     appendCardText(button, "span", "card-choice-back", "?");
-    appendCardText(button, "span", "card-choice-index", `Carta ${index + 1}`);
+    appendCardText(button, "span", "card-choice-index", t("cards.cardIndex", { index: index + 1 }));
     return button;
   }
 
@@ -302,7 +310,7 @@
     hideExitConfirm();
     hideTowerDeleteConfirm();
     hideCardChoice();
-    dom.victoryTitle.textContent = victoryTitles[state.theme] || "Vitoria!";
+    dom.victoryTitle.textContent = getVictoryTitle(state.theme);
     updateResultDetails();
     dom.victoryContinueButton.hidden = !hasNextTheme;
     dom.victoryOverlay.classList.toggle("is-final-victory", !hasNextTheme);
@@ -313,12 +321,12 @@
   }
 
   function showGameOver() {
-    const levelName = maps[state.theme]?.name || "Fase";
+    const levelName = getMapName(state.theme) || maps[state.theme]?.name || "Fase";
     hideRestartConfirm();
     hideExitConfirm();
     hideTowerDeleteConfirm();
     hideCardChoice();
-    dom.victoryTitle.textContent = `Fim de jogo, ${levelName} destruído(a)`;
+    dom.victoryTitle.textContent = t("victory.gameOver", { map: levelName });
     updateResultDetails();
     dom.victoryContinueButton.hidden = true;
     dom.victoryOverlay.classList.remove("is-final-victory");

@@ -10,6 +10,7 @@
     enemyTypes,
     getConfiguredWaveLimit,
     getFirstTheme,
+    getTowerLabel,
     getUnlockedTowerKeys,
     hideCardChoice,
     hideExitConfirm,
@@ -34,6 +35,7 @@
     showVictory,
     state,
     syncThemeButtons,
+    t,
     towerOrder,
     towers,
     updateHud,
@@ -48,12 +50,6 @@
 
   const WAVE_TRANSITION_DURATION = 1.25;
   const UNDO_PLACEMENT_WINDOW_MS = 5000;
-  const CARD_OFFER_INTERVALS = {
-    easy: 2,
-    medium: 3,
-    hard: 4,
-    custom: 5
-  };
   const CARD_EFFECT_DURATION_WAVES = 1;
   const CARD_COIN_GAIN = 100;
   const CARD_COIN_LOSS = 70;
@@ -85,7 +81,7 @@
     buildBoard();
     gameplayHooks.afterStartGame();
     updateHud();
-    showMessage("Escolha uma torre e proteja o mapa.");
+    showMessage(t("messages.start"));
   }
 
   function returnToMenu() {
@@ -119,26 +115,26 @@
   function placeTower(x, y) {
     if (!state.running || state.paused || state.gameOver) return;
     if (state.deleteMode) {
-      showMessage("Cancele Excluir para construir.");
+      showMessage(t("messages.cancelDeleteToBuild"));
       return;
     }
 
     const key = coordKey(x, y);
     const towerDef = towers[state.selectedTower];
     if (!towerDef || !isTowerUnlocked(state.selectedTower, state.theme)) {
-      showMessage("Torre bloqueada neste bioma.");
+      showMessage(t("messages.towerLocked"));
       return;
     }
     if (state.pathSet.has(key) || state.blockedSet.has(key) || state.occupied.has(key)) {
-      showMessage("Espaco bloqueado.");
+      showMessage(t("messages.spaceBlocked"));
       return;
     }
     if (state.coins < towerDef.cost) {
-      showMessage("Moedas insuficientes.");
+      showMessage(t("messages.notEnoughCoins"));
       return;
     }
     if (!doesTowerReachPath(x, y, towerDef.range)) {
-      showMessage("Torre não pode ser criada sem alcançar alvos");
+      showMessage(t("messages.towerNoTargets"));
       return;
     }
 
@@ -227,7 +223,7 @@
     const tower = state.lastPlacedTower;
     const refund = tower.cost ?? towers[tower.type]?.cost ?? 0;
     if (removeTower(tower, { refund })) {
-      showMessage("Torre desfeita.");
+      showMessage(t("messages.towerUndone"));
     }
     clearUndoPlacement();
     updateHud();
@@ -283,14 +279,14 @@
       state.pendingDeleteTower = null;
       hidePlacementPreview();
       if (!options.silent) {
-        showMessage("Selecione uma torre para remover.");
+        showMessage(t("messages.selectTowerToRemove"));
       }
     } else {
       state.pendingDeleteTower = null;
       hideTowerDeleteConfirm();
       refreshPlacementPreview();
       if (!options.silent) {
-        showMessage("Modo de construcao retomado.");
+        showMessage(t("messages.buildModeRestored"));
       }
     }
 
@@ -305,7 +301,7 @@
 
   function requestTowerDelete(tower) {
     if (!state.deleteMode || !tower || !state.placedTowers.includes(tower)) {
-      showMessage("Selecione uma torre.");
+      showMessage(t("messages.selectTower"));
       return false;
     }
 
@@ -321,7 +317,7 @@
   function requestTowerDeleteAt(x, y) {
     const tower = getTowerAtTile(x, y);
     if (!tower) {
-      showMessage("Selecione uma torre.");
+      showMessage(t("messages.selectTower"));
       return false;
     }
     return requestTowerDelete(tower);
@@ -333,9 +329,9 @@
     hideTowerDeleteConfirm();
 
     if (tower && removeTower(tower)) {
-      showMessage("Torre removida.");
+      showMessage(t("messages.towerRemoved"));
     } else {
-      showMessage("Torre nao encontrada.");
+      showMessage(t("messages.towerNotFound"));
     }
 
     state.paused = previousPaused;
@@ -349,7 +345,7 @@
     state.pendingDeleteTower = null;
     state.paused = previousPaused;
     setDeleteMode(false, { silent: true });
-    showMessage("Modo de construcao retomado.");
+    showMessage(t("messages.buildModeRestored"));
     updateHud();
   }
 
@@ -439,12 +435,13 @@
 
   function beginWaveSpawn() {
     state.waveDefeated = 0;
+    state.waveHpLost = 0;
     state.waveComboVisible = false;
     state.waveInProgress = true;
     state.spawnRemaining = 6 + state.wave * 2;
     state.spawnTimer = 0;
     state.victoryPending = false;
-    showMessage(`Onda ${state.wave}`);
+    showMessage(t("messages.waveStart", { wave: state.wave }));
     updateHud();
   }
 
@@ -460,14 +457,16 @@
   }
 
   function shouldOfferCardChoice(finishedWave) {
-    const offerInterval = CARD_OFFER_INTERVALS[settings.difficulty];
+    const offerInterval = settings.cardFrequency;
     return finishedWave < state.waveLimit
       && Number.isFinite(offerInterval)
+      && offerInterval > 0
+      && state.waveHpLost <= 0
       && finishedWave % offerInterval === 0;
   }
 
   function startCardChoice(callback) {
-    if (!CARD_OFFER_INTERVALS[settings.difficulty]) {
+    if (!settings.cardFrequency) {
       if (callback) callback();
       return;
     }
@@ -524,21 +523,21 @@
 
   function createNeutralCard() {
     return buildCard("neutral", {
-      title: "Nada mudou",
-      description: "A proxima onda segue normal.",
-      result: "Nada acontece. A proxima onda vem no ritmo normal.",
+      title: t("cards.neutral.title"),
+      description: t("cards.neutral.description"),
+      result: t("cards.neutral.result"),
       effect: { type: "none" }
     });
   }
 
   function createBoonCard() {
     const towerKey = getRandomUnlockedTowerKey();
-    const towerDef = towers[towerKey];
+    const towerLabel = getTowerLabel(towerKey);
     const cards = [
       {
-        title: `${towerDef.label} reforcada`,
-        description: `${towerDef.label}: +30% dano permanente.`,
-        result: `${towerDef.label} ganhou +30% de dano permanente.`,
+        title: t("cards.damage.title", { tower: towerLabel }),
+        description: t("cards.damage.description", { tower: towerLabel }),
+        result: t("cards.damage.result", { tower: towerLabel }),
         effect: {
           type: "towerBuff",
           towerType: towerKey,
@@ -548,21 +547,21 @@
         }
       },
       {
-        title: `${towerDef.label} ampliada`,
-        description: `${towerDef.label}: +25% raio permanente.`,
-        result: `${towerDef.label} ganhou +25% de raio permanente.`,
+        title: t("cards.range.title", { tower: towerLabel }),
+        description: t("cards.range.description", { tower: towerLabel }),
+        result: t("cards.range.result", { tower: towerLabel }),
         effect: {
           type: "towerBuff",
           towerType: towerKey,
           stat: "range",
-          multiplier: 1.25,
+          multiplier: 1.5,
           permanent: true
         }
       },
       {
-        title: "Coleta premiada",
-        description: `Ganhe ${CARD_COIN_GAIN} moedas agora.`,
-        result: `Voce ganhou ${CARD_COIN_GAIN} moedas.`,
+        title: t("cards.coinsGain.title"),
+        description: t("cards.coinsGain.description", { amount: CARD_COIN_GAIN }),
+        result: t("cards.coinsGain.result", { amount: CARD_COIN_GAIN }),
         effect: {
           type: "coins",
           amount: CARD_COIN_GAIN
@@ -572,9 +571,9 @@
 
     if (state.lives < state.maxLives) {
       cards.push({
-        title: "Folego extra",
-        description: "Recupere 1 HP agora.",
-        result: "Voce recuperou 1 HP.",
+        title: t("cards.heal.title"),
+        description: t("cards.heal.description"),
+        result: t("cards.heal.result"),
         effect: {
           type: "heal",
           amount: 1
@@ -588,9 +587,9 @@
   function createBaneCard() {
     const cards = [
       {
-        title: "Lixo reforcado",
-        description: "Inimigos: +18% HP na proxima onda.",
-        result: "Inimigos terao +18% HP na proxima onda.",
+        title: t("cards.enemyHp.title"),
+        description: t("cards.enemyHp.description"),
+        result: t("cards.enemyHp.result"),
         effect: {
           type: "enemyModifier",
           stat: "hp",
@@ -599,9 +598,9 @@
         }
       },
       {
-        title: "Correria toxica",
-        description: "Inimigos: +15% velocidade na proxima onda.",
-        result: "Inimigos terao +15% de velocidade na proxima onda.",
+        title: t("cards.enemySpeed.title"),
+        description: t("cards.enemySpeed.description"),
+        result: t("cards.enemySpeed.result"),
         effect: {
           type: "enemyModifier",
           stat: "speed",
@@ -610,18 +609,18 @@
         }
       },
       {
-        title: "Pedagio de limpeza",
-        description: `Perca ate ${CARD_COIN_LOSS} moedas agora.`,
-        result: `Voce perdeu ${CARD_COIN_LOSS} moedas.`,
+        title: t("cards.coinsLoss.title"),
+        description: t("cards.coinsLoss.description", { amount: CARD_COIN_LOSS }),
+        result: t("cards.coinsLoss.result", { amount: CARD_COIN_LOSS }),
         effect: {
           type: "coins",
           amount: -CARD_COIN_LOSS
         }
       },
       {
-        title: "Confisco total",
-        description: "Perca todas as moedas agora.",
-        result: "Voce perdeu todas as moedas.",
+        title: t("cards.coinsAll.title"),
+        description: t("cards.coinsAll.description"),
+        result: t("cards.coinsAll.result"),
         effect: {
           type: "coinsAll"
         }
@@ -660,7 +659,7 @@
     if (effect.type === "heal") {
       const previousLives = state.lives;
       state.lives = Math.min(state.maxLives, state.lives + effect.amount);
-      return state.lives > previousLives ? card.result : "Vida ja estava cheia. Nada mudou.";
+      return state.lives > previousLives ? card.result : t("cards.heal.full");
     }
 
     if (effect.type === "coins") {
@@ -669,22 +668,22 @@
       const coinDifference = state.coins - previousCoins;
 
       if (coinDifference > 0) {
-        return `Voce ganhou ${coinDifference} moedas.`;
+        return t("cards.coinsGain.result", { amount: coinDifference });
       }
 
       if (coinDifference < 0) {
-        return `Voce perdeu ${Math.abs(coinDifference)} moedas.`;
+        return t("cards.coinsLoss.result", { amount: Math.abs(coinDifference) });
       }
 
-      return "Sem moedas para alterar. Nada mudou.";
+      return t("cards.noCoinsChanged");
     }
 
     if (effect.type === "coinsAll") {
       const previousCoins = state.coins;
       state.coins = 0;
       return previousCoins > 0
-        ? `Voce perdeu ${previousCoins} moedas.`
-        : "Sem moedas para perder. Nada mudou.";
+        ? t("cards.coinsLoss.result", { amount: previousCoins })
+        : t("cards.noCoinsLost");
     }
 
     if (effect.type === "towerBuff") {
@@ -769,14 +768,14 @@
     state.waveComboVisible = false;
     clearExpiredCardEffects(finishedWave);
 
-    const steps = [`Fim da onda ${finishedWave}\nDerrotados: ${defeatedThisWave}`];
+    const steps = [t("wave.end", { wave: finishedWave, defeated: defeatedThisWave })];
     if (shouldOfferCardChoice(finishedWave)) {
       startWaveTransition(steps, () => startCardChoice(startNextWave));
       return;
     }
 
     if (finishedWave < state.waveLimit) {
-      steps.push(`Início da onda ${finishedWave + 1}`);
+      steps.push(t("wave.start", { wave: finishedWave + 1 }));
     }
 
     startWaveTransition(steps, startNextWave);
@@ -884,6 +883,7 @@
     leaked.forEach((enemy) => {
       removeEnemy(enemy, false);
       if (state.gameOver) return;
+      state.waveHpLost += 1;
       state.lives = Math.max(0, state.lives - 1);
       if (state.lives <= 0) endGame();
     });

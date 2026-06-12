@@ -7,6 +7,7 @@
     configureGameplayHooks,
     dom,
     focusGamepadButton,
+    applyTranslations,
     initializeBackgroundMusic,
     isGamepadConnected,
     playMenuMusic,
@@ -14,6 +15,7 @@
     resetGamepadCursor,
     startLoop,
     state,
+    syncCardFrequencyControl,
     syncControllerLayout,
     syncDifficultyButtons,
     syncGamepadCursor,
@@ -41,9 +43,10 @@
 
   bindEvents();
   buildBoard();
+  applyTranslations();
   syncControllerLayout();
+  syncCardFrequencyControl();
   syncDifficultyButtons();
-  updateVersionText();
   updateHud();
   initializeBackgroundMusic();
   startLoop();

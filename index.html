@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="pt-BR">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -9,6 +9,7 @@
     <script src="src/data.js" defer></script>
     <script src="src/dom.js" defer></script>
     <script src="src/state.js" defer></script>
+    <script src="src/i18n.js" defer></script>
     <script src="src/utils.js" defer></script>
     <script src="src/board.js" defer></script>
     <script src="src/config.js" defer></script>
@@ -22,7 +23,7 @@
   </head>
   <body>
     <div id="app" class="app">
-      <section id="menuScreen" class="screen menu-screen" aria-label="Main menu">
+      <section id="menuScreen" class="screen menu-screen" aria-label="Menu principal" data-i18n-aria-label="menu.screenAria">
         <div class="menu-world" aria-hidden="true">
           <div class="cloud cloud-a"></div>
           <div class="cloud cloud-b"></div>
@@ -38,32 +39,32 @@
           <h1>No Trash Park</h1>
         </div>
 
-        <div id="versionText" class="version-text" aria-label="Game version"></div>
+        <div id="versionText" class="version-text" aria-label="Versao do jogo" data-i18n-aria-label="version.aria"></div>
 
-        <div id="menuGamepadHints" class="controller-hints menu-controller-hints" aria-label="Gamepad menu controls">
+        <div id="menuGamepadHints" class="controller-hints menu-controller-hints" aria-label="Controles do menu por controle" data-i18n-aria-label="menu.controlsAria">
           <div class="hint-chip">
             <span class="pad-key pad-key-wide" data-gamepad-token="leftStick" aria-hidden="true">LS</span>
             <span class="pad-key pad-key-dpad" aria-hidden="true"></span>
-            <span>Navegar</span>
+            <span data-i18n="controls.navigate">Navegar</span>
           </div>
           <div class="hint-chip">
             <span class="pad-key pad-key-face is-a" data-gamepad-token="faceSouth" aria-hidden="true">A</span>
-            <span>Confirmar</span>
+            <span data-i18n="controls.confirm">Confirmar</span>
           </div>
           <div class="hint-chip">
             <span class="pad-key pad-key-face is-b" data-gamepad-token="faceEast" aria-hidden="true">B</span>
-            <span>Voltar</span>
+            <span data-i18n="controls.back">Voltar</span>
           </div>
           <div class="hint-chip">
             <span class="pad-key pad-key-dpad" aria-hidden="true"></span>
-            <span>Ajustar</span>
+            <span data-i18n="controls.adjust">Ajustar</span>
           </div>
         </div>
 
-        <nav class="menu-actions" aria-label="Menu">
-          <button id="playButton" class="pixel-button menu-button" type="button">Jogar</button>
-          <button id="configButton" class="pixel-button menu-button" type="button">Config.</button>
-          <button id="exitButton" class="pixel-button menu-button" type="button">Sair</button>
+        <nav class="menu-actions" aria-label="Menu" data-i18n-aria-label="menu.actionsAria">
+          <button id="playButton" class="pixel-button menu-button" type="button" data-i18n="menu.play">Jogar</button>
+          <button id="configButton" class="pixel-button menu-button" type="button" data-i18n="menu.config">Config.</button>
+          <button id="exitButton" class="pixel-button menu-button" type="button" data-i18n="menu.exit">Sair</button>
         </nav>
 
         <div id="configPanel" class="config-panel" hidden>
@@ -77,89 +78,107 @@
           </div> -->
 
           <div class="config-section">
-            <div class="config-title">Controle</div>
-            <div class="sound-toggle-grid" role="group" aria-label="Controller layout">
+            <div class="config-title" data-i18n="settings.controller">Controle</div>
+            <div class="sound-toggle-grid" role="group" aria-label="Layout do controle" data-i18n-aria-label="settings.controllerLayout">
               <button id="xboxLayoutButton" class="seg-button is-active" data-controller-layout="xbox" type="button">Xbox</button>
               <button id="switchLayoutButton" class="seg-button" data-controller-layout="switch" type="button">Switch Pro</button>
             </div>
           </div>
 
           <div class="config-section">
-            <div class="config-title">Som</div>
-            <div class="sound-toggle-grid" role="group" aria-label="Sound toggles">
+            <div class="config-title" data-i18n="settings.language">Idioma</div>
+            <div class="language-toggle-grid" role="group" aria-label="Opcoes de idioma" data-i18n-aria-label="settings.languageOptions">
+              <button id="ptLanguageButton" class="seg-button is-active" data-language="pt-BR" type="button">PT-BR</button>
+              <button id="enLanguageButton" class="seg-button" data-language="en" type="button">EN</button>
+              <button id="esLanguageButton" class="seg-button" data-language="es" type="button">ES</button>
+            </div>
+          </div>
+
+          <div class="config-section">
+            <div class="config-title" data-i18n="settings.cards">Cartas</div>
+            <label class="sound-row card-frequency-row" for="cardFrequencyInput">
+              <span data-i18n="settings.frequency">Freq.</span>
+              <input id="cardFrequencyInput" class="sound-slider" data-card-frequency type="range" min="0" max="10" step="1" value="3" aria-label="Frequencia de exibicao das cartas" data-i18n-aria-label="settings.cardFrequencyAria">
+              <strong id="cardFrequencyText">3 ondas</strong>
+            </label>
+          </div>
+
+          <div class="config-section">
+            <div class="config-title" data-i18n="settings.sound">Som</div>
+            <div class="sound-toggle-grid" role="group" aria-label="Opcoes de som" data-i18n-aria-label="settings.soundToggles">
               <button id="bgmToggleButton" class="seg-button is-active" data-sound-toggle="bgm" type="button">BGM On</button>
               <button id="sfxToggleButton" class="seg-button is-active" data-sound-toggle="sfx" type="button">SFX On</button>
             </div>
 
             <label class="sound-row" for="bgmVolumeInput">
               <span>BGM</span>
-              <input id="bgmVolumeInput" class="sound-slider" data-sound-volume="bgm" type="range" min="0" max="100" step="5" value="100" aria-label="BGM master volume">
+              <input id="bgmVolumeInput" class="sound-slider" data-sound-volume="bgm" type="range" min="0" max="100" step="5" value="100" aria-label="Volume principal da musica" data-i18n-aria-label="settings.bgmVolumeAria">
               <strong id="bgmVolumeText">100%</strong>
             </label>
 
             <label class="sound-row" for="sfxVolumeInput">
               <span>SFX</span>
-              <input id="sfxVolumeInput" class="sound-slider" data-sound-volume="sfx" type="range" min="0" max="100" step="5" value="100" aria-label="SFX master volume">
+              <input id="sfxVolumeInput" class="sound-slider" data-sound-volume="sfx" type="range" min="0" max="100" step="5" value="100" aria-label="Volume principal dos efeitos" data-i18n-aria-label="settings.sfxVolumeAria">
               <strong id="sfxVolumeText">100%</strong>
             </label>
           </div>
 
-          <button id="configBackButton" class="pixel-button config-back-button" type="button">Voltar</button>
+          <button id="configBackButton" class="pixel-button config-back-button" type="button" data-i18n="common.back">Voltar</button>
         </div>
 
         <div id="difficultyPanel" class="config-panel difficulty-panel" role="dialog" aria-modal="true" aria-labelledby="difficultyTitle" hidden>
           <div class="config-section">
-            <div id="difficultyTitle" class="config-title">Dificuldade</div>
-            <div class="difficulty-grid" role="group" aria-label="Difficulty">
+            <div id="difficultyTitle" class="config-title" data-i18n="difficulty.title">Dificuldade</div>
+            <div class="difficulty-grid" role="group" aria-label="Dificuldade" data-i18n-aria-label="difficulty.aria">
               <button class="seg-button" data-difficulty="easy" type="button">
-                <span>Facil</span>
+                <span data-i18n="difficulty.easy">Facil</span>
                 <strong>5</strong>
               </button>
               <button class="seg-button" data-difficulty="medium" type="button">
-                <span>Medio</span>
+                <span data-i18n="difficulty.medium">Medio</span>
                 <strong>12</strong>
               </button>
               <button class="seg-button" data-difficulty="hard" type="button">
-                <span>Dificil</span>
+                <span data-i18n="difficulty.hard">Dificil</span>
                 <strong>20</strong>
               </button>
               <button class="seg-button" data-difficulty="custom" type="button">
-                <span>Custom</span>
+                <span data-i18n="difficulty.custom">Custom</span>
                 <strong>20-99</strong>
               </button>
             </div>
 
             <label class="waves-field" for="customWavesInput">
-              <span>Ondas</span>
-              <input id="customWavesInput" class="waves-input" type="text" inputmode="numeric" pattern="[0-9]*" value="20" aria-label="Custom wave count">
+              <span data-i18n="difficulty.waves">Ondas</span>
+              <input id="customWavesInput" class="waves-input" type="text" inputmode="numeric" pattern="[0-9]*" value="20" aria-label="Quantidade de ondas customizada" data-i18n-aria-label="difficulty.customWavesAria">
             </label>
           </div>
 
           <div class="difficulty-actions">
-            <button id="difficultyBackButton" class="pixel-button difficulty-action" type="button">Voltar</button>
-            <button id="startGameButton" class="pixel-button difficulty-action" type="button" disabled>Iniciar</button>
+            <button id="difficultyBackButton" class="pixel-button difficulty-action" type="button" data-i18n="common.back">Voltar</button>
+            <button id="startGameButton" class="pixel-button difficulty-action" type="button" disabled data-i18n="common.start">Iniciar</button>
           </div>
         </div>
       </section>
 
-      <section id="gameScreen" class="screen game-screen is-hidden" aria-label="Tower defense demo">
+      <section id="gameScreen" class="screen game-screen is-hidden" aria-label="Demo tower defense" data-i18n-aria-label="game.screenAria">
         <main class="game-layout">
-          <section class="board-stage" aria-label="Battlefield">
+          <section class="board-stage" aria-label="Campo de batalha" data-i18n-aria-label="game.boardAria">
             <div class="top-hud" aria-live="polite">
               <div class="stat-pill">
                 <span class="heart-stack" id="heartStack" aria-hidden="true"></span>
                 <span id="livesText">10</span>
               </div>
               <div class="stat-pill">
-                <span>Wave</span>
+                <span data-i18n="hud.wave">Onda</span>
                 <strong id="waveText">0</strong>
               </div>
               <div class="stat-pill defeated-pill">
-                <span>Derrotados</span>
+                <span data-i18n="hud.defeated">Derrotou</span>
                 <strong id="defeatedText">0</strong>
               </div>
               <div class="stat-pill">
-                <span>Tempo</span>
+                <span data-i18n="hud.time">Tempo</span>
                 <strong id="sessionTimeText">00:00</strong>
               </div>
             </div>
@@ -171,24 +190,24 @@
 
             <div id="cardChoiceOverlay" class="card-choice-overlay" role="dialog" aria-modal="true" aria-labelledby="cardChoiceTitle" hidden>
               <div class="card-choice-panel">
-                <div class="card-choice-kicker">Evento da onda</div>
-                <h2 id="cardChoiceTitle">Escolha uma carta</h2>
-                <div id="cardChoiceCards" class="card-choice-grid" aria-label="Cartas misteriosas"></div>
+                <div class="card-choice-kicker" data-i18n="cards.kicker">Evento da onda</div>
+                <h2 id="cardChoiceTitle" data-i18n="cards.choose">Escolha uma carta</h2>
+                <div id="cardChoiceCards" class="card-choice-grid" aria-label="Cartas misteriosas" data-i18n-aria-label="cards.mysteryAria"></div>
                 <p id="cardChoiceResult" class="card-choice-result" aria-live="polite" hidden></p>
-                <button id="cardChoiceContinueButton" class="pixel-button card-choice-continue" type="button" hidden>Continuar</button>
+                <button id="cardChoiceContinueButton" class="pixel-button card-choice-continue" type="button" hidden data-i18n="common.continue">Continuar</button>
               </div>
             </div>
 
-            <div id="boardGamepadHints" class="controller-hints gameplay-board-hints" aria-label="Gamepad battlefield controls">
+            <div id="boardGamepadHints" class="controller-hints gameplay-board-hints" aria-label="Controles do campo de batalha por controle" data-i18n-aria-label="game.boardControlsAria">
               <div class="hint-chip">
                 <span class="pad-key pad-key-wide" data-gamepad-token="leftStick" aria-hidden="true">LS</span>
                 <span class="pad-key pad-key-dpad" aria-hidden="true"></span>
-                <span>Cursor</span>
+                <span data-i18n="controls.cursor">Cursor</span>
               </div>
               <div class="hint-chip">
                 <span class="pad-key pad-key-face is-a" data-gamepad-token="faceSouth" aria-hidden="true">A</span>
                 <span class="pad-key pad-key-trigger" data-gamepad-token="rightTrigger" aria-hidden="true">RT</span>
-                <span>Construir</span>
+                <span data-i18n="controls.build">Construir</span>
               </div>
             </div>
 
@@ -196,64 +215,64 @@
               <div class="victory-card">
                 <h2 id="victoryTitle">Parque Protegido!</h2>
                 <p id="victorySummary" class="victory-summary"></p>
-                <div class="victory-stats" aria-label="Resumo da sessao">
+                <div class="victory-stats" aria-label="Resumo da sessao" data-i18n-aria-label="victory.statsAria">
                   <div class="victory-stat">
-                    <span>Tempo</span>
+                    <span data-i18n="hud.time">Tempo</span>
                     <strong id="victoryTimeText">00:00</strong>
                   </div>
                   <div class="victory-stat">
-                    <span>Onda</span>
+                    <span data-i18n="hud.wave">Onda</span>
                     <strong id="victoryWaveText">0/0</strong>
                   </div>
                   <div class="victory-stat">
-                    <span>Derrotados</span>
+                    <span data-i18n="hud.defeated">Derrotou</span>
                     <strong id="victoryDefeatedText">0</strong>
                   </div>
                 </div>
-                <div class="victory-actions" aria-label="Opcoes de resultado">
-                  <button id="victoryContinueButton" class="victory-choice" type="button">Continuar</button>
-                  <button id="victoryRestartButton" class="victory-choice" type="button">Jogar novamente!</button>
-                  <button id="victoryMenuButton" class="victory-choice" type="button">Menu</button>
+                <div class="victory-actions" aria-label="Opcoes de resultado" data-i18n-aria-label="victory.optionsAria">
+                  <button id="victoryContinueButton" class="victory-choice" type="button" data-i18n="common.continue">Continuar</button>
+                  <button id="victoryRestartButton" class="victory-choice" type="button" data-i18n="victory.restart">Jogar novamente!</button>
+                  <button id="victoryMenuButton" class="victory-choice" type="button" data-i18n="common.menu">Menu</button>
                 </div>
               </div>
             </div>
           </section>
 
-          <aside class="shop-panel" aria-label="Shop">
+          <aside class="shop-panel" aria-label="Loja" data-i18n-aria-label="shop.aria">
             <div class="shop-top">
-              <div class="money-readout" aria-label="Coins">
+              <div class="money-readout" aria-label="Moedas" data-i18n-aria-label="shop.coinsAria">
                 <span class="coin-icon" aria-hidden="true">$</span>
                 <span id="coinText">300</span>
               </div>
-              <div class="shop-actions" aria-label="Acoes">
-                <button id="restartButton" class="icon-button restart-icon-button" title="Reiniciar" aria-label="Reiniciar" type="button"></button>
-                <button id="backToMenuButton" class="icon-button menu-icon-button" title="Menu" aria-label="Menu" type="button"></button>
+              <div class="shop-actions" aria-label="Acoes" data-i18n-aria-label="shop.actionsAria">
+                <button id="restartButton" class="icon-button restart-icon-button" title="Reiniciar" aria-label="Reiniciar" data-i18n-title="shop.restart" data-i18n-aria-label="shop.restart" type="button"></button>
+                <button id="backToMenuButton" class="icon-button menu-icon-button" title="Menu" aria-label="Menu" data-i18n-title="shop.menu" data-i18n-aria-label="shop.menu" type="button"></button>
               </div>
             </div>
 
-            <div class="shop-title">SHOP</div>
+            <div class="shop-title" data-i18n="shop.title">LOJA</div>
 
-            <div id="shopGamepadHints" class="controller-hints shop-gamepad-hints" aria-label="Gamepad shop controls">
+            <div id="shopGamepadHints" class="controller-hints shop-gamepad-hints" aria-label="Controles da loja por controle" data-i18n-aria-label="shop.controlsAria">
               <div class="hint-chip">
                 <span class="pad-key pad-key-trigger" data-gamepad-token="leftBumper" aria-hidden="true">LB</span>
                 <span class="pad-key pad-key-trigger" data-gamepad-token="rightBumper" aria-hidden="true">RB</span>
-                <span>Torre</span>
+                <span data-i18n="controls.tower">Torre</span>
               </div>
               <div class="hint-chip">
                 <span class="pad-key pad-key-face is-x" data-gamepad-token="faceWest" aria-hidden="true">X</span>
-                <span>Pausa</span>
+                <span data-i18n="controls.pause">Pausa</span>
               </div>
               <div class="hint-chip">
                 <span class="pad-key pad-key-face is-y" data-gamepad-token="faceNorth" aria-hidden="true">Y</span>
-                <span>Vel.</span>
+                <span data-i18n="controls.speed">Vel.</span>
               </div>
               <div class="hint-chip">
                 <span class="pad-key pad-key-wide" data-gamepad-token="back" aria-hidden="true">View</span>
-                <span>Menu</span>
+                <span data-i18n="common.menu">Menu</span>
               </div>
             </div>
 
-            <div id="towerShop" class="tower-shop" aria-label="Tower choices">
+            <div id="towerShop" class="tower-shop" aria-label="Opcoes de torres" data-i18n-aria-label="shop.towerChoicesAria">
               <button class="shop-button is-active" data-tower="sentinel" type="button">
                 <span>Sentinela</span>
                 <strong>$100</strong>
@@ -272,14 +291,14 @@
               </button>
             </div>
 
-            <div class="shop-tools" aria-label="Ferramentas">
+            <div class="shop-tools" aria-label="Ferramentas" data-i18n-aria-label="shop.toolsAria">
               <button id="undoTowerButton" class="shop-button shop-tool-button undo-tool-button" type="button" hidden>
-                <span>Desfazer</span>
+                <span data-i18n="shop.undo">Desfazer</span>
                 <strong>5s</strong>
               </button>
               <button id="deleteTowerButton" class="shop-button shop-tool-button delete-tool-button" type="button" aria-pressed="false">
-                <span>Excluir</span>
-                <strong>Selecionar</strong>
+                <span data-i18n="shop.delete">Excluir</span>
+                <strong data-i18n="shop.select">Selecionar</strong>
               </button>
             </div>
 
@@ -297,30 +316,30 @@
 
           <div id="restartConfirmOverlay" class="confirm-overlay" role="dialog" aria-modal="true" aria-labelledby="restartConfirmTitle" hidden>
             <div class="confirm-card">
-              <h2 id="restartConfirmTitle">Deseja realmente reiniciar o jogo?</h2>
-              <div class="confirm-actions" aria-label="Confirmar reinicio">
-                <button id="restartConfirmYesButton" class="pixel-button confirm-button" type="button">Sim</button>
-                <button id="restartConfirmNoButton" class="pixel-button confirm-button" type="button">Não</button>
+              <h2 id="restartConfirmTitle" data-i18n="confirm.restartTitle">Deseja realmente reiniciar o jogo?</h2>
+              <div class="confirm-actions" aria-label="Confirmar reinicio" data-i18n-aria-label="confirm.restartAria">
+                <button id="restartConfirmYesButton" class="pixel-button confirm-button" type="button" data-i18n="common.yes">Sim</button>
+                <button id="restartConfirmNoButton" class="pixel-button confirm-button" type="button" data-i18n="common.no">Nao</button>
               </div>
             </div>
           </div>
 
           <div id="exitConfirmOverlay" class="confirm-overlay" role="dialog" aria-modal="true" aria-labelledby="exitConfirmTitle" hidden>
             <div class="confirm-card">
-              <h2 id="exitConfirmTitle">Deseja realmente sair do jogo atual?</h2>
-              <div class="confirm-actions" aria-label="Confirmar saida">
-                <button id="exitConfirmYesButton" class="pixel-button confirm-button" type="button">Sim</button>
-                <button id="exitConfirmNoButton" class="pixel-button confirm-button" type="button">Não</button>
+              <h2 id="exitConfirmTitle" data-i18n="confirm.exitTitle">Deseja realmente sair do jogo atual?</h2>
+              <div class="confirm-actions" aria-label="Confirmar saida" data-i18n-aria-label="confirm.exitAria">
+                <button id="exitConfirmYesButton" class="pixel-button confirm-button" type="button" data-i18n="common.yes">Sim</button>
+                <button id="exitConfirmNoButton" class="pixel-button confirm-button" type="button" data-i18n="common.no">Nao</button>
               </div>
             </div>
           </div>
 
           <div id="towerDeleteConfirmOverlay" class="confirm-overlay" role="dialog" aria-modal="true" aria-labelledby="towerDeleteConfirmTitle" hidden>
             <div class="confirm-card">
-              <h2 id="towerDeleteConfirmTitle">Remover esta torre?</h2>
-              <div class="confirm-actions" aria-label="Confirmar remocao">
-                <button id="towerDeleteConfirmYesButton" class="pixel-button confirm-button" type="button">Remover</button>
-                <button id="towerDeleteConfirmNoButton" class="pixel-button confirm-button" type="button">Cancelar</button>
+              <h2 id="towerDeleteConfirmTitle" data-i18n="confirm.towerDeleteTitle">Remover esta torre?</h2>
+              <div class="confirm-actions" aria-label="Confirmar remocao" data-i18n-aria-label="confirm.towerDeleteAria">
+                <button id="towerDeleteConfirmYesButton" class="pixel-button confirm-button" type="button" data-i18n="common.remove">Remover</button>
+                <button id="towerDeleteConfirmNoButton" class="pixel-button confirm-button" type="button" data-i18n="common.cancel">Cancelar</button>
               </div>
             </div>
           </div>

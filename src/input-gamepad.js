@@ -1,6 +1,7 @@
 (() => {
   const ntp = window.NTP = window.NTP || {};
   const {
+    adjustCardFrequencyFromGamepad,
     adjustCustomWavesFromGamepad,
     adjustSoundVolumeFromGamepad,
     cancelTowerDelete,
@@ -18,6 +19,7 @@
     hidePlacementPreview,
     closeDifficultyPanel,
     isCardChoiceOpen,
+    isCardFrequencyInput,
     isDifficultyPanelOpen,
     isBuildableTile,
     isCustomWavesInput,
@@ -38,6 +40,7 @@
     showMenuNote,
     showMessage,
     state,
+    t,
     togglePause,
     toggleSpeed,
     updatePlacementPreview
@@ -157,7 +160,7 @@
     gamepadInput.lastButtons = readGamepadButtons(gamepad);
     syncGamepadVisualState();
     syncGamepadCursor();
-    showGamepadNotice("Controle conectado.");
+    showGamepadNotice(t("messages.gamepadConnected"));
   }
 
   function handleGamepadDisconnected() {
@@ -168,7 +171,7 @@
     syncGamepadVisualState();
     clearGamepadCursor();
     clearGamepadButtonFocus();
-    showGamepadNotice("Controle desconectado.");
+    showGamepadNotice(t("messages.gamepadDisconnected"));
   }
 
   function markGamepadInputActive() {
@@ -316,6 +319,8 @@
     const buttons = [
       dom.xboxLayoutButton,
       dom.switchLayoutButton,
+      ...Array.from(dom.configPanel.querySelectorAll("[data-language]")),
+      dom.cardFrequencyInput,
       dom.bgmToggleButton,
       dom.sfxToggleButton,
       dom.bgmVolumeInput,
@@ -549,6 +554,21 @@
   }
 
   function updateMenuGamepadInput(dt, direction, justPressed) {
+    if (isCardFrequencyInput(document.activeElement)) {
+      if (shouldRepeatDirection(direction, "navCooldown", "lastNavDirection", GAMEPAD_NAV_REPEAT, dt)) {
+        if (isHorizontalDirection(direction)) {
+          adjustCardFrequencyFromGamepad(direction);
+        } else if (isVerticalDirection(direction)) {
+          moveGamepadButtonFocus(direction);
+        }
+      }
+
+      if (justPressed(gamepadButtons.a) || justPressed(gamepadButtons.b) || justPressed(gamepadButtons.start)) {
+        localFocusGamepadButton(dom.configBackButton);
+      }
+      return;
+    }
+
     if (isSoundVolumeInput(document.activeElement)) {
       if (shouldRepeatDirection(direction, "navCooldown", "lastNavDirection", GAMEPAD_NAV_REPEAT, dt)) {
         if (isHorizontalDirection(direction)) {

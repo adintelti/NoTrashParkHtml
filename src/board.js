@@ -1,6 +1,6 @@
 (() => {
   const ntp = window.NTP = window.NTP || {};
-  const { COLS, ROWS, coordKey, dom, isTowerUnlocked, maps, state, towers } = ntp;
+  const { COLS, ROWS, coordKey, dom, isTowerUnlocked, maps, state, t, towers } = ntp;
 
   let placementPreview = null;
   let highlightedPreviewTiles = [];
@@ -23,7 +23,7 @@
         tile.className = "tile";
         tile.dataset.x = String(x);
         tile.dataset.y = String(y);
-        tile.setAttribute("aria-label", `Tile ${x + 1}, ${y + 1}`);
+        tile.setAttribute("aria-label", t("board.tileAria", { x: x + 1, y: y + 1 }));
         if (pathSet.has(key)) {
           tile.classList.add("path", "blocked");
         } else if (blockedSet.has(key)) {

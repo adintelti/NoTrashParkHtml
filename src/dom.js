@@ -57,6 +57,8 @@
     customWavesInput: document.getElementById("customWavesInput"),
     xboxLayoutButton: document.getElementById("xboxLayoutButton"),
     switchLayoutButton: document.getElementById("switchLayoutButton"),
+    cardFrequencyInput: document.getElementById("cardFrequencyInput"),
+    cardFrequencyText: document.getElementById("cardFrequencyText"),
     bgmToggleButton: document.getElementById("bgmToggleButton"),
     sfxToggleButton: document.getElementById("sfxToggleButton"),
     bgmVolumeInput: document.getElementById("bgmVolumeInput"),

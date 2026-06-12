@@ -2,7 +2,10 @@
   const ntp = window.NTP = window.NTP || {};
 
   const CONTROLLER_LAYOUT_STORAGE_KEY = "ntp.controllerLayout";
+  const CARD_FREQUENCY_STORAGE_KEY = "ntp.cardFrequency";
+  const LANGUAGE_STORAGE_KEY = "ntp.language";
   const controllerLayouts = ["xbox", "switch"];
+  const supportedLanguages = ntp.SUPPORTED_LANGUAGES || ["pt-BR", "en", "es"];
 
   function loadControllerLayout() {
     try {
@@ -13,15 +16,55 @@
     }
   }
 
+  function clampCardFrequency(value) {
+    return Math.min(ntp.MAX_CARD_FREQUENCY, Math.max(ntp.MIN_CARD_FREQUENCY, value));
+  }
+
+  function loadCardFrequency() {
+    try {
+      const savedFrequency = Number.parseInt(window.localStorage.getItem(CARD_FREQUENCY_STORAGE_KEY), 10);
+      return Number.isFinite(savedFrequency) ? clampCardFrequency(savedFrequency) : ntp.DEFAULT_CARD_FREQUENCY;
+    } catch (error) {
+      return ntp.DEFAULT_CARD_FREQUENCY;
+    }
+  }
+
+  function loadLanguage() {
+    try {
+      const savedLanguage = window.localStorage.getItem(LANGUAGE_STORAGE_KEY);
+      return supportedLanguages.includes(savedLanguage) ? savedLanguage : ntp.DEFAULT_LANGUAGE;
+    } catch (error) {
+      return ntp.DEFAULT_LANGUAGE;
+    }
+  }
+
   const settings = {
     difficulty: "medium",
     customWaves: ntp.MIN_CUSTOM_WAVES,
+    cardFrequency: loadCardFrequency(),
+    language: loadLanguage(),
     controllerLayout: loadControllerLayout()
   };
 
   function saveControllerLayout(controllerLayout) {
     try {
       window.localStorage.setItem(CONTROLLER_LAYOUT_STORAGE_KEY, controllerLayout);
+    } catch (error) {
+      // Keep the in-memory setting when local storage is unavailable.
+    }
+  }
+
+  function saveCardFrequency(cardFrequency) {
+    try {
+      window.localStorage.setItem(CARD_FREQUENCY_STORAGE_KEY, String(cardFrequency));
+    } catch (error) {
+      // Keep the in-memory setting when local storage is unavailable.
+    }
+  }
+
+  function saveLanguage(language) {
+    try {
+      window.localStorage.setItem(LANGUAGE_STORAGE_KEY, language);
     } catch (error) {
       // Keep the in-memory setting when local storage is unavailable.
     }
@@ -37,6 +80,7 @@
       lives: 10,
       sessionDefeated: 0,
       waveDefeated: 0,
+      waveHpLost: 0,
       waveComboVisible: false,
       waveInProgress: false,
       wave: 0,
@@ -97,7 +141,10 @@
   Object.assign(ntp, {
     settings,
     controllerLayouts,
+    supportedLanguages,
     saveControllerLayout,
+    saveCardFrequency,
+    saveLanguage,
     state,
     createFreshState,
     resetState

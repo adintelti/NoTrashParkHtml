@@ -1,6 +1,17 @@
 (() => {
   const ntp = window.NTP = window.NTP || {};
-  const { difficultyOptions, dom, MAX_CUSTOM_WAVES, MIN_CUSTOM_WAVES, settings } = ntp;
+  const {
+    DEFAULT_CARD_FREQUENCY,
+    difficultyOptions,
+    dom,
+    MAX_CARD_FREQUENCY,
+    MAX_CUSTOM_WAVES,
+    MIN_CARD_FREQUENCY,
+    MIN_CUSTOM_WAVES,
+    formatCardFrequencyLabel,
+    saveCardFrequency,
+    settings
+  } = ntp;
 
   let difficultySelectedForStart = false;
 
@@ -97,6 +108,42 @@
     setDifficulty("custom");
   }
 
+  function clampCardFrequency(value) {
+    return Math.min(MAX_CARD_FREQUENCY, Math.max(MIN_CARD_FREQUENCY, value));
+  }
+
+  function getRawCardFrequency() {
+    const parsedValue = Number.parseInt(dom.cardFrequencyInput.value, 10);
+    return Number.isFinite(parsedValue) ? parsedValue : settings.cardFrequency;
+  }
+
+  function getCardFrequencyLabel(cardFrequency = settings.cardFrequency) {
+    return formatCardFrequencyLabel(cardFrequency);
+  }
+
+  function syncCardFrequencyControl() {
+    const cardFrequency = clampCardFrequency(settings.cardFrequency ?? DEFAULT_CARD_FREQUENCY);
+    settings.cardFrequency = cardFrequency;
+    dom.cardFrequencyInput.value = String(cardFrequency);
+    dom.cardFrequencyText.textContent = getCardFrequencyLabel(cardFrequency);
+  }
+
+  function setCardFrequency(cardFrequency) {
+    settings.cardFrequency = clampCardFrequency(cardFrequency);
+    saveCardFrequency(settings.cardFrequency);
+    syncCardFrequencyControl();
+  }
+
+  function isCardFrequencyInput(el) {
+    return el === dom.cardFrequencyInput;
+  }
+
+  function adjustCardFrequencyFromGamepad(direction) {
+    const directionStep = direction.x || -direction.y;
+    if (!directionStep) return;
+    setCardFrequency(getRawCardFrequency() + directionStep);
+  }
+
   Object.assign(ntp, {
     getConfiguredWaveLimit,
     getRawCustomWaves,
@@ -108,6 +155,11 @@
     setDifficulty,
     syncDifficultyButtons,
     isCustomWavesInput,
-    adjustCustomWavesFromGamepad
+    adjustCustomWavesFromGamepad,
+    getCardFrequencyLabel,
+    syncCardFrequencyControl,
+    setCardFrequency,
+    isCardFrequencyInput,
+    adjustCardFrequencyFromGamepad
   });
 })();

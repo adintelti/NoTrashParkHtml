@@ -3,9 +3,14 @@
 
   ntp.COLS = 12;
   ntp.ROWS = 9;
-  ntp.GAME_VERSION = "1.10.4";
+  ntp.GAME_VERSION = "2.0.0";
+  ntp.DEFAULT_LANGUAGE = "pt-BR";
+  ntp.SUPPORTED_LANGUAGES = ["pt-BR", "en", "es"];
   ntp.MIN_CUSTOM_WAVES = 20;
   ntp.MAX_CUSTOM_WAVES = 99;
+  ntp.MIN_CARD_FREQUENCY = 0;
+  ntp.MAX_CARD_FREQUENCY = 10;
+  ntp.DEFAULT_CARD_FREQUENCY = 3;
   ntp.GAMEPAD_DEADZONE = 0.35;
   ntp.GAMEPAD_MOVE_REPEAT = 0.16;
   ntp.GAMEPAD_NAV_REPEAT = 0.18;
