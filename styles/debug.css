@@ -1,0 +1,289 @@
+.debug-console {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 30;
+  width: min(92vw, 520px);
+  max-height: calc(100vh - 32px);
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr);
+  gap: 10px;
+  padding: 12px;
+  color: #f7f4df;
+  background: rgba(9, 12, 15, 0.96);
+  border: 3px solid #f0c64a;
+  box-shadow:
+    inset 3px 3px 0 rgba(255, 255, 255, 0.08),
+    inset -3px -3px 0 rgba(0, 0, 0, 0.55),
+    0 10px 0 rgba(0, 0, 0, 0.34);
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 0.72rem;
+  line-height: 1.35;
+}
+
+.debug-console[hidden] {
+  display: none;
+}
+
+.debug-console-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid rgba(240, 198, 74, 0.45);
+  cursor: move;
+  touch-action: none;
+  user-select: none;
+}
+
+.debug-console.is-dragging {
+  opacity: 0.94;
+}
+
+.debug-console-actions {
+  cursor: default;
+}
+
+.debug-console-actions .debug-console-button {
+  cursor: pointer;
+}
+
+.debug-console-header strong {
+  display: block;
+  margin-top: 2px;
+  color: #ffffff;
+  font-size: 0.95rem;
+  line-height: 1;
+}
+
+.debug-console-kicker {
+  color: #81d4ff;
+  font-size: 0.62rem;
+  font-weight: 900;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.debug-console-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.debug-console-button {
+  min-width: 44px;
+  min-height: 30px;
+  padding: 4px 8px;
+  color: #101417;
+  background: #f0c64a;
+  border: 2px solid #050607;
+  box-shadow: inset -2px -2px 0 rgba(0, 0, 0, 0.24);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 900;
+}
+
+.debug-console-button:focus-visible,
+.debug-console-button:hover {
+  outline: 3px solid #81d4ff;
+  outline-offset: 2px;
+}
+
+.debug-filters {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.debug-filters label {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 6px;
+  color: #e9f7ff;
+  background: #17252d;
+  border: 1px solid rgba(129, 212, 255, 0.55);
+  font-weight: 800;
+}
+
+.debug-filters input {
+  width: 13px;
+  height: 13px;
+  flex: 0 0 auto;
+  accent-color: #f0c64a;
+}
+
+.debug-console-body {
+  min-height: 0;
+  overflow: auto;
+  display: grid;
+  gap: 10px;
+  padding-right: 4px;
+}
+
+.debug-section {
+  display: grid;
+  gap: 7px;
+  padding: 9px;
+  background: rgba(255, 255, 255, 0.055);
+  border: 1px solid rgba(247, 244, 223, 0.22);
+}
+
+.debug-section h3 {
+  margin: 0;
+  color: #f0c64a;
+  font-size: 0.78rem;
+  line-height: 1;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.debug-kv-list {
+  margin: 0;
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: 4px 10px;
+}
+
+.debug-kv-list dt {
+  color: #81d4ff;
+  font-weight: 900;
+}
+
+.debug-kv-list dd {
+  min-width: 0;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.debug-stack {
+  display: grid;
+  gap: 7px;
+}
+
+.debug-item {
+  display: grid;
+  gap: 5px;
+  padding: 7px;
+  color: #f7f4df;
+  background: rgba(5, 7, 9, 0.65);
+  border-left: 4px solid #8ee66f;
+}
+
+.debug-item.is-empty {
+  border-left-color: #7f8c94;
+  color: #b8c2c7;
+}
+
+.debug-item.is-card-neutral {
+  border-left-color: #d5d1a7;
+}
+
+.debug-item.is-card-boon {
+  border-left-color: #8ee66f;
+}
+
+.debug-item.is-card-bane {
+  border-left-color: #ff7a66;
+}
+
+.debug-item-title {
+  color: #ffffff;
+  font-weight: 900;
+}
+
+.debug-item-meta {
+  color: #b8c2c7;
+  overflow-wrap: anywhere;
+}
+
+.debug-log-section {
+  min-height: 180px;
+}
+
+.debug-log-list {
+  max-height: 240px;
+  overflow: auto;
+  display: grid;
+  align-content: start;
+  gap: 6px;
+}
+
+.debug-log-entry {
+  display: grid;
+  gap: 3px;
+  padding: 6px;
+  background: rgba(5, 7, 9, 0.72);
+  border-left: 4px solid #7f8c94;
+}
+
+.debug-log-entry[data-category="system"] {
+  border-left-color: #81d4ff;
+}
+
+.debug-log-entry[data-category="waves"] {
+  border-left-color: #f0c64a;
+}
+
+.debug-log-entry[data-category="towers"] {
+  border-left-color: #8ee66f;
+}
+
+.debug-log-entry[data-category="cards"] {
+  border-left-color: #ff95d0;
+}
+
+.debug-log-entry[data-category="combat"] {
+  border-left-color: #ff7a66;
+}
+
+.debug-log-entry[data-category="economy"] {
+  border-left-color: #60e0ba;
+}
+
+.debug-log-entry[data-category="input"] {
+  border-left-color: #b6a2ff;
+}
+
+.debug-log-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  color: #ffffff;
+  font-weight: 900;
+}
+
+.debug-log-category {
+  color: #81d4ff;
+  text-transform: uppercase;
+}
+
+.debug-log-time {
+  color: #b8c2c7;
+  font-size: 0.66rem;
+}
+
+.debug-log-details {
+  margin: 0;
+  overflow: auto;
+  color: #dbe6ea;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+@media (max-width: 720px) {
+  .debug-console {
+    top: 8px;
+    right: 8px;
+    left: 8px;
+    width: auto;
+    max-height: calc(100vh - 16px);
+    font-size: 0.66rem;
+  }
+
+  .debug-filters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

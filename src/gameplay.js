@@ -65,6 +65,37 @@
     Object.assign(gameplayHooks, hooks);
   }
 
+  function logDebug(category, message, details) {
+    ntp.debugLog?.(category, message, details);
+  }
+
+  function roundDebugNumber(value) {
+    return Number.isFinite(value) ? Math.round(value * 100) / 100 : value;
+  }
+
+  function getDebugTowerStats(stats = {}) {
+    return {
+      cost: stats.cost,
+      damage: stats.damage,
+      range: roundDebugNumber(stats.range),
+      fireRate: roundDebugNumber(stats.fireRate),
+      projectileSpeed: roundDebugNumber(stats.projectileSpeed),
+      slowFactor: roundDebugNumber(stats.slowFactor),
+      slowDuration: roundDebugNumber(stats.slowDuration),
+      splash: roundDebugNumber(stats.splash)
+    };
+  }
+
+  function getDebugCardDetails(card) {
+    return {
+      id: card.id,
+      kind: card.kind,
+      title: card.title,
+      description: card.description,
+      effect: card.effect || {}
+    };
+  }
+
   function startGame(theme = state.theme) {
     resetState(theme, getConfiguredWaveLimit());
     clearUndoPlacement();
@@ -86,9 +117,19 @@
     gameplayHooks.afterStartGame();
     updateHud();
     showMessage(t("messages.start"));
+    logDebug("system", "Game started", {
+      theme: state.theme,
+      waveLimit: state.waveLimit,
+      cardFrequency: settings.cardFrequency
+    });
   }
 
   function returnToMenu() {
+    logDebug("system", "Returned to menu", {
+      theme: state.theme,
+      wave: state.wave,
+      defeated: state.sessionDefeated
+    });
     state.running = false;
     hideRestartConfirm();
     hideExitConfirm();
@@ -169,6 +210,21 @@
     startUndoPlacement(tower);
     gameplayHooks.afterTowerPlaced();
     updateHud();
+    logDebug("towers", "Tower placed", {
+      id: tower.id,
+      type: tower.type,
+      label: getTowerLabel(tower.type),
+      tileX: tower.tileX,
+      tileY: tower.tileY,
+      cost: tower.cost,
+      coins: state.coins,
+      stats: getDebugTowerStats(towerStats)
+    });
+    logDebug("economy", "Coins spent", {
+      reason: "tower",
+      amount: -tower.cost,
+      coins: state.coins
+    });
   }
 
   function getInteractionNow() {
@@ -248,6 +304,9 @@
 
     const tileX = tower.tileX ?? Math.floor(tower.x);
     const tileY = tower.tileY ?? Math.floor(tower.y);
+    const refund = Number.isFinite(options.refund) && options.refund > 0
+      ? Math.round(options.refund)
+      : 0;
     state.placedTowers.splice(index, 1);
     state.occupied.delete(coordKey(tileX, tileY));
 
@@ -266,12 +325,27 @@
       state.pendingDeleteTower = null;
     }
 
-    if (Number.isFinite(options.refund) && options.refund > 0) {
-      state.coins += Math.round(options.refund);
+    if (refund > 0) {
+      state.coins += refund;
     }
 
     refreshPlacementPreview();
     ntp.syncGamepadCursor?.();
+    logDebug("towers", "Tower removed", {
+      id: tower.id,
+      type: tower.type,
+      label: getTowerLabel(tower.type),
+      tileX,
+      tileY,
+      refund,
+      coins: state.coins
+    });
+    if (refund > 0) {
+      logDebug("economy", "Tower refund", {
+        amount: refund,
+        coins: state.coins
+      });
+    }
     return true;
   }
 
@@ -432,6 +506,11 @@
       state.victoryPending = true;
       showVictory();
       updateHud();
+      logDebug("system", "Victory pending", {
+        theme: state.theme,
+        wave: state.wave,
+        defeated: state.sessionDefeated
+      });
       return;
     }
     state.wave += 1;
@@ -448,6 +527,12 @@
     state.victoryPending = false;
     showMessage(t("messages.waveStart", { wave: state.wave }));
     updateHud();
+    logDebug("waves", "Wave started", {
+      wave: state.wave,
+      spawnRemaining: state.spawnRemaining,
+      enemies: state.enemies.length,
+      activeEnemyModifiers: state.cardEffects.enemyModifiers.length
+    });
   }
 
   function resetCardChoiceState() {
@@ -488,6 +573,11 @@
     state.paused = true;
     showCardChoice();
     updateHud();
+    logDebug("cards", "Card options generated", {
+      wave: state.wave,
+      count: state.cardChoice.cards.length,
+      cards: state.cardChoice.cards.map(getDebugCardDetails)
+    });
   }
 
   function selectCardChoice(cardId) {
@@ -501,6 +591,11 @@
     state.cardChoice.resultText = applyCardEffect(card);
     showCardChoice();
     updateHud();
+    logDebug("cards", "Card selected", {
+      wave: state.wave,
+      card: getDebugCardDetails(card),
+      result: state.cardChoice.resultText
+    });
     return true;
   }
 
@@ -719,6 +814,11 @@
       const previousCoins = state.coins;
       state.coins = Math.max(0, state.coins + effect.amount);
       const coinDifference = state.coins - previousCoins;
+      logDebug("economy", "Card changed coins", {
+        requestedAmount: effect.amount,
+        actualAmount: coinDifference,
+        coins: state.coins
+      });
 
       if (coinDifference > 0) {
         return t("cards.coinsGain.result", { amount: coinDifference });
@@ -734,6 +834,10 @@
     if (effect.type === "coinsAll") {
       const previousCoins = state.coins;
       state.coins = 0;
+      logDebug("economy", "Card removed all coins", {
+        actualAmount: -previousCoins,
+        coins: state.coins
+      });
       return previousCoins > 0
         ? t("cards.coinsLoss.result", { amount: previousCoins })
         : t("cards.noCoinsLost");
@@ -758,24 +862,28 @@
   }
 
   function addTowerBuff(effect) {
-    state.cardEffects.towerBuffs.push({
+    const buff = {
       towerType: effect.towerType,
       stat: effect.stat,
       multiplier: effect.multiplier,
       permanent: Boolean(effect.permanent),
       expiresAfterWave: getCardEffectExpirationWave(effect)
-    });
+    };
+    state.cardEffects.towerBuffs.push(buff);
+    logDebug("towers", "Tower buff applied", buff);
   }
 
   function addEnemyModifier(effect) {
     state.cardEffects.enemyModifiers = state.cardEffects.enemyModifiers.filter((modifier) => {
       return modifier.stat !== effect.stat;
     });
-    state.cardEffects.enemyModifiers.push({
+    const modifier = {
       stat: effect.stat,
       multiplier: effect.multiplier,
       expiresAfterWave: getCardEffectExpirationWave(effect)
-    });
+    };
+    state.cardEffects.enemyModifiers.push(modifier);
+    logDebug("cards", "Enemy modifier applied", modifier);
   }
 
   function clearExpiredCardEffects(finishedWave) {
@@ -816,6 +924,7 @@
   function completeCurrentWave() {
     const finishedWave = state.wave;
     const defeatedThisWave = state.waveDefeated;
+    const hpLostThisWave = state.waveHpLost;
     state.waveInProgress = false;
     state.sessionDefeated += defeatedThisWave;
     state.waveDefeated = 0;
@@ -823,7 +932,15 @@
     clearExpiredCardEffects(finishedWave);
 
     const steps = [t("wave.end", { wave: finishedWave, defeated: defeatedThisWave })];
-    if (shouldOfferCardChoice(finishedWave)) {
+    const willOfferCards = shouldOfferCardChoice(finishedWave);
+    logDebug("waves", "Wave completed", {
+      wave: finishedWave,
+      defeated: defeatedThisWave,
+      hpLost: hpLostThisWave,
+      willOfferCards
+    });
+
+    if (willOfferCards) {
       startWaveTransition(steps, () => startCardChoice(startNextWave));
       return;
     }
@@ -939,6 +1056,12 @@
       if (state.gameOver) return;
       state.waveHpLost += 1;
       state.lives = Math.max(0, state.lives - 1);
+      logDebug("combat", "Enemy reached exit", {
+        id: enemy.id,
+        wave: state.wave,
+        lives: state.lives,
+        waveHpLost: state.waveHpLost
+      });
       if (state.lives <= 0) endGame();
     });
   }
@@ -1072,6 +1195,16 @@
       playSfx("enemyDeath");
       state.waveDefeated += 1;
       state.coins += enemy.reward;
+      logDebug("combat", "Enemy defeated", {
+        id: enemy.id,
+        wave: state.wave,
+        reward: enemy.reward,
+        waveDefeated: state.waveDefeated
+      });
+      logDebug("economy", "Enemy reward collected", {
+        amount: enemy.reward,
+        coins: state.coins
+      });
     }
   }
 
@@ -1118,6 +1251,11 @@
     state.lives = 0;
     showGameOver();
     updateHud();
+    logDebug("system", "Game over", {
+      theme: state.theme,
+      wave: state.wave,
+      defeated: state.sessionDefeated
+    });
   }
 
   Object.assign(ntp, {

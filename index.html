@@ -19,6 +19,7 @@
     <script src="src/input-gamepad.js" defer></script>
     <script src="src/events.js" defer></script>
     <script src="src/loop.js" defer></script>
+    <script src="src/debug.js" defer></script>
     <script src="game.js" defer></script>
   </head>
   <body>
@@ -187,6 +188,51 @@
             <div id="comboCounter" class="combo-counter" aria-live="polite" hidden>0X</div>
             <div id="waveTransition" class="wave-transition" aria-live="assertive" hidden></div>
             <div id="floatingMessage" class="floating-message" aria-live="polite"></div>
+
+            <div id="debugConsole" class="debug-console" aria-label="Debug console" hidden>
+              <div class="debug-console-header">
+                <div>
+                  <span class="debug-console-kicker">Debug</span>
+                  <strong>Runtime Console</strong>
+                </div>
+                <div class="debug-console-actions">
+                  <button id="debugClearButton" class="debug-console-button" type="button">Clear</button>
+                  <button id="debugCloseButton" class="debug-console-button" type="button" aria-label="Close debug console">F9</button>
+                </div>
+              </div>
+
+              <div id="debugFilters" class="debug-filters" aria-label="Debug log filters">
+                <label><input type="checkbox" data-debug-filter="system" checked> System</label>
+                <label><input type="checkbox" data-debug-filter="waves" checked> Waves</label>
+                <label><input type="checkbox" data-debug-filter="towers" checked> Towers</label>
+                <label><input type="checkbox" data-debug-filter="cards" checked> Cards</label>
+                <label><input type="checkbox" data-debug-filter="combat" checked> Combat</label>
+                <label><input type="checkbox" data-debug-filter="economy" checked> Economy</label>
+                <label><input type="checkbox" data-debug-filter="input" checked> Input</label>
+              </div>
+
+              <div class="debug-console-body">
+                <section class="debug-section" aria-label="Current game state">
+                  <h3>State</h3>
+                  <dl id="debugStateSummary" class="debug-kv-list"></dl>
+                </section>
+
+                <section class="debug-section" aria-label="Tower status">
+                  <h3>Tower Status</h3>
+                  <div id="debugTowerStatus" class="debug-stack"></div>
+                </section>
+
+                <section class="debug-section" aria-label="Card options">
+                  <h3>Card Options</h3>
+                  <div id="debugCardOptions" class="debug-stack"></div>
+                </section>
+
+                <section class="debug-section debug-log-section" aria-label="Filtered debug log">
+                  <h3>Log</h3>
+                  <div id="debugLogList" class="debug-log-list" aria-live="polite"></div>
+                </section>
+              </div>
+            </div>
 
             <div id="cardChoiceOverlay" class="card-choice-overlay" role="dialog" aria-modal="true" aria-labelledby="cardChoiceTitle" hidden>
               <div class="card-choice-panel">

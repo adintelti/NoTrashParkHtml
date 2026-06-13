@@ -5,4 +5,5 @@
 @import "./styles/board.css";
 @import "./styles/entities.css";
 @import "./styles/overlays.css";
+@import "./styles/debug.css";
 @import "./styles/responsive.css";
