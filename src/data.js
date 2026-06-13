@@ -8,6 +8,7 @@
       range: 2.75,
       fireRate: 1,
       damage: 18,
+      maxDamage: 62,
       projectileSpeed: 7.5,
       className: "tower-sentinel",
       projectileClass: ""
@@ -18,6 +19,7 @@
       range: 2.35,
       fireRate: 0.8,
       damage: 7,
+      maxDamage: 25,
       projectileSpeed: 6.6,
       slowFactor: 0.45,
       slowDuration: 1.8,
@@ -30,6 +32,7 @@
       range: 2.45,
       fireRate: 0.55,
       damage: 24,
+      maxDamage: 55,
       projectileSpeed: 6,
       splash: 0.82,
       className: "tower-splash",
@@ -41,6 +44,7 @@
       range: 1.85,
       fireRate: 2.8,
       damage: 9,
+      maxDamage: 28,
       projectileSpeed: 8.5,
       className: "tower-flame",
       projectileClass: "projectile-flame"

@@ -157,8 +157,13 @@
         },
         damage: {
           title: "{tower} reforcada",
-          description: "{tower}: +30% dano permanente.",
-          result: "{tower} ganhou +30% de dano permanente."
+          description: "{tower}: +30% dano permanente, max. {max}.",
+          result: "{tower} ganhou dano permanente ate {max}."
+        },
+        damageSetback: {
+          title: "{tower} desregulada",
+          description: "{tower}: -23% dano permanente.",
+          result: "{tower} perdeu 23% de dano permanente."
         },
         range: {
           title: "{tower} ampliada",
@@ -169,6 +174,12 @@
           title: "{tower} sobrecarregada",
           description: "{tower}: -20% raio permanente.",
           result: "{tower} perdeu 20% de raio permanente."
+        },
+        towerTypeClear: {
+          title: "Varredura de {tower}",
+          description: "Remova todas as torres {tower} do tabuleiro.",
+          result: "Foram removidas {count} torres {tower}.",
+          none: "Nenhuma torre {tower} para remover."
         },
         coinsGain: {
           title: "Coleta premiada",
@@ -378,8 +389,13 @@
         },
         damage: {
           title: "{tower} reinforced",
-          description: "{tower}: +30% permanent damage.",
-          result: "{tower} gained +30% permanent damage."
+          description: "{tower}: +30% permanent damage, max {max}.",
+          result: "{tower} gained permanent damage up to {max}."
+        },
+        damageSetback: {
+          title: "{tower} destabilized",
+          description: "{tower}: -23% permanent damage.",
+          result: "{tower} lost 23% permanent damage."
         },
         range: {
           title: "{tower} expanded",
@@ -390,6 +406,12 @@
           title: "{tower} overloaded",
           description: "{tower}: -20% permanent range.",
           result: "{tower} lost 20% permanent range."
+        },
+        towerTypeClear: {
+          title: "{tower} sweep",
+          description: "Remove every {tower} tower from the board.",
+          result: "Removed {count} {tower} towers.",
+          none: "No {tower} towers to remove."
         },
         coinsGain: {
           title: "Prize collection",
@@ -599,8 +621,13 @@
         },
         damage: {
           title: "{tower} reforzada",
-          description: "{tower}: +30% dano permanente.",
-          result: "{tower} gano +30% de dano permanente."
+          description: "{tower}: +30% dano permanente, max. {max}.",
+          result: "{tower} gano dano permanente hasta {max}."
+        },
+        damageSetback: {
+          title: "{tower} desregulada",
+          description: "{tower}: -23% dano permanente.",
+          result: "{tower} perdio 23% de dano permanente."
         },
         range: {
           title: "{tower} ampliada",
@@ -611,6 +638,12 @@
           title: "{tower} sobrecargada",
           description: "{tower}: -20% alcance permanente.",
           result: "{tower} perdio 20% de alcance permanente."
+        },
+        towerTypeClear: {
+          title: "Barrida de {tower}",
+          description: "Quita todas las torres {tower} del tablero.",
+          result: "Se quitaron {count} torres {tower}.",
+          none: "No hay torres {tower} para quitar."
         },
         coinsGain: {
           title: "Recoleccion premiada",

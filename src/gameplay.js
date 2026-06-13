@@ -2,6 +2,7 @@
   const ntp = window.NTP = window.NTP || {};
   const {
     buildBoard,
+    COLS,
     closeDifficultyPanel,
     clearDynamicElements,
     coordKey,
@@ -26,6 +27,7 @@
     playSfx,
     resetState,
     refreshPlacementPreview,
+    ROWS,
     setElementPosition,
     settings,
     showCardChoice,
@@ -54,6 +56,9 @@
   const CARD_EFFECT_DURATION_WAVES = 1;
   const CARD_COIN_GAIN = 100;
   const CARD_COIN_LOSS = 70;
+  const DAMAGE_BUFF_MULTIPLIER = 1.3;
+  const DAMAGE_SETBACK_MULTIPLIER = 1 / DAMAGE_BUFF_MULTIPLIER;
+  const DAMAGE_MAX_EPSILON = 0.001;
   const RANGE_BUFF_MULTIPLIER = 1.25;
   const RANGE_SETBACK_MULTIPLIER = 1 / RANGE_BUFF_MULTIPLIER;
   const RANGE_MAX_EPSILON = 0.001;
@@ -77,6 +82,7 @@
     return {
       cost: stats.cost,
       damage: stats.damage,
+      maxDamage: stats.maxDamage,
       range: roundDebugNumber(stats.range),
       fireRate: roundDebugNumber(stats.fireRate),
       projectileSpeed: roundDebugNumber(stats.projectileSpeed),
@@ -637,36 +643,16 @@
   }
 
   function createBoonCardConfigs() {
-    const towerKey = getRandomUnlockedTowerKey();
-    const towerLabel = getTowerLabel(towerKey);
-    const configs = [
-      {
-        title: t("cards.damage.title", { tower: towerLabel }),
-        description: t("cards.damage.description", { tower: towerLabel }),
-        result: t("cards.damage.result", { tower: towerLabel }),
-        effect: {
-          type: "towerBuff",
-          towerType: towerKey,
-          stat: "damage",
-          multiplier: 1.3,
-          permanent: true
-        }
-      }
-    ];
+    const configs = [];
+    const damageTowerKey = getRandomDamageBuffTowerKey();
+    const rangeTowerKey = getRandomRangeBuffTowerKey();
 
-    if (canOfferRangeBuff(towerKey)) {
-      configs.push({
-        title: t("cards.range.title", { tower: towerLabel }),
-        description: t("cards.range.description", { tower: towerLabel }),
-        result: t("cards.range.result", { tower: towerLabel }),
-        effect: {
-          type: "towerBuff",
-          towerType: towerKey,
-          stat: "range",
-          multiplier: RANGE_BUFF_MULTIPLIER,
-          permanent: true
-        }
-      });
+    if (damageTowerKey) {
+      configs.push(createDamageBuffCardConfig(damageTowerKey));
+    }
+
+    if (rangeTowerKey) {
+      configs.push(createRangeBuffCardConfig(rangeTowerKey));
     }
 
     configs.push(
@@ -696,7 +682,50 @@
     return configs;
   }
 
+  function createDamageBuffCardConfig(towerKey) {
+    const towerLabel = getTowerLabel(towerKey);
+    const maxDamage = getTowerMaxDamage(towerKey);
+    return {
+      title: t("cards.damage.title", { tower: towerLabel }),
+      description: t("cards.damage.description", { tower: towerLabel, max: maxDamage }),
+      result: t("cards.damage.result", { tower: towerLabel, max: maxDamage }),
+      effect: {
+        type: "towerBuff",
+        towerType: towerKey,
+        stat: "damage",
+        multiplier: DAMAGE_BUFF_MULTIPLIER,
+        permanent: true
+      }
+    };
+  }
+
+  function createRangeBuffCardConfig(towerKey) {
+    const towerLabel = getTowerLabel(towerKey);
+    return {
+      title: t("cards.range.title", { tower: towerLabel }),
+      description: t("cards.range.description", { tower: towerLabel }),
+      result: t("cards.range.result", { tower: towerLabel }),
+      effect: {
+        type: "towerBuff",
+        towerType: towerKey,
+        stat: "range",
+        multiplier: RANGE_BUFF_MULTIPLIER,
+        permanent: true
+      }
+    };
+  }
+
   function createBaneCard() {
+    const towerTypeClearCard = createTowerTypeClearCardConfig();
+    if (towerTypeClearCard) {
+      return buildCard("bane", towerTypeClearCard);
+    }
+
+    const damageSetbackCard = createDamageSetbackCardConfig();
+    if (damageSetbackCard) {
+      return buildCard("bane", damageSetbackCard);
+    }
+
     const cards = [
       {
         title: t("cards.enemyHp.title"),
@@ -747,6 +776,44 @@
     return buildCard("bane", randomItem(cards));
   }
 
+  function createTowerTypeClearCardConfig() {
+    if (!isBoardFilledWithTowers()) return null;
+
+    const towerKey = getRandomPlacedTowerKey();
+    if (!towerKey) return null;
+
+    const towerLabel = getTowerLabel(towerKey);
+    const towerCount = getPlacedTowerCountByType(towerKey);
+    return {
+      title: t("cards.towerTypeClear.title", { tower: towerLabel }),
+      description: t("cards.towerTypeClear.description", { tower: towerLabel, count: towerCount }),
+      result: t("cards.towerTypeClear.result", { tower: towerLabel, count: towerCount }),
+      effect: {
+        type: "removeTowerType",
+        towerType: towerKey
+      }
+    };
+  }
+
+  function createDamageSetbackCardConfig() {
+    const towerKey = getRandomMaxDamageTowerKey();
+    if (!towerKey) return null;
+
+    const towerLabel = getTowerLabel(towerKey);
+    return {
+      title: t("cards.damageSetback.title", { tower: towerLabel }),
+      description: t("cards.damageSetback.description", { tower: towerLabel }),
+      result: t("cards.damageSetback.result", { tower: towerLabel }),
+      effect: {
+        type: "towerBuff",
+        towerType: towerKey,
+        stat: "damage",
+        multiplier: DAMAGE_SETBACK_MULTIPLIER,
+        permanent: true
+      }
+    };
+  }
+
   function createRangeSetbackCardConfig() {
     const towerKey = getRandomMaxRangeTowerKey();
     if (!towerKey) return null;
@@ -774,14 +841,102 @@
     };
   }
 
-  function getRandomUnlockedTowerKey() {
+  function getRandomDamageBuffTowerKey() {
+    const towerKeys = getUnlockedTowerKeys(state.theme).filter((towerKey) => {
+      return towers[towerKey] && canOfferDamageBuff(towerKey);
+    });
+    return towerKeys.length ? randomItem(towerKeys) : "";
+  }
+
+  function getRandomRangeBuffTowerKey() {
+    const towerKeys = getUnlockedTowerKeys(state.theme).filter((towerKey) => {
+      return towers[towerKey] && canOfferRangeBuff(towerKey);
+    });
+    return towerKeys.length ? randomItem(towerKeys) : "";
+  }
+
+  function getRandomPlacedTowerKey() {
+    const towerKeys = Array.from(new Set(state.placedTowers.map((tower) => tower.type)))
+      .filter((towerKey) => towers[towerKey]);
+    return towerKeys.length ? randomItem(towerKeys) : "";
+  }
+
+  function getPlacedTowerCountByType(towerType) {
+    return state.placedTowers.filter((tower) => tower.type === towerType).length;
+  }
+
+  function getTerrainTileSets() {
+    const map = maps[state.theme];
+    if (!map) return null;
+
+    return {
+      map,
+      pathSet: state.pathSet || new Set(map.path.map(([x, y]) => coordKey(x, y))),
+      blockedSet: state.blockedSet || new Set(map.blocked)
+    };
+  }
+
+  function canAnyUnlockedTowerReachPathFromTile(x, y, map) {
     const unlockedTowerKeys = getUnlockedTowerKeys(state.theme).filter((towerKey) => towers[towerKey]);
-    return randomItem(unlockedTowerKeys.length ? unlockedTowerKeys : towerOrder);
+    return unlockedTowerKeys.some((towerKey) => {
+      const towerStats = getTowerCombatStats(towerKey);
+      if (!towerStats) return false;
+
+      const towerCenterX = x + 0.5;
+      const towerCenterY = y + 0.5;
+      return map.path.some(([pathX, pathY]) => {
+        return Math.hypot(pathX + 0.5 - towerCenterX, pathY + 0.5 - towerCenterY) <= towerStats.range;
+      });
+    });
+  }
+
+  function isBoardFilledWithTowers() {
+    const terrain = getTerrainTileSets();
+    if (!terrain) return false;
+
+    let fillableTileCount = 0;
+    for (let y = 0; y < ROWS; y += 1) {
+      for (let x = 0; x < COLS; x += 1) {
+        const key = coordKey(x, y);
+        if (terrain.pathSet.has(key) || terrain.blockedSet.has(key)) {
+          continue;
+        }
+        if (!canAnyUnlockedTowerReachPathFromTile(x, y, terrain.map)) {
+          continue;
+        }
+
+        fillableTileCount += 1;
+        if (!state.occupied.has(key)) {
+          return false;
+        }
+      }
+    }
+
+    return fillableTileCount > 0;
+  }
+
+  function getTowerMaxDamage(towerType) {
+    const maxDamage = towers[towerType]?.maxDamage;
+    return Number.isFinite(maxDamage) ? maxDamage : Infinity;
+  }
+
+  function canOfferDamageBuff(towerType) {
+    const towerStats = getTowerCombatStats(towerType);
+    const maxDamage = getTowerMaxDamage(towerType);
+    return Boolean(towerStats)
+      && (!Number.isFinite(maxDamage) || towerStats.damage < maxDamage - DAMAGE_MAX_EPSILON);
   }
 
   function canOfferRangeBuff(towerType) {
     const towerStats = getTowerCombatStats(towerType);
     return Boolean(towerStats) && towerStats.range < MAX_TOWER_RANGE - RANGE_MAX_EPSILON;
+  }
+
+  function getRandomMaxDamageTowerKey() {
+    const maxDamageTowerKeys = getUnlockedTowerKeys(state.theme).filter((towerKey) => {
+      return towers[towerKey] && !canOfferDamageBuff(towerKey);
+    });
+    return maxDamageTowerKeys.length ? randomItem(maxDamageTowerKeys) : "";
   }
 
   function getRandomMaxRangeTowerKey() {
@@ -843,6 +998,10 @@
         : t("cards.noCoinsLost");
     }
 
+    if (effect.type === "removeTowerType") {
+      return removeTowersByType(effect.towerType);
+    }
+
     if (effect.type === "towerBuff") {
       addTowerBuff(effect);
       return card.result;
@@ -854,6 +1013,25 @@
     }
 
     return card.result;
+  }
+
+  function removeTowersByType(towerType) {
+    const towerLabel = getTowerLabel(towerType);
+    const towersToRemove = state.placedTowers.filter((tower) => tower.type === towerType);
+
+    towersToRemove.forEach((tower) => {
+      removeTower(tower);
+    });
+
+    logDebug("towers", "Tower type cleared by card", {
+      type: towerType,
+      label: towerLabel,
+      count: towersToRemove.length
+    });
+
+    return towersToRemove.length > 0
+      ? t("cards.towerTypeClear.result", { tower: towerLabel, count: towersToRemove.length })
+      : t("cards.towerTypeClear.none", { tower: towerLabel });
   }
 
   function getCardEffectExpirationWave(effect) {
@@ -903,15 +1081,20 @@
     const towerDef = towers[towerType];
     if (!towerDef) return null;
     const stats = { ...towerDef };
+    const maxDamage = getTowerMaxDamage(towerType);
     state.cardEffects.towerBuffs
       .filter((buff) => buff.towerType === towerType && isCardEffectActive(buff))
       .forEach((buff) => {
         if (buff.stat === "damage") {
-          stats.damage = Math.max(1, Math.round(stats.damage * buff.multiplier));
+          const nextDamage = Math.max(1, Math.round(stats.damage * buff.multiplier));
+          stats.damage = Number.isFinite(maxDamage) ? Math.min(maxDamage, nextDamage) : nextDamage;
         } else if (buff.stat === "range") {
           stats.range = Math.min(MAX_TOWER_RANGE, stats.range * buff.multiplier);
         }
       });
+    if (Number.isFinite(maxDamage)) {
+      stats.damage = Math.min(maxDamage, stats.damage);
+    }
     return stats;
   }
 
