@@ -165,6 +165,11 @@
           description: "{tower}: +25% raio permanente.",
           result: "{tower} ganhou +25% de raio permanente."
         },
+        rangeSetback: {
+          title: "{tower} sobrecarregada",
+          description: "{tower}: -20% raio permanente.",
+          result: "{tower} perdeu 20% de raio permanente."
+        },
         coinsGain: {
           title: "Coleta premiada",
           description: "Ganhe {amount} moedas agora.",
@@ -381,6 +386,11 @@
           description: "{tower}: +25% permanent range.",
           result: "{tower} gained +25% permanent range."
         },
+        rangeSetback: {
+          title: "{tower} overloaded",
+          description: "{tower}: -20% permanent range.",
+          result: "{tower} lost 20% permanent range."
+        },
         coinsGain: {
           title: "Prize collection",
           description: "Gain {amount} coins now.",
@@ -596,6 +606,11 @@
           title: "{tower} ampliada",
           description: "{tower}: +25% alcance permanente.",
           result: "{tower} gano +25% de alcance permanente."
+        },
+        rangeSetback: {
+          title: "{tower} sobrecargada",
+          description: "{tower}: -20% alcance permanente.",
+          result: "{tower} perdio 20% de alcance permanente."
         },
         coinsGain: {
           title: "Recoleccion premiada",

@@ -22,6 +22,7 @@
     isTowerUnlocked,
     isVictoryOpen,
     maps,
+    MAX_TOWER_RANGE,
     playSfx,
     resetState,
     refreshPlacementPreview,
@@ -53,6 +54,9 @@
   const CARD_EFFECT_DURATION_WAVES = 1;
   const CARD_COIN_GAIN = 100;
   const CARD_COIN_LOSS = 70;
+  const RANGE_BUFF_MULTIPLIER = 1.25;
+  const RANGE_SETBACK_MULTIPLIER = 1 / RANGE_BUFF_MULTIPLIER;
+  const RANGE_MAX_EPSILON = 0.001;
   let waveTransitionCallback = null;
   let cardChoiceCallback = null;
   let undoHideTimer = 0;
@@ -552,8 +556,11 @@
           multiplier: 1.3,
           permanent: true
         }
-      },
-      {
+      }
+    ];
+
+    if (canOfferRangeBuff(towerKey)) {
+      configs.push({
         title: t("cards.range.title", { tower: towerLabel }),
         description: t("cards.range.description", { tower: towerLabel }),
         result: t("cards.range.result", { tower: towerLabel }),
@@ -561,10 +568,13 @@
           type: "towerBuff",
           towerType: towerKey,
           stat: "range",
-          multiplier: 1.25,
+          multiplier: RANGE_BUFF_MULTIPLIER,
           permanent: true
         }
-      },
+      });
+    }
+
+    configs.push(
       {
         title: t("cards.coinsGain.title"),
         description: t("cards.coinsGain.description", { amount: CARD_COIN_GAIN }),
@@ -574,7 +584,7 @@
           amount: CARD_COIN_GAIN
         }
       }
-    ];
+    );
 
     if (state.lives < state.maxLives) {
       configs.push({
@@ -634,7 +644,31 @@
       }
     ];
 
+    const rangeSetbackCard = createRangeSetbackCardConfig();
+    if (rangeSetbackCard) {
+      cards.push(rangeSetbackCard);
+    }
+
     return buildCard("bane", randomItem(cards));
+  }
+
+  function createRangeSetbackCardConfig() {
+    const towerKey = getRandomMaxRangeTowerKey();
+    if (!towerKey) return null;
+
+    const towerLabel = getTowerLabel(towerKey);
+    return {
+      title: t("cards.rangeSetback.title", { tower: towerLabel }),
+      description: t("cards.rangeSetback.description", { tower: towerLabel }),
+      result: t("cards.rangeSetback.result", { tower: towerLabel }),
+      effect: {
+        type: "towerBuff",
+        towerType: towerKey,
+        stat: "range",
+        multiplier: RANGE_SETBACK_MULTIPLIER,
+        permanent: true
+      }
+    };
   }
 
   function buildCard(kind, config) {
@@ -648,6 +682,18 @@
   function getRandomUnlockedTowerKey() {
     const unlockedTowerKeys = getUnlockedTowerKeys(state.theme).filter((towerKey) => towers[towerKey]);
     return randomItem(unlockedTowerKeys.length ? unlockedTowerKeys : towerOrder);
+  }
+
+  function canOfferRangeBuff(towerType) {
+    const towerStats = getTowerCombatStats(towerType);
+    return Boolean(towerStats) && towerStats.range < MAX_TOWER_RANGE - RANGE_MAX_EPSILON;
+  }
+
+  function getRandomMaxRangeTowerKey() {
+    const maxRangeTowerKeys = getUnlockedTowerKeys(state.theme).filter((towerKey) => {
+      return towers[towerKey] && !canOfferRangeBuff(towerKey);
+    });
+    return maxRangeTowerKeys.length ? randomItem(maxRangeTowerKeys) : "";
   }
 
   function randomItem(items) {
@@ -755,7 +801,7 @@
         if (buff.stat === "damage") {
           stats.damage = Math.max(1, Math.round(stats.damage * buff.multiplier));
         } else if (buff.stat === "range") {
-          stats.range *= buff.multiplier;
+          stats.range = Math.min(MAX_TOWER_RANGE, stats.range * buff.multiplier);
         }
       });
     return stats;
