@@ -160,6 +160,11 @@
           description: "{tower}: +30% dano permanente, max. {max}.",
           result: "{tower} ganhou dano permanente ate {max}."
         },
+        powerSurge: {
+          title: "Pico de poder {tower}",
+          description: "Uma torre {tower}: dano dobrado na proxima onda.",
+          result: "Uma torre {tower} tera dano dobrado na proxima onda."
+        },
         damageSetback: {
           title: "{tower} desregulada",
           description: "{tower}: -23% dano permanente.",
@@ -392,6 +397,11 @@
           description: "{tower}: +30% permanent damage, max {max}.",
           result: "{tower} gained permanent damage up to {max}."
         },
+        powerSurge: {
+          title: "{tower} power surge",
+          description: "One {tower} tower: double damage next wave.",
+          result: "One {tower} tower will deal double damage next wave."
+        },
         damageSetback: {
           title: "{tower} destabilized",
           description: "{tower}: -23% permanent damage.",
@@ -623,6 +633,11 @@
           title: "{tower} reforzada",
           description: "{tower}: +30% dano permanente, max. {max}.",
           result: "{tower} gano dano permanente hasta {max}."
+        },
+        powerSurge: {
+          title: "Pico de poder {tower}",
+          description: "Una torre {tower}: dano doble en la proxima oleada.",
+          result: "Una torre {tower} tendra dano doble en la proxima oleada."
         },
         damageSetback: {
           title: "{tower} desregulada",

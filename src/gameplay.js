@@ -58,6 +58,7 @@
   const CARD_COIN_LOSS = 70;
   const DAMAGE_BUFF_MULTIPLIER = 1.3;
   const DAMAGE_SETBACK_MULTIPLIER = 1 / DAMAGE_BUFF_MULTIPLIER;
+  const POWER_SURGE_MULTIPLIER = 2;
   const DAMAGE_MAX_EPSILON = 0.001;
   const RANGE_BUFF_MULTIPLIER = 1.25;
   const RANGE_SETBACK_MULTIPLIER = 1 / RANGE_BUFF_MULTIPLIER;
@@ -620,6 +621,23 @@
   }
 
   function createCardChoices() {
+    const towerTypeClearCard = createTowerTypeClearCardConfig();
+    if (towerTypeClearCard) {
+      const powerSurgeCard = createPowerSurgeCardConfig();
+      const boonCount = powerSurgeCard ? 1 : 2;
+      const cards = [
+        createNeutralCard(),
+        ...createBoonCards(boonCount),
+        buildCard("bane", towerTypeClearCard)
+      ];
+
+      if (powerSurgeCard) {
+        cards.push(buildCard("boon", powerSurgeCard));
+      }
+
+      return shuffleCards(cards);
+    }
+
     return shuffleCards([
       createNeutralCard(),
       ...createBoonCards(2),
@@ -711,6 +729,27 @@
         stat: "range",
         multiplier: RANGE_BUFF_MULTIPLIER,
         permanent: true
+      }
+    };
+  }
+
+  function createPowerSurgeCardConfig() {
+    const tower = getRandomPlacedTower();
+    if (!tower) return null;
+
+    const towerLabel = getTowerLabel(tower.type);
+    return {
+      title: t("cards.powerSurge.title", { tower: towerLabel }),
+      description: t("cards.powerSurge.description", { tower: towerLabel }),
+      result: t("cards.powerSurge.result", { tower: towerLabel }),
+      effect: {
+        type: "towerBuff",
+        towerId: tower.id,
+        towerType: tower.type,
+        stat: "damage",
+        multiplier: POWER_SURGE_MULTIPLIER,
+        durationWaves: CARD_EFFECT_DURATION_WAVES,
+        ignoreMaxDamage: true
       }
     };
   }
@@ -859,6 +898,11 @@
     const towerKeys = Array.from(new Set(state.placedTowers.map((tower) => tower.type)))
       .filter((towerKey) => towers[towerKey]);
     return towerKeys.length ? randomItem(towerKeys) : "";
+  }
+
+  function getRandomPlacedTower() {
+    const placedTowers = state.placedTowers.filter((tower) => towers[tower.type]);
+    return placedTowers.length ? randomItem(placedTowers) : null;
   }
 
   function getPlacedTowerCountByType(towerType) {
@@ -1041,10 +1085,12 @@
 
   function addTowerBuff(effect) {
     const buff = {
+      towerId: effect.towerId,
       towerType: effect.towerType,
       stat: effect.stat,
       multiplier: effect.multiplier,
       permanent: Boolean(effect.permanent),
+      ignoreMaxDamage: Boolean(effect.ignoreMaxDamage),
       expiresAfterWave: getCardEffectExpirationWave(effect)
     };
     state.cardEffects.towerBuffs.push(buff);
@@ -1077,22 +1123,34 @@
     return effect.expiresAfterWave >= state.wave;
   }
 
-  function getTowerCombatStats(towerType) {
+  function getTowerCombatStats(towerOrType) {
+    const towerType = typeof towerOrType === "string" ? towerOrType : towerOrType?.type;
+    const towerId = typeof towerOrType === "string" ? undefined : towerOrType?.id;
     const towerDef = towers[towerType];
     if (!towerDef) return null;
     const stats = { ...towerDef };
     const maxDamage = getTowerMaxDamage(towerType);
+    let ignoreMaxDamage = false;
     state.cardEffects.towerBuffs
-      .filter((buff) => buff.towerType === towerType && isCardEffectActive(buff))
+      .filter((buff) => {
+        return buff.towerType === towerType
+          && (!buff.towerId || buff.towerId === towerId)
+          && isCardEffectActive(buff);
+      })
       .forEach((buff) => {
         if (buff.stat === "damage") {
           const nextDamage = Math.max(1, Math.round(stats.damage * buff.multiplier));
-          stats.damage = Number.isFinite(maxDamage) ? Math.min(maxDamage, nextDamage) : nextDamage;
+          if (buff.ignoreMaxDamage) {
+            ignoreMaxDamage = true;
+            stats.damage = nextDamage;
+          } else {
+            stats.damage = Number.isFinite(maxDamage) ? Math.min(maxDamage, nextDamage) : nextDamage;
+          }
         } else if (buff.stat === "range") {
           stats.range = Math.min(MAX_TOWER_RANGE, stats.range * buff.multiplier);
         }
       });
-    if (Number.isFinite(maxDamage)) {
+    if (Number.isFinite(maxDamage) && !ignoreMaxDamage) {
       stats.damage = Math.min(maxDamage, stats.damage);
     }
     return stats;
@@ -1251,7 +1309,7 @@
 
   function updateTowers(dt) {
     state.placedTowers.forEach((tower) => {
-      const towerDef = getTowerCombatStats(tower.type);
+      const towerDef = getTowerCombatStats(tower);
       if (!towerDef) return;
       tower.cooldown -= dt;
       if (tower.cooldown > 0) return;
