@@ -2,9 +2,12 @@
   const ntp = window.NTP = window.NTP || {};
   const { COLS, ROWS, coordKey, dom, isTowerUnlocked, maps, state, t, towers } = ntp;
 
+  const PLACEMENT_PREVIEW_IDLE_MS = 4000;
+
   let placementPreview = null;
   let highlightedPreviewTiles = [];
   let lastPreviewSignature = "";
+  let placementPreviewIdleTimer = 0;
 
   function buildBoard() {
     const map = maps[state.theme];
@@ -37,6 +40,7 @@
 
     state.pathSet = pathSet;
     state.blockedSet = blockedSet;
+    clearPlacementPreviewIdleTimer();
     placementPreview = null;
     highlightedPreviewTiles = [];
     lastPreviewSignature = "";
@@ -148,6 +152,7 @@
     placementPreview.x = x;
     placementPreview.y = y;
     placementPreview.visible = true;
+    schedulePlacementPreviewIdleHide();
     renderPlacementPreview();
   }
 
@@ -158,6 +163,7 @@
 
   function hidePlacementPreview() {
     if (!placementPreview) return;
+    clearPlacementPreviewIdleTimer();
     placementPreview.x = null;
     placementPreview.y = null;
     placementPreview.visible = false;
@@ -219,6 +225,18 @@
     setElementPosition(ghostEl, centerX, centerY);
 
     applyPreviewTileHighlights(centerX, centerY, placementRange, isAvailable);
+  }
+
+  function clearPlacementPreviewIdleTimer() {
+    window.clearTimeout(placementPreviewIdleTimer);
+    placementPreviewIdleTimer = 0;
+  }
+
+  function schedulePlacementPreviewIdleHide() {
+    clearPlacementPreviewIdleTimer();
+    placementPreviewIdleTimer = window.setTimeout(() => {
+      hidePlacementPreview();
+    }, PLACEMENT_PREVIEW_IDLE_MS);
   }
 
   function applyPreviewTileHighlights(centerX, centerY, range, isAvailable) {
