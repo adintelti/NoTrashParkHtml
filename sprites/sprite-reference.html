@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>No Trash Park - Sprite Reference Captures</title>
+    <link rel="stylesheet" href="../../styles.css">
+    <style>
+      body {
+        min-height: 100vh;
+        padding: 24px;
+        background: #1d2528;
+        color: #fff7d6;
+      }
+
+      .reference-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+        gap: 18px;
+      }
+
+      .reference-card {
+        display: grid;
+        gap: 8px;
+      }
+
+      .reference-card > span {
+        font-size: 0.78rem;
+        font-weight: 700;
+      }
+
+      .shot-stage {
+        --cell-size: 96px;
+        position: relative;
+        width: 180px;
+        height: 180px;
+        overflow: hidden;
+        border: 2px solid rgba(255, 247, 214, 0.2);
+        background:
+          linear-gradient(45deg, rgba(255, 255, 255, 0.06) 25%, transparent 25% 75%, rgba(255, 255, 255, 0.06) 75%) 0 0 / 24px 24px,
+          #223039;
+      }
+
+      .shot-stage.wide {
+        width: 380px;
+        height: 220px;
+      }
+
+      .shot-stage.tall {
+        width: 190px;
+        height: 250px;
+      }
+
+      .shot-stage.tile-stage {
+        width: 128px;
+        height: 128px;
+        display: grid;
+        place-items: center;
+      }
+
+      .shot-stage.icon-stage {
+        width: 96px;
+        height: 96px;
+        display: grid;
+        place-items: center;
+      }
+
+      .shot-stage.menu-bg {
+        background:
+          linear-gradient(#1594dd 0 42%, #90e272 42%),
+          #90e272;
+      }
+
+      .shot-stage.sky-bg {
+        background: #1594dd;
+      }
+
+      .shot-stage.board-bg {
+        background: #0f411a;
+      }
+
+      .shot-stage.dark-bg {
+        background: #101820;
+      }
+
+      .tile-frame {
+        width: 96px;
+        height: 96px;
+      }
+
+      .tile-frame .tile {
+        display: block;
+        width: 96px;
+        height: 96px;
+        min-width: 96px;
+        min-height: 96px;
+      }
+
+      .shot-stage .tower,
+      .shot-stage .enemy,
+      .shot-stage .projectile,
+      .shot-stage .impact,
+      .shot-stage .range-ring,
+      .shot-stage .placement-range {
+        left: 50%;
+        top: 50%;
+      }
+
+      .shot-stage .tower {
+        top: 60%;
+      }
+
+      .shot-stage .enemy .health {
+        top: -36%;
+      }
+
+      .shot-stage .impact {
+        animation: none;
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(0.9);
+      }
+
+      .shot-stage .range-ring {
+        width: 128px;
+        height: 128px;
+      }
+
+      .shot-stage .placement-range {
+        width: 150px;
+        height: 150px;
+      }
+
+      .shot-stage .cloud {
+        width: 72px;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+      }
+
+      .shot-stage .menu-creature {
+        left: 50%;
+        top: 52%;
+        transform: translate(-50%, -50%);
+      }
+
+      .shot-stage .menu-tower {
+        left: 50%;
+        top: 54%;
+        transform: translate(-50%, -50%);
+      }
+
+      .shot-stage .menu-path {
+        left: 34px;
+        bottom: 32px;
+      }
+
+      .shot-stage .card-choice-card {
+        width: 132px;
+        min-height: 188px;
+        margin: 28px auto 0;
+      }
+
+      .shot-stage .card-choice-card.is-revealed {
+        min-height: 172px;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="reference-grid" aria-label="Elementos substituiveis por sprites">
+      <section class="reference-card">
+        <span>Menu cloud</span>
+        <div class="shot-stage sky-bg" data-sprite-shot data-file="menu-cloud.png"><div class="cloud"></div></div>
+      </section>
+      <section class="reference-card">
+        <span>Menu creature</span>
+        <div class="shot-stage menu-bg" data-sprite-shot data-file="menu-creature.png"><div class="menu-creature"></div></div>
+      </section>
+      <section class="reference-card">
+        <span>Menu tower</span>
+        <div class="shot-stage menu-bg" data-sprite-shot data-file="menu-tower.png"><div class="menu-tower"></div></div>
+      </section>
+      <section class="reference-card">
+        <span>Menu path</span>
+        <div class="shot-stage wide menu-bg" data-sprite-shot data-file="menu-path.png"><div class="menu-path"></div></div>
+      </section>
+
+      <section class="reference-card">
+        <span>Park terrain tile</span>
+        <div class="shot-stage tile-stage theme-park" data-sprite-shot data-file="tile-park-terrain.png"><div class="tile-frame"><button class="tile terrain detail-a" type="button"></button></div></div>
+      </section>
+      <section class="reference-card">
+        <span>Park path tile</span>
+        <div class="shot-stage tile-stage theme-park" data-sprite-shot data-file="tile-park-path.png"><div class="tile-frame"><button class="tile path blocked" type="button"></button></div></div>
+      </section>
+      <section class="reference-card">
+        <span>Park blocked tile</span>
+        <div class="shot-stage tile-stage theme-park" data-sprite-shot data-file="tile-park-blocked.png"><div class="tile-frame"><button class="tile terrain blocked detail-b" type="button"></button></div></div>
+      </section>
+
+      <section class="reference-card">
+        <span>Lagoon terrain tile</span>
+        <div class="shot-stage tile-stage theme-lagoon" data-sprite-shot data-file="tile-lagoon-terrain.png"><div class="tile-frame"><button class="tile terrain detail-a" type="button"></button></div></div>
+      </section>
+      <section class="reference-card">
+        <span>Lagoon path tile</span>
+        <div class="shot-stage tile-stage theme-lagoon" data-sprite-shot data-file="tile-lagoon-path.png"><div class="tile-frame"><button class="tile path blocked" type="button"></button></div></div>
+      </section>
+      <section class="reference-card">
+        <span>Lagoon blocked tile</span>
+        <div class="shot-stage tile-stage theme-lagoon" data-sprite-shot data-file="tile-lagoon-blocked.png"><div class="tile-frame"><button class="tile terrain blocked detail-b" type="button"></button></div></div>
+      </section>
+
+      <section class="reference-card">
+        <span>Lava terrain tile</span>
+        <div class="shot-stage tile-stage theme-lava" data-sprite-shot data-file="tile-lava-terrain.png"><div class="tile-frame"><button class="tile terrain detail-a" type="button"></button></div></div>
+      </section>
+      <section class="reference-card">
+        <span>Lava path tile</span>
+        <div class="shot-stage tile-stage theme-lava" data-sprite-shot data-file="tile-lava-path.png"><div class="tile-frame"><button class="tile path blocked" type="button"></button></div></div>
+      </section>
+      <section class="reference-card">
+        <span>Lava blocked tile</span>
+        <div class="shot-stage tile-stage theme-lava" data-sprite-shot data-file="tile-lava-blocked.png"><div class="tile-frame"><button class="tile terrain blocked detail-c" type="button"></button></div></div>
+      </section>
+
+      <section class="reference-card">
+        <span>Tower sentinel</span>
+        <div class="shot-stage board-bg" data-sprite-shot data-file="tower-sentinel.png"><div class="tower tower-sentinel"></div></div>
+      </section>
+      <section class="reference-card">
+        <span>Tower slow</span>
+        <div class="shot-stage board-bg" data-sprite-shot data-file="tower-slow.png"><div class="tower tower-slow"></div></div>
+      </section>
+      <section class="reference-card">
+        <span>Tower splash</span>
+        <div class="shot-stage board-bg" data-sprite-shot data-file="tower-splash.png"><div class="tower tower-splash"></div></div>
+      </section>
+      <section class="reference-card">
+        <span>Tower flame</span>
+        <div class="shot-stage board-bg" data-sprite-shot data-file="tower-flame.png"><div class="tower tower-flame"></div></div>
+      </section>
+
+      <section class="reference-card">
+        <span>Enemy runner</span>
+        <div class="shot-stage board-bg" data-sprite-shot data-file="enemy-runner.png"><div class="enemy enemy-runner"><div class="health"><span></span></div></div></div>
+      </section>
+      <section class="reference-card">
+        <span>Enemy brute</span>
+        <div class="shot-stage board-bg" data-sprite-shot data-file="enemy-brute.png"><div class="enemy enemy-brute"><div class="health"><span></span></div></div></div>
+      </section>
+      <section class="reference-card">
+        <span>Enemy shield</span>
+        <div class="shot-stage board-bg" data-sprite-shot data-file="enemy-shield.png"><div class="enemy enemy-shield"><div class="health"><span></span></div></div></div>
+      </section>
+      <section class="reference-card">
+        <span>Enemy slowed</span>
+        <div class="shot-stage board-bg" data-sprite-shot data-file="enemy-slowed.png"><div class="enemy enemy-runner slowed"><div class="health"><span></span></div></div></div>
+      </section>
+
+      <section class="reference-card">
+        <span>Projectile default</span>
+        <div class="shot-stage board-bg" data-sprite-shot data-file="projectile-default.png"><div class="projectile"></div></div>
+      </section>
+      <section class="reference-card">
+        <span>Projectile slow</span>
+        <div class="shot-stage board-bg" data-sprite-shot data-file="projectile-slow.png"><div class="projectile projectile-slow"></div></div>
+      </section>
+      <section class="reference-card">
+        <span>Projectile splash</span>
+        <div class="shot-stage board-bg" data-sprite-shot data-file="projectile-splash.png"><div class="projectile projectile-splash"></div></div>
+      </section>
+      <section class="reference-card">
+        <span>Projectile flame</span>
+        <div class="shot-stage board-bg" data-sprite-shot data-file="projectile-flame.png"><div class="projectile projectile-flame"></div></div>
+      </section>
+
+      <section class="reference-card">
+        <span>Impact effect</span>
+        <div class="shot-stage board-bg" data-sprite-shot data-file="effect-impact.png"><div class="impact"></div></div>
+      </section>
+      <section class="reference-card">
+        <span>Range ring</span>
+        <div class="shot-stage board-bg" data-sprite-shot data-file="effect-range-ring.png"><div class="range-ring"></div></div>
+      </section>
+      <section class="reference-card">
+        <span>Placement range</span>
+        <div class="shot-stage board-bg" data-sprite-shot data-file="effect-placement-range.png"><div class="placement-range" data-tower="sentinel"></div></div>
+      </section>
+
+      <section class="reference-card">
+        <span>Heart icon</span>
+        <div class="shot-stage icon-stage dark-bg" data-sprite-shot data-file="ui-heart-dot.png"><span class="heart-dot"></span></div>
+      </section>
+      <section class="reference-card">
+        <span>Coin icon</span>
+        <div class="shot-stage icon-stage dark-bg" data-sprite-shot data-file="ui-coin-icon.png"><span class="coin-icon">$</span></div>
+      </section>
+      <section class="reference-card">
+        <span>Restart icon</span>
+        <div class="shot-stage icon-stage dark-bg" data-sprite-shot data-file="ui-restart-icon.png"><button class="icon-button restart-icon-button" type="button" aria-label="Reiniciar"></button></div>
+      </section>
+      <section class="reference-card">
+        <span>Menu icon</span>
+        <div class="shot-stage icon-stage dark-bg" data-sprite-shot data-file="ui-menu-icon.png"><button class="icon-button menu-icon-button" type="button" aria-label="Menu"></button></div>
+      </section>
+
+      <section class="reference-card">
+        <span>Card back</span>
+        <div class="shot-stage tall dark-bg" data-sprite-shot data-file="card-back.png"><button class="card-choice-card" type="button"><span class="card-choice-back">?</span></button></div>
+      </section>
+      <section class="reference-card">
+        <span>Card boon</span>
+        <div class="shot-stage tall dark-bg" data-sprite-shot data-file="card-boon.png"><button class="card-choice-card is-boon is-revealed" type="button"><span class="card-choice-name">Bonus</span></button></div>
+      </section>
+      <section class="reference-card">
+        <span>Card bane</span>
+        <div class="shot-stage tall dark-bg" data-sprite-shot data-file="card-bane.png"><button class="card-choice-card is-bane is-revealed" type="button"><span class="card-choice-name">Reves</span></button></div>
+      </section>
+    </main>
+  </body>
+</html>
