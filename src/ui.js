@@ -44,6 +44,61 @@
   };
 
   let messageTimer = 0;
+  let hudCache = {};
+  let shopButtonCache = null;
+  let undoSecondsEl = null;
+  let deleteActionLabelEl = null;
+
+  function invalidateHud() {
+    hudCache = {};
+    shopButtonCache = null;
+    undoSecondsEl = null;
+    deleteActionLabelEl = null;
+  }
+
+  function setCachedText(cacheKey, el, text) {
+    if (hudCache[cacheKey] === text) return;
+    el.textContent = text;
+    hudCache[cacheKey] = text;
+  }
+
+  function setCachedHidden(cacheKey, el, hidden) {
+    if (hudCache[cacheKey] === hidden) return;
+    el.hidden = hidden;
+    hudCache[cacheKey] = hidden;
+  }
+
+  function setCachedClass(cacheKey, el, className, active) {
+    if (hudCache[cacheKey] === active) return;
+    el.classList.toggle(className, active);
+    hudCache[cacheKey] = active;
+  }
+
+  function getShopButtons() {
+    if (!shopButtonCache) {
+      shopButtonCache = Array.from(document.querySelectorAll(".shop-button[data-tower]")).map((button) => ({
+        button,
+        labelEl: button.querySelector("span"),
+        priceEl: button.querySelector("strong")
+      }));
+    }
+
+    return shopButtonCache;
+  }
+
+  function getUndoSecondsEl() {
+    if (!undoSecondsEl) {
+      undoSecondsEl = dom.undoTowerButton.querySelector("strong");
+    }
+    return undoSecondsEl;
+  }
+
+  function getDeleteActionLabelEl() {
+    if (!deleteActionLabelEl) {
+      deleteActionLabelEl = dom.deleteTowerButton.querySelector("strong");
+    }
+    return deleteActionLabelEl;
+  }
 
   function formatSessionTime(totalSeconds = 0) {
     const safeSeconds = Math.max(0, Math.floor(totalSeconds));
@@ -67,32 +122,46 @@
   }
 
   function updateHud() {
-    dom.coinText.textContent = String(state.coins);
-    dom.livesText.textContent = String(state.lives);
-    dom.waveText.textContent = getWaveProgressText();
-    dom.defeatedText.textContent = String(state.sessionDefeated);
-    dom.sessionTimeText.textContent = formatSessionTime(state.sessionTime);
-    dom.comboCounter.textContent = `${state.waveDefeated}X`;
-    dom.comboCounter.hidden = !state.waveComboVisible;
-    dom.comboCounter.classList.toggle("is-active", state.waveDefeated > 0);
-    dom.pauseButton.textContent = state.paused ? t("actions.resume") : t("actions.pause");
-    dom.speedButton.textContent = `${state.speed}x`;
-    dom.heartStack.innerHTML = "";
+    setCachedText("coins", dom.coinText, String(state.coins));
+    setCachedText("lives", dom.livesText, String(state.lives));
+    setCachedText("wave", dom.waveText, getWaveProgressText());
+    setCachedText("defeated", dom.defeatedText, String(state.sessionDefeated));
+    setCachedText("sessionTime", dom.sessionTimeText, formatSessionTime(state.sessionTime));
+    setCachedText("comboText", dom.comboCounter, `${state.waveDefeated}X`);
+    setCachedHidden("comboHidden", dom.comboCounter, !state.waveComboVisible);
+    setCachedClass("comboActive", dom.comboCounter, "is-active", state.waveDefeated > 0);
+    setCachedText("pauseLabel", dom.pauseButton, state.paused ? t("actions.resume") : t("actions.pause"));
+    setCachedText("speedLabel", dom.speedButton, `${state.speed}x`);
+
     const shownLives = Math.min(5, state.lives);
-    for (let i = 0; i < shownLives; i += 1) {
-      const heart = document.createElement("span");
-      heart.className = "heart-dot";
-      dom.heartStack.appendChild(heart);
+    if (hudCache.shownLives !== shownLives) {
+      const fragment = document.createDocumentFragment();
+      for (let i = 0; i < shownLives; i += 1) {
+        const heart = document.createElement("span");
+        heart.className = "heart-dot";
+        fragment.appendChild(heart);
+      }
+      dom.heartStack.replaceChildren(fragment);
+      hudCache.shownLives = shownLives;
     }
 
-    document.querySelectorAll(".shop-button[data-tower]").forEach((button) => {
+    const shopSignature = `${state.coins}|${state.theme}|${state.selectedTower}|${settings.language}`;
+    if (hudCache.shopSignature !== shopSignature) {
+      syncShopButtons();
+      hudCache.shopSignature = shopSignature;
+    }
+
+    syncTowerActionUi();
+    syncPlacementPreviewFromHud();
+  }
+
+  function syncShopButtons() {
+    getShopButtons().forEach(({ button, labelEl, priceEl }) => {
       const towerKey = button.dataset.tower;
       const towerDef = towers[towerKey];
       const towerLabel = getTowerLabel(towerKey);
       const isUnlocked = isTowerUnlocked(towerKey, state.theme);
       const isActive = isUnlocked && towerKey === state.selectedTower;
-      const labelEl = button.querySelector("span");
-      const priceEl = button.querySelector("strong");
       button.classList.toggle("is-active", isActive);
       button.classList.toggle("is-locked", !isUnlocked);
       button.disabled = !isUnlocked || state.coins < towerDef.cost;
@@ -110,36 +179,51 @@
         priceEl.textContent = isUnlocked ? `$${towerDef.cost}` : t("shop.lockedShort");
       }
     });
-
-    syncTowerActionUi();
-    ntp.refreshPlacementPreview?.();
   }
 
   function syncTowerActionUi() {
     const canUndo = Boolean(ntp.isUndoPlacementAvailable?.());
     const undoSecondsRemaining = ntp.getUndoPlacementSecondsRemaining?.() || 0;
-    dom.undoTowerButton.hidden = !canUndo;
-    dom.undoTowerButton.disabled = !canUndo;
+    setCachedHidden("undoHidden", dom.undoTowerButton, !canUndo);
+    if (hudCache.undoDisabled !== !canUndo) {
+      dom.undoTowerButton.disabled = !canUndo;
+      hudCache.undoDisabled = !canUndo;
+    }
     if (canUndo) {
       const secondsLabel = `${undoSecondsRemaining}s`;
-      const priceEl = dom.undoTowerButton.querySelector("strong");
-      dom.undoTowerButton.setAttribute("aria-label", t("shop.undoAria", { seconds: secondsLabel }));
+      const priceEl = getUndoSecondsEl();
+      const undoAria = t("shop.undoAria", { seconds: secondsLabel });
+      if (hudCache.undoAria !== undoAria) {
+        dom.undoTowerButton.setAttribute("aria-label", undoAria);
+        hudCache.undoAria = undoAria;
+      }
       if (priceEl) {
-        priceEl.textContent = secondsLabel;
+        setCachedText("undoSeconds", priceEl, secondsLabel);
       }
     }
 
-    dom.deleteTowerButton.classList.toggle("is-active", state.deleteMode);
-    dom.deleteTowerButton.setAttribute("aria-pressed", String(state.deleteMode));
-    const deleteLabel = dom.deleteTowerButton.querySelector("strong");
+    setCachedClass("deleteActive", dom.deleteTowerButton, "is-active", state.deleteMode);
+    const deletePressed = String(state.deleteMode);
+    if (hudCache.deletePressed !== deletePressed) {
+      dom.deleteTowerButton.setAttribute("aria-pressed", deletePressed);
+      hudCache.deletePressed = deletePressed;
+    }
+    const deleteLabel = getDeleteActionLabelEl();
     if (deleteLabel) {
-      deleteLabel.textContent = state.deleteMode ? t("common.cancel") : t("shop.select");
+      setCachedText("deleteLabel", deleteLabel, state.deleteMode ? t("common.cancel") : t("shop.select"));
     }
 
     syncTowerDeleteHighlights();
   }
 
   function syncTowerDeleteHighlights() {
+    const towerSignature = state.deleteMode
+      ? state.placedTowers.map((tower) => `${tower.id}:${tower.tileX},${tower.tileY}`).join(",")
+      : "";
+    const signature = `${state.deleteMode}|${state.pendingDeleteTower?.id || 0}|${towerSignature}`;
+    if (hudCache.deleteHighlights === signature) return;
+    hudCache.deleteHighlights = signature;
+
     dom.board.classList.toggle("is-delete-mode", state.deleteMode);
     dom.board.querySelectorAll(".tile.delete-candidate, .tile.delete-target").forEach((tile) => {
       tile.classList.remove("delete-candidate", "delete-target");
@@ -155,6 +239,25 @@
       if (!tile) return;
       tile.classList.add(isPending ? "delete-target" : "delete-candidate");
     });
+  }
+
+  function syncPlacementPreviewFromHud() {
+    const signature = [
+      state.coins,
+      state.selectedTower,
+      state.theme,
+      state.wave,
+      state.cardEffects?.towerBuffs?.length || 0,
+      state.deleteMode,
+      state.paused,
+      state.running,
+      state.gameOver,
+      state.victoryPending
+    ].join("|");
+
+    if (hudCache.placementPreview === signature) return;
+    hudCache.placementPreview = signature;
+    ntp.refreshPlacementPreview?.();
   }
 
   function ensureSelectedTowerUnlocked() {
@@ -423,6 +526,7 @@
   }
 
   Object.assign(ntp, {
+    invalidateHud,
     updateVersionText,
     updateHud,
     ensureSelectedTowerUnlocked,

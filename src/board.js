@@ -13,10 +13,13 @@
     const map = maps[state.theme];
     const pathSet = getPathSet(map);
     const blockedSet = new Set(map.blocked);
+    const tileByCoord = new Map();
+    const pathTiles = [];
     dom.board.className = `board ${map.boardClass}`;
     dom.board.innerHTML = "";
     dom.board.style.setProperty("--board-cols", COLS);
     dom.board.style.setProperty("--board-rows", ROWS);
+    state.pathCenters = map.path.map(([x, y]) => ({ x: x + 0.5, y: y + 0.5 }));
 
     for (let y = 0; y < ROWS; y += 1) {
       for (let x = 0; x < COLS; x += 1) {
@@ -29,17 +32,21 @@
         tile.setAttribute("aria-label", t("board.tileAria", { x: x + 1, y: y + 1 }));
         if (pathSet.has(key)) {
           tile.classList.add("path", "blocked");
+          pathTiles.push(tile);
         } else if (blockedSet.has(key)) {
           tile.classList.add("terrain", "blocked");
         } else {
           tile.classList.add("terrain", "can-place", detailClass(x, y));
         }
+        tileByCoord.set(key, tile);
         dom.board.appendChild(tile);
       }
     }
 
     state.pathSet = pathSet;
     state.blockedSet = blockedSet;
+    state.tileByCoord = tileByCoord;
+    state.pathTiles = pathTiles;
     clearPlacementPreviewIdleTimer();
     placementPreview = null;
     highlightedPreviewTiles = [];
@@ -57,6 +64,7 @@
     state.projectiles.forEach((projectile) => projectile.el?.remove());
     state.impacts.forEach((impact) => impact.el?.remove());
     state.enemies = [];
+    state.enemiesById?.clear?.();
     state.placedTowers = [];
     state.projectiles = [];
     state.impacts = [];
@@ -82,8 +90,8 @@
   }
 
   function setElementPosition(el, gridX, gridY) {
-    el.style.left = `${gridX * state.cellW}px`;
-    el.style.top = `${gridY * state.cellH}px`;
+    el.style.setProperty("--entity-x", `${gridX * state.cellW}px`);
+    el.style.setProperty("--entity-y", `${gridY * state.cellH}px`);
   }
 
   function renderAllPositions() {
@@ -112,7 +120,8 @@
   }
 
   function getTileAt(x, y) {
-    return dom.board.querySelector(`[data-x="${x}"][data-y="${y}"]`);
+    return state.tileByCoord?.get(coordKey(x, y))
+      || dom.board.querySelector(`[data-x="${x}"][data-y="${y}"]`);
   }
 
   function createPlacementPreviewElements() {
@@ -250,7 +259,8 @@
   }
 
   function getPathTilesInRange(centerX, centerY, range) {
-    return Array.from(dom.board.querySelectorAll(".tile.path")).filter((tile) => {
+    const pathTiles = state.pathTiles?.length ? state.pathTiles : Array.from(dom.board.querySelectorAll(".tile.path"));
+    return pathTiles.filter((tile) => {
       const tileCenterX = Number(tile.dataset.x) + 0.5;
       const tileCenterY = Number(tile.dataset.y) + 0.5;
       return Math.hypot(tileCenterX - centerX, tileCenterY - centerY) <= range;

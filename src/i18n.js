@@ -808,6 +808,7 @@
     ntp.updateVersionText?.();
     ntp.syncCardFrequencyControl?.();
     ntp.syncSoundControls?.();
+    ntp.invalidateHud?.();
     ntp.updateHud?.();
   }
 

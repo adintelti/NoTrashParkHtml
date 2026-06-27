@@ -63,9 +63,28 @@
   const RANGE_BUFF_MULTIPLIER = 1.25;
   const RANGE_SETBACK_MULTIPLIER = 1 / RANGE_BUFF_MULTIPLIER;
   const RANGE_MAX_EPSILON = 0.001;
+  const PROJECTILE_POOL_LIMIT = 80;
+  const IMPACT_POOL_LIMIT = 32;
+  const projectileElementPool = [];
+  const impactElementPool = [];
   let waveTransitionCallback = null;
   let cardChoiceCallback = null;
   let undoHideTimer = 0;
+
+  function acquirePooledElement(pool, className) {
+    const el = pool.pop() || document.createElement("div");
+    el.className = className;
+    dom.board.appendChild(el);
+    return el;
+  }
+
+  function releasePooledElement(pool, limit, el) {
+    if (!el) return;
+    el.remove();
+    if (pool.length >= limit) return;
+    el.className = "";
+    pool.push(el);
+  }
 
   function configureGameplayHooks(hooks) {
     Object.assign(gameplayHooks, hooks);
@@ -1238,7 +1257,11 @@
     const maxHp = Math.round(type.hp * (1 + state.wave * 0.12) * getEnemyModifierMultiplier("hp"));
     const el = document.createElement("div");
     el.className = `enemy ${type.className}`;
-    el.innerHTML = '<div class="health"><span></span></div>';
+    const healthEl = document.createElement("div");
+    const healthBar = document.createElement("span");
+    healthEl.className = "health";
+    healthEl.appendChild(healthBar);
+    el.appendChild(healthEl);
     dom.board.appendChild(el);
 
     const enemy = {
@@ -1252,16 +1275,20 @@
       reward: type.reward,
       slowUntil: 0,
       slowFactor: 1,
+      healthBar,
       el
     };
 
     state.nextEnemyId += 1;
     state.enemies.push(enemy);
+    state.enemiesById?.set(enemy.id, enemy);
     setElementPosition(el, enemy.x, enemy.y);
   }
 
   function moveEnemies(dt) {
-    const path = maps[state.theme].path.map(([x, y]) => ({ x: x + 0.5, y: y + 0.5 }));
+    const path = state.pathCenters?.length
+      ? state.pathCenters
+      : maps[state.theme].path.map(([x, y]) => ({ x: x + 0.5, y: y + 0.5 }));
     const leaked = [];
 
     state.enemies.forEach((enemy) => {
@@ -1309,11 +1336,11 @@
 
   function updateTowers(dt) {
     state.placedTowers.forEach((tower) => {
-      const towerDef = getTowerCombatStats(tower);
-      if (!towerDef) return;
       tower.cooldown -= dt;
       if (tower.cooldown > 0) return;
 
+      const towerDef = getTowerCombatStats(tower);
+      if (!towerDef) return;
       const target = findTarget(tower, towerDef.range);
       if (!target) return;
 
@@ -1325,11 +1352,17 @@
   function findTarget(tower, range) {
     let best = null;
     let bestProgress = -1;
+    const rangeSq = range * range;
 
     state.enemies.forEach((enemy) => {
-      const distance = Math.hypot(enemy.x - tower.x, enemy.y - tower.y);
+      const dx = enemy.x - tower.x;
+      const dy = enemy.y - tower.y;
+      const distanceSq = dx * dx + dy * dy;
+      if (distanceSq > rangeSq) return;
+
+      const distance = Math.sqrt(distanceSq);
       const progress = enemy.pathIndex + distance / 10;
-      if (distance <= range && progress > bestProgress) {
+      if (progress > bestProgress) {
         best = enemy;
         bestProgress = progress;
       }
@@ -1339,9 +1372,10 @@
   }
 
   function fireProjectile(tower, target, towerDef) {
-    const el = document.createElement("div");
-    el.className = `projectile ${towerDef.projectileClass || ""}`.trim();
-    dom.board.appendChild(el);
+    const el = acquirePooledElement(
+      projectileElementPool,
+      `projectile ${towerDef.projectileClass || ""}`.trim()
+    );
 
     const projectile = {
       id: state.nextProjectileId,
@@ -1367,7 +1401,8 @@
     const finished = [];
 
     state.projectiles.forEach((projectile) => {
-      const target = state.enemies.find((enemy) => enemy.id === projectile.targetId);
+      const target = state.enemiesById?.get(projectile.targetId)
+        || state.enemies.find((enemy) => enemy.id === projectile.targetId);
       if (!target) {
         finished.push(projectile);
         return;
@@ -1417,9 +1452,8 @@
       state.waveComboVisible = true;
     }
     enemy.hp -= Math.max(1, amount);
-    const bar = enemy.el.querySelector(".health span");
-    if (bar) {
-      bar.style.width = `${Math.max(0, (enemy.hp / enemy.maxHp) * 100)}%`;
+    if (enemy.healthBar) {
+      enemy.healthBar.style.width = `${Math.max(0, (enemy.hp / enemy.maxHp) * 100)}%`;
     }
     if (enemy.hp <= 0) {
       removeEnemy(enemy, true);
@@ -1431,6 +1465,7 @@
     if (index >= 0) {
       state.enemies.splice(index, 1);
     }
+    state.enemiesById?.delete(enemy.id);
     enemy.el?.remove();
     if (awardCoins) {
       playSfx("enemyDeath");
@@ -1454,13 +1489,11 @@
     if (index >= 0) {
       state.projectiles.splice(index, 1);
     }
-    projectile.el?.remove();
+    releasePooledElement(projectileElementPool, PROJECTILE_POOL_LIMIT, projectile.el);
   }
 
   function createImpact(x, y) {
-    const el = document.createElement("div");
-    el.className = "impact";
-    dom.board.appendChild(el);
+    const el = acquirePooledElement(impactElementPool, "impact");
     const impact = {
       x,
       y,
@@ -1475,7 +1508,7 @@
     state.impacts = state.impacts.filter((impact) => {
       impact.life -= dt;
       if (impact.life <= 0) {
-        impact.el.remove();
+        releasePooledElement(impactElementPool, IMPACT_POOL_LIMIT, impact.el);
         return false;
       }
       return true;
