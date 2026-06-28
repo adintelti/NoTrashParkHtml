@@ -130,7 +130,7 @@
     setCachedText("comboText", dom.comboCounter, `${state.waveDefeated}X`);
     setCachedHidden("comboHidden", dom.comboCounter, !state.waveComboVisible);
     setCachedClass("comboActive", dom.comboCounter, "is-active", state.waveDefeated > 0);
-    setCachedText("pauseLabel", dom.pauseButton, state.paused ? t("actions.resume") : t("actions.pause"));
+    setCachedText("pauseLabel", dom.pauseButton, t("actions.pause"));
     setCachedText("speedLabel", dom.speedButton, `${state.speed}x`);
 
     const shownLives = Math.min(5, state.lives);
@@ -361,6 +361,7 @@
     hideRestartConfirm();
     hideExitConfirm();
     hideTowerDeleteConfirm();
+    hidePauseMenu();
     renderCardChoice();
     dom.cardChoiceOverlay.hidden = false;
     dom.floatingMessage.classList.remove("is-visible");
@@ -412,6 +413,7 @@
     hideRestartConfirm();
     hideExitConfirm();
     hideTowerDeleteConfirm();
+    hidePauseMenu();
     hideCardChoice();
     dom.victoryTitle.textContent = getVictoryTitle(state.theme);
     updateResultDetails();
@@ -428,6 +430,7 @@
     hideRestartConfirm();
     hideExitConfirm();
     hideTowerDeleteConfirm();
+    hidePauseMenu();
     hideCardChoice();
     dom.victoryTitle.textContent = t("victory.gameOver", { map: levelName });
     updateResultDetails();
@@ -455,6 +458,7 @@
   function showRestartConfirm() {
     hideExitConfirm();
     hideTowerDeleteConfirm();
+    hidePauseMenu();
     dom.restartConfirmOverlay.hidden = false;
     dom.restartConfirmNoButton.focus({ preventScroll: true });
   }
@@ -466,6 +470,7 @@
   function showExitConfirm() {
     hideRestartConfirm();
     hideTowerDeleteConfirm();
+    hidePauseMenu();
     dom.exitConfirmOverlay.hidden = false;
     dom.exitConfirmNoButton.focus({ preventScroll: true });
   }
@@ -477,12 +482,67 @@
   function showTowerDeleteConfirm() {
     hideRestartConfirm();
     hideExitConfirm();
+    hidePauseMenu();
     dom.towerDeleteConfirmOverlay.hidden = false;
     dom.towerDeleteConfirmNoButton.focus({ preventScroll: true });
   }
 
   function hideTowerDeleteConfirm() {
     dom.towerDeleteConfirmOverlay.hidden = true;
+  }
+
+  function showPauseMenu() {
+    hideRestartConfirm();
+    hideExitConfirm();
+    hideTowerDeleteConfirm();
+    dom.pauseMenuActions.hidden = false;
+    dom.pauseSoundPanel.hidden = true;
+    syncPauseSaveButton();
+    dom.pauseMenuOverlay.hidden = false;
+    dom.floatingMessage.classList.remove("is-visible");
+    messageTimer = 0;
+    focusPauseTarget(dom.pauseResumeButton);
+  }
+
+  function hidePauseMenu() {
+    dom.pauseMenuOverlay.hidden = true;
+    dom.pauseMenuActions.hidden = false;
+    dom.pauseSoundPanel.hidden = true;
+  }
+
+  function showPauseSoundPanel() {
+    dom.pauseMenuActions.hidden = true;
+    dom.pauseSoundPanel.hidden = false;
+    ntp.syncSoundControls?.();
+    focusPauseTarget(dom.pauseSoundPanel.querySelector("[data-sound-toggle]") || dom.pauseSoundBackButton);
+  }
+
+  function hidePauseSoundPanel() {
+    dom.pauseSoundPanel.hidden = true;
+    dom.pauseMenuActions.hidden = false;
+    focusPauseTarget(dom.pauseSoundButton);
+  }
+
+  function syncPauseSaveButton() {
+    const canSave = Boolean(ntp.canSaveGame?.());
+    dom.pauseSaveExitButton.disabled = !canSave;
+    dom.pauseSaveExitButton.setAttribute("aria-disabled", String(!canSave));
+    dom.pauseSaveExitButton.title = canSave ? "" : t("pause.saveUnavailable");
+  }
+
+  function focusPauseTarget(focusTarget) {
+    if (!focusTarget) return;
+
+    window.requestAnimationFrame(() => {
+      ntp.clearGamepadButtonFocus?.();
+
+      if (dom.app.classList.contains("using-gamepad")) {
+        ntp.focusGamepadButton?.(focusTarget);
+        return;
+      }
+
+      focusTarget.focus({ preventScroll: true });
+    });
   }
 
   function showMenuNote(text) {
@@ -525,6 +585,14 @@
     return !dom.towerDeleteConfirmOverlay.hidden;
   }
 
+  function isPauseMenuOpen() {
+    return !dom.pauseMenuOverlay.hidden;
+  }
+
+  function isPauseSoundPanelOpen() {
+    return isPauseMenuOpen() && !dom.pauseSoundPanel.hidden;
+  }
+
   Object.assign(ntp, {
     invalidateHud,
     updateVersionText,
@@ -549,12 +617,19 @@
     hideExitConfirm,
     showTowerDeleteConfirm,
     hideTowerDeleteConfirm,
+    showPauseMenu,
+    hidePauseMenu,
+    showPauseSoundPanel,
+    hidePauseSoundPanel,
+    syncPauseSaveButton,
     showMenuNote,
     syncThemeButtons,
     isMenuVisible,
     isVictoryOpen,
     isRestartConfirmOpen,
     isExitConfirmOpen,
-    isTowerDeleteConfirmOpen
+    isTowerDeleteConfirmOpen,
+    isPauseMenuOpen,
+    isPauseSoundPanelOpen
   });
 })();

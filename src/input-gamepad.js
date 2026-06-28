@@ -6,6 +6,7 @@
     adjustSoundVolumeFromGamepad,
     cancelTowerDelete,
     clamp,
+    closePauseMenu,
     COLS,
     cycleSelectedTower,
     dom,
@@ -17,6 +18,7 @@
     getTileAt,
     getTowerAtTile,
     hidePlacementPreview,
+    hidePauseSoundPanel,
     closeDifficultyPanel,
     isCardChoiceOpen,
     isCardFrequencyInput,
@@ -25,11 +27,14 @@
     isCustomWavesInput,
     isExitConfirmOpen,
     isMenuVisible,
+    isPauseMenuOpen,
+    isPauseSoundPanelOpen,
     isRestartConfirmOpen,
     isSoundVolumeInput,
     isTowerDeleteConfirmOpen,
     isVictoryOpen,
     normalizeCustomWaves,
+    openPauseMenu,
     placeTower,
     requestTowerDeleteAt,
     resumeDesiredMusic,
@@ -41,7 +46,6 @@
     showMessage,
     state,
     t,
-    togglePause,
     toggleSpeed,
     updatePlacementPreview
   } = ntp;
@@ -100,7 +104,7 @@
   }
 
   function moveGamepadCursor(dx, dy) {
-    if (!state.running || isCardChoiceOpen() || isVictoryOpen() || isRestartConfirmOpen() || isExitConfirmOpen()) return;
+    if (!state.running || isCardChoiceOpen() || isVictoryOpen() || isRestartConfirmOpen() || isExitConfirmOpen() || isTowerDeleteConfirmOpen() || isPauseMenuOpen?.()) return;
 
     const nextX = clamp(gamepadInput.cursorX + dx, 0, COLS - 1);
     const nextY = clamp(gamepadInput.cursorY + dy, 0, ROWS - 1);
@@ -144,7 +148,7 @@
       resumeDesiredMusic();
     }
 
-    if (isCardChoiceOpen() || isVictoryOpen() || isRestartConfirmOpen() || isExitConfirmOpen() || isTowerDeleteConfirmOpen() || isMenuVisible()) {
+    if (isCardChoiceOpen() || isVictoryOpen() || isRestartConfirmOpen() || isExitConfirmOpen() || isTowerDeleteConfirmOpen() || isPauseMenuOpen?.() || isMenuVisible()) {
       updateMenuGamepadInput(dt, direction, justPressed);
     } else if (state.running) {
       updateGameplayGamepadInput(dt, direction, justPressed);
@@ -229,13 +233,15 @@
             ? dom.exitConfirmOverlay
             : isTowerDeleteConfirmOpen()
               ? dom.towerDeleteConfirmOverlay
-              : isDifficultyPanelOpen()
-                ? dom.difficultyPanel
-                : !dom.configPanel.hidden
-                  ? dom.configPanel
-                  : isMenuVisible()
-                    ? dom.menu
-                    : null;
+              : isPauseMenuOpen?.()
+                ? dom.pauseMenuOverlay
+                : isDifficultyPanelOpen()
+                  ? dom.difficultyPanel
+                  : !dom.configPanel.hidden
+                    ? dom.configPanel
+                    : isMenuVisible()
+                      ? dom.menu
+                      : null;
   }
 
   function getGamepadFocusableButtons() {
@@ -579,7 +585,8 @@
       }
 
       if (justPressed(gamepadButtons.a) || justPressed(gamepadButtons.b) || justPressed(gamepadButtons.start)) {
-        const soundToggle = dom.configPanel.querySelector(`[data-sound-toggle="${document.activeElement.dataset.soundVolume}"]`);
+        const soundRoot = document.activeElement.closest(".config-panel, .pause-sound-panel") || document;
+        const soundToggle = soundRoot.querySelector(`[data-sound-toggle="${document.activeElement.dataset.soundVolume}"]`);
         localFocusGamepadButton(soundToggle);
       }
       return;
@@ -620,6 +627,10 @@
         dom.exitConfirmNoButton.click();
       } else if (isTowerDeleteConfirmOpen()) {
         cancelTowerDelete();
+      } else if (isPauseSoundPanelOpen?.()) {
+        hidePauseSoundPanel?.();
+      } else if (isPauseMenuOpen?.()) {
+        closePauseMenu?.();
       } else if (isDifficultyPanelOpen()) {
         closeDifficultyPanel();
         localFocusGamepadButton(dom.playButton);
@@ -657,7 +668,7 @@
     }
 
     if (justPressed(gamepadButtons.x) || justPressed(gamepadButtons.start)) {
-      togglePause();
+      openPauseMenu?.();
     }
 
     if (justPressed(gamepadButtons.y)) {

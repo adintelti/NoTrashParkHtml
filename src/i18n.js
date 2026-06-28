@@ -30,6 +30,7 @@
         screenAria: "Menu principal",
         controlsAria: "Controles do menu por controle",
         actionsAria: "Menu",
+        continue: "Continuar",
         play: "Jogar",
         config: "Config.",
         exit: "Sair",
@@ -108,6 +109,12 @@
       actions: {
         pause: "Pause",
         resume: "Retomar"
+      },
+      pause: {
+        title: "Pausado",
+        actionsAria: "Menu de pausa",
+        saveExit: "Salvar e sair",
+        saveUnavailable: "Nao e possivel salvar agora"
       },
       confirm: {
         restartTitle: "Deseja realmente reiniciar o jogo?",
@@ -267,6 +274,7 @@
         screenAria: "Main menu",
         controlsAria: "Gamepad menu controls",
         actionsAria: "Menu",
+        continue: "Continue",
         play: "Play",
         config: "Settings",
         exit: "Exit",
@@ -345,6 +353,12 @@
       actions: {
         pause: "Pause",
         resume: "Resume"
+      },
+      pause: {
+        title: "Paused",
+        actionsAria: "Pause menu",
+        saveExit: "Save and exit",
+        saveUnavailable: "Cannot save right now"
       },
       confirm: {
         restartTitle: "Do you really want to restart the game?",
@@ -504,6 +518,7 @@
         screenAria: "Menu principal",
         controlsAria: "Controles del menu con mando",
         actionsAria: "Menu",
+        continue: "Continuar",
         play: "Jugar",
         config: "Config.",
         exit: "Salir",
@@ -582,6 +597,12 @@
       actions: {
         pause: "Pausa",
         resume: "Retomar"
+      },
+      pause: {
+        title: "Pausado",
+        actionsAria: "Menu de pausa",
+        saveExit: "Guardar y salir",
+        saveUnavailable: "No se puede guardar ahora"
       },
       confirm: {
         restartTitle: "Realmente quieres reiniciar el juego?",
@@ -808,6 +829,8 @@
     ntp.updateVersionText?.();
     ntp.syncCardFrequencyControl?.();
     ntp.syncSoundControls?.();
+    ntp.syncPauseSaveButton?.();
+    ntp.syncSavedGameButton?.();
     ntp.invalidateHud?.();
     ntp.updateHud?.();
   }

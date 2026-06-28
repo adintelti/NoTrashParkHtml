@@ -15,6 +15,7 @@
     getUnlockedTowerKeys,
     hideCardChoice,
     hideExitConfirm,
+    hidePauseMenu,
     hidePlacementPreview,
     hideRestartConfirm,
     hideTowerDeleteConfirm,
@@ -33,6 +34,7 @@
     showCardChoice,
     showGameOver,
     showMessage,
+    showPauseMenu,
     showTowerDeleteConfirm,
     showWaveTransition,
     showVictory,
@@ -42,7 +44,8 @@
     towerOrder,
     towers,
     updateHud,
-    ensureSelectedTowerUnlocked
+    ensureSelectedTowerUnlocked,
+    isPauseMenuOpen
   } = ntp;
 
   const gameplayHooks = {
@@ -123,6 +126,7 @@
   }
 
   function startGame(theme = state.theme) {
+    ntp.clearSavedGame?.();
     resetState(theme, getConfiguredWaveLimit());
     clearUndoPlacement();
     ensureSelectedTowerUnlocked();
@@ -134,6 +138,7 @@
     hideRestartConfirm();
     hideExitConfirm();
     hideTowerDeleteConfirm();
+    hidePauseMenu();
     hideCardChoice();
     hideWaveTransition();
     hideVictory();
@@ -160,6 +165,7 @@
     hideRestartConfirm();
     hideExitConfirm();
     hideTowerDeleteConfirm();
+    hidePauseMenu();
     hideCardChoice();
     hideWaveTransition();
     hideVictory();
@@ -497,9 +503,42 @@
   }
 
   function togglePause() {
-    if (!state.running || state.gameOver || state.cardChoice.active || isVictoryOpen()) return;
-    state.paused = !state.paused;
+    if (isPauseMenuOpen?.()) {
+      closePauseMenu();
+      return;
+    }
+    openPauseMenu();
+  }
+
+  function openPauseMenu() {
+    if (
+      !state.running
+      || state.gameOver
+      || state.cardChoice.active
+      || state.waveTransitionActive
+      || state.victoryPending
+      || isVictoryOpen()
+    ) {
+      return false;
+    }
+
+    setDeleteMode(false, { silent: true });
+    hidePlacementPreview();
+    state.paused = true;
     updateHud();
+    showPauseMenu();
+    return true;
+  }
+
+  function closePauseMenu() {
+    if (!isPauseMenuOpen?.()) return false;
+    hidePauseMenu();
+    if (state.running && !state.gameOver && !state.victoryPending) {
+      state.paused = false;
+    }
+    updateHud();
+    refreshPlacementPreview();
+    return true;
   }
 
   function toggleSpeed() {
@@ -530,6 +569,7 @@
       clearUndoPlacement();
       state.victoryShown = true;
       state.victoryPending = true;
+      ntp.clearSavedGame?.();
       showVictory();
       updateHud();
       logDebug("system", "Victory pending", {
@@ -1519,8 +1559,10 @@
     if (state.gameOver) return;
     state.gameOver = true;
     state.waveComboVisible = false;
+    ntp.clearSavedGame?.();
     setDeleteMode(false, { silent: true });
     clearUndoPlacement();
+    hidePauseMenu();
     hideVictory();
     state.lives = 0;
     showGameOver();
@@ -1555,6 +1597,8 @@
     getTowerCombatStats,
     update,
     togglePause,
+    openPauseMenu,
+    closePauseMenu,
     toggleSpeed,
     cycleSelectedTower,
     startNextWave,

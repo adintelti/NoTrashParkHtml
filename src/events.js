@@ -4,6 +4,7 @@
     beginWaveSpawn,
     cancelTowerDelete,
     clearGamepadButtonFocus,
+    closePauseMenu,
     continueCardChoice,
     confirmTowerDelete,
     dom,
@@ -13,6 +14,7 @@
     handleGamepadConnected,
     handleGamepadDisconnected,
     hideExitConfirm,
+    hidePauseSoundPanel,
     hidePlacementPreview,
     hideRestartConfirm,
     hideVictory,
@@ -21,12 +23,16 @@
     isCardFrequencyInput,
     isExitConfirmOpen,
     isDifficultyPanelOpen,
+    isPauseMenuOpen,
+    isPauseSoundPanelOpen,
     isRestartConfirmOpen,
     isTowerDeleteConfirmOpen,
+    loadSavedGame,
     markPointerInputActive,
     measureBoard,
     normalizeCustomWaves,
     openDifficultyPanel,
+    openPauseMenu,
     placeTower,
     refreshPlacementPreview,
     requestTowerDeleteAt,
@@ -45,15 +51,18 @@
     setTheme,
     settings,
     getSoundSettings,
+    saveGame,
     showExitConfirm,
+    showPauseSoundPanel,
     showRestartConfirm,
     showMenuNote,
     startGame,
     state,
     syncDifficultyButtons,
+    syncPauseSaveButton,
+    syncSavedGameButton,
     syncThemeButtons,
     t,
-    togglePause,
     toggleDeleteMode,
     toggleSpeed,
     undoLastTowerPlacement,
@@ -107,7 +116,23 @@
     returnToMenu();
   }
 
+  function saveAndExitFromPause() {
+    if (!saveGame?.()) {
+      syncPauseSaveButton?.();
+      return;
+    }
+
+    closePauseMenu?.();
+    returnToMenu();
+    syncSavedGameButton?.();
+  }
+
   function bindEvents() {
+    dom.continueButton.addEventListener("click", () => {
+      if (!loadSavedGame?.()) {
+        syncSavedGameButton?.();
+      }
+    });
     dom.playButton.addEventListener("click", () => {
       openDifficultyPanel();
       focusGamepadButton(dom.difficultyPanel.querySelector("[data-difficulty]"));
@@ -136,7 +161,11 @@
       showMenuNote(t("menu.demoReady"));
     });
     dom.backToMenuButton.addEventListener("click", openExitConfirm);
-    dom.pauseButton.addEventListener("click", togglePause);
+    dom.pauseButton.addEventListener("click", openPauseMenu);
+    dom.pauseResumeButton.addEventListener("click", closePauseMenu);
+    dom.pauseSoundButton.addEventListener("click", showPauseSoundPanel);
+    dom.pauseSoundBackButton.addEventListener("click", hidePauseSoundPanel);
+    dom.pauseSaveExitButton.addEventListener("click", saveAndExitFromPause);
     dom.speedButton.addEventListener("click", toggleSpeed);
     dom.undoTowerButton.addEventListener("click", undoLastTowerPlacement);
     dom.deleteTowerButton.addEventListener("click", () => {
@@ -218,11 +247,15 @@
       setCardFrequency(Number(dom.cardFrequencyInput.value));
     });
 
-    dom.bgmToggleButton.addEventListener("click", () => {
-      setBgmEnabled(!getSoundSettings().bgmEnabled);
-    });
-    dom.sfxToggleButton.addEventListener("click", () => {
-      setSfxEnabled(!getSoundSettings().sfxEnabled);
+    document.querySelectorAll("[data-sound-toggle]").forEach((button) => {
+      button.addEventListener("click", () => {
+        if (button.dataset.soundToggle === "bgm") {
+          setBgmEnabled(!getSoundSettings().bgmEnabled);
+          return;
+        }
+
+        setSfxEnabled(!getSoundSettings().sfxEnabled);
+      });
     });
     document.querySelectorAll("[data-controller-layout]").forEach((button) => {
       button.addEventListener("click", () => setControllerLayout(button.dataset.controllerLayout));
@@ -230,11 +263,15 @@
     document.querySelectorAll("[data-language]").forEach((button) => {
       button.addEventListener("click", () => setLanguage(button.dataset.language));
     });
-    dom.bgmVolumeInput.addEventListener("input", () => {
-      setBgmMasterVolume(Number(dom.bgmVolumeInput.value) / 100);
-    });
-    dom.sfxVolumeInput.addEventListener("input", () => {
-      setSfxMasterVolume(Number(dom.sfxVolumeInput.value) / 100);
+    document.querySelectorAll("[data-sound-volume]").forEach((input) => {
+      input.addEventListener("input", () => {
+        if (input.dataset.soundVolume === "bgm") {
+          setBgmMasterVolume(Number(input.value) / 100);
+          return;
+        }
+
+        setSfxMasterVolume(Number(input.value) / 100);
+      });
     });
 
     dom.towerShop.addEventListener("click", (event) => {
@@ -289,6 +326,12 @@
         event.preventDefault();
         closeDifficultyPanel();
         focusGamepadButton(dom.playButton);
+      } else if (event.key === "Escape" && isPauseSoundPanelOpen?.()) {
+        event.preventDefault();
+        hidePauseSoundPanel?.();
+      } else if (event.key === "Escape" && isPauseMenuOpen?.()) {
+        event.preventDefault();
+        closePauseMenu?.();
       }
     });
     window.addEventListener("resize", measureBoard);

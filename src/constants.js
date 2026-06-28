@@ -3,7 +3,7 @@
 
   ntp.COLS = 12;
   ntp.ROWS = 9;
-  ntp.GAME_VERSION = "2.0.4";
+  ntp.GAME_VERSION = "2.1.0";
   ntp.DEFAULT_LANGUAGE = "pt-BR";
   ntp.SUPPORTED_LANGUAGES = ["pt-BR", "en", "es"];
   ntp.MIN_CUSTOM_WAVES = 20;

@@ -419,6 +419,18 @@
     return { ...soundSettings };
   }
 
+  function getSoundToggleButtons(type) {
+    return Array.from(document.querySelectorAll(`[data-sound-toggle="${type}"]`));
+  }
+
+  function getSoundVolumeInputs(type) {
+    return Array.from(document.querySelectorAll(`[data-sound-volume="${type}"]`));
+  }
+
+  function getSoundVolumeTexts(type) {
+    return Array.from(document.querySelectorAll(`[data-sound-volume-text="${type}"]`));
+  }
+
   function isSoundVolumeInput(el) {
     return Boolean(el?.dataset?.soundVolume);
   }
@@ -446,17 +458,31 @@
   }
 
   function syncSoundControls() {
-    dom.bgmToggleButton.classList.toggle("is-active", soundSettings.bgmEnabled);
-    dom.bgmToggleButton.textContent = `BGM ${t(soundSettings.bgmEnabled ? "sound.on" : "sound.off")}`;
-    dom.sfxToggleButton.classList.toggle("is-active", soundSettings.sfxEnabled);
-    dom.sfxToggleButton.textContent = `SFX ${t(soundSettings.sfxEnabled ? "sound.on" : "sound.off")}`;
+    getSoundToggleButtons("bgm").forEach((button) => {
+      button.classList.toggle("is-active", soundSettings.bgmEnabled);
+      button.textContent = `BGM ${t(soundSettings.bgmEnabled ? "sound.on" : "sound.off")}`;
+      button.setAttribute("aria-pressed", String(soundSettings.bgmEnabled));
+    });
+    getSoundToggleButtons("sfx").forEach((button) => {
+      button.classList.toggle("is-active", soundSettings.sfxEnabled);
+      button.textContent = `SFX ${t(soundSettings.sfxEnabled ? "sound.on" : "sound.off")}`;
+      button.setAttribute("aria-pressed", String(soundSettings.sfxEnabled));
+    });
 
     const bgmPercent = Math.round(soundSettings.bgmVolume * 100);
     const sfxPercent = Math.round(soundSettings.sfxVolume * 100);
-    dom.bgmVolumeInput.value = String(bgmPercent);
-    dom.sfxVolumeInput.value = String(sfxPercent);
-    dom.bgmVolumeText.textContent = `${bgmPercent}%`;
-    dom.sfxVolumeText.textContent = `${sfxPercent}%`;
+    getSoundVolumeInputs("bgm").forEach((input) => {
+      input.value = String(bgmPercent);
+    });
+    getSoundVolumeInputs("sfx").forEach((input) => {
+      input.value = String(sfxPercent);
+    });
+    getSoundVolumeTexts("bgm").forEach((text) => {
+      text.textContent = `${bgmPercent}%`;
+    });
+    getSoundVolumeTexts("sfx").forEach((text) => {
+      text.textContent = `${sfxPercent}%`;
+    });
   }
 
   function loadSoundSettings() {

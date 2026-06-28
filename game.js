@@ -19,6 +19,7 @@
     syncControllerLayout,
     syncDifficultyButtons,
     syncGamepadCursor,
+    syncSavedGameButton,
     updateHud,
     updateVersionText
   } = window.NTP;
@@ -33,7 +34,7 @@
       playMenuMusic();
       clearGamepadCursor();
       if (isGamepadConnected()) {
-        focusGamepadButton(dom.playButton);
+        focusGamepadButton(dom.continueButton.hidden ? dom.playButton : dom.continueButton);
       }
     },
     afterTowerPlaced() {
@@ -47,6 +48,7 @@
   syncControllerLayout();
   syncCardFrequencyControl();
   syncDifficultyButtons();
+  syncSavedGameButton();
   updateHud();
   initializeBackgroundMusic();
   startLoop();

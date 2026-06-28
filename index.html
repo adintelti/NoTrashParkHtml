@@ -16,6 +16,7 @@
     <script src="src/ui.js" defer></script>
     <script src="src/audio.js" defer></script>
     <script src="src/gameplay.js" defer></script>
+    <script src="src/save-game.js" defer></script>
     <script src="src/input-gamepad.js" defer></script>
     <script src="src/events.js" defer></script>
     <script src="src/loop.js" defer></script>
@@ -63,6 +64,7 @@
         </div>
 
         <nav class="menu-actions" aria-label="Menu" data-i18n-aria-label="menu.actionsAria">
+          <button id="continueButton" class="pixel-button menu-button" type="button" data-i18n="menu.continue" hidden>Continuar</button>
           <button id="playButton" class="pixel-button menu-button" type="button" data-i18n="menu.play">Jogar</button>
           <button id="configButton" class="pixel-button menu-button" type="button" data-i18n="menu.config">Config.</button>
           <button id="exitButton" class="pixel-button menu-button" type="button" data-i18n="menu.exit">Sair</button>
@@ -114,13 +116,13 @@
             <label class="sound-row" for="bgmVolumeInput">
               <span>BGM</span>
               <input id="bgmVolumeInput" class="sound-slider" data-sound-volume="bgm" type="range" min="0" max="100" step="5" value="100" aria-label="Volume principal da musica" data-i18n-aria-label="settings.bgmVolumeAria">
-              <strong id="bgmVolumeText">100%</strong>
+              <strong id="bgmVolumeText" data-sound-volume-text="bgm">100%</strong>
             </label>
 
             <label class="sound-row" for="sfxVolumeInput">
               <span>SFX</span>
               <input id="sfxVolumeInput" class="sound-slider" data-sound-volume="sfx" type="range" min="0" max="100" step="5" value="100" aria-label="Volume principal dos efeitos" data-i18n-aria-label="settings.sfxVolumeAria">
-              <strong id="sfxVolumeText">100%</strong>
+              <strong id="sfxVolumeText" data-sound-volume-text="sfx">100%</strong>
             </label>
           </div>
 
@@ -386,6 +388,39 @@
               <div class="confirm-actions" aria-label="Confirmar remocao" data-i18n-aria-label="confirm.towerDeleteAria">
                 <button id="towerDeleteConfirmYesButton" class="pixel-button confirm-button" type="button" data-i18n="common.remove">Remover</button>
                 <button id="towerDeleteConfirmNoButton" class="pixel-button confirm-button" type="button" data-i18n="common.cancel">Cancelar</button>
+              </div>
+            </div>
+          </div>
+
+          <div id="pauseMenuOverlay" class="pause-menu-overlay" role="dialog" aria-modal="true" aria-labelledby="pauseMenuTitle" hidden>
+            <div class="pause-menu-card">
+              <h2 id="pauseMenuTitle" data-i18n="pause.title">Pausado</h2>
+              <div id="pauseMenuActions" class="pause-menu-actions" aria-label="Menu de pausa" data-i18n-aria-label="pause.actionsAria">
+                <button id="pauseResumeButton" class="pixel-button pause-menu-button" type="button" data-i18n="actions.resume">Retomar</button>
+                <button id="pauseSoundButton" class="pixel-button pause-menu-button" type="button" data-i18n="settings.sound">Som</button>
+                <button id="pauseSaveExitButton" class="pixel-button pause-menu-button" type="button" data-i18n="pause.saveExit">Salvar e sair</button>
+              </div>
+
+              <div id="pauseSoundPanel" class="pause-sound-panel" aria-label="Opcoes de som" data-i18n-aria-label="settings.soundToggles" hidden>
+                <div class="config-title" data-i18n="settings.sound">Som</div>
+                <div class="sound-toggle-grid" role="group" aria-label="Opcoes de som" data-i18n-aria-label="settings.soundToggles">
+                  <button class="seg-button is-active" data-sound-toggle="bgm" type="button">BGM On</button>
+                  <button class="seg-button is-active" data-sound-toggle="sfx" type="button">SFX On</button>
+                </div>
+
+                <label class="sound-row">
+                  <span>BGM</span>
+                  <input class="sound-slider" data-sound-volume="bgm" type="range" min="0" max="100" step="5" value="100" aria-label="Volume principal da musica" data-i18n-aria-label="settings.bgmVolumeAria">
+                  <strong data-sound-volume-text="bgm">100%</strong>
+                </label>
+
+                <label class="sound-row">
+                  <span>SFX</span>
+                  <input class="sound-slider" data-sound-volume="sfx" type="range" min="0" max="100" step="5" value="100" aria-label="Volume principal dos efeitos" data-i18n-aria-label="settings.sfxVolumeAria">
+                  <strong data-sound-volume-text="sfx">100%</strong>
+                </label>
+
+                <button id="pauseSoundBackButton" class="pixel-button pause-menu-button" type="button" data-i18n="common.back">Voltar</button>
               </div>
             </div>
           </div>
