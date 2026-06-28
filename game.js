@@ -12,6 +12,9 @@
     isGamepadConnected,
     playMenuMusic,
     playThemeMusic,
+    refreshSavedGameFromStorage,
+    registerServiceWorker,
+    requestPersistentStorage,
     resetGamepadCursor,
     startLoop,
     state,
@@ -20,6 +23,7 @@
     syncDifficultyButtons,
     syncGamepadCursor,
     syncSavedGameButton,
+    bindAutosaveLifecycle,
     updateHud,
     updateVersionText
   } = window.NTP;
@@ -49,7 +53,11 @@
   syncCardFrequencyControl();
   syncDifficultyButtons();
   syncSavedGameButton();
+  refreshSavedGameFromStorage?.();
   updateHud();
   initializeBackgroundMusic();
+  requestPersistentStorage?.();
+  bindAutosaveLifecycle?.();
+  registerServiceWorker?.();
   startLoop();
 })();

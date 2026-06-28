@@ -3,6 +3,11 @@
 
   const SAVE_STORAGE_KEY = "ntp.savedGame";
   const SAVE_VERSION = 1;
+  const AUTOSAVE_INTERVAL_MS = 15000;
+
+  let cachedSnapshot = null;
+  let autosaveBound = false;
+  let lastAutosaveAt = 0;
 
   const savedStateFields = [
     "theme",
@@ -47,13 +52,16 @@
   function saveGame() {
     if (!canSaveGame()) return false;
 
-    try {
-      window.localStorage.setItem(SAVE_STORAGE_KEY, JSON.stringify(createSaveSnapshot()));
+    const snapshot = createSaveSnapshot();
+    cachedSnapshot = snapshot;
+    const saved = writeSavedSnapshot(snapshot);
+
+    if (saved) {
+      lastAutosaveAt = Date.now();
       syncSavedGameButton();
-      return true;
-    } catch (error) {
-      return false;
     }
+
+    return saved;
   }
 
   function loadSavedGame() {
@@ -70,17 +78,40 @@
   }
 
   function clearSavedGame() {
-    try {
-      window.localStorage.removeItem(SAVE_STORAGE_KEY);
-    } catch (error) {
-      // The in-memory game can continue even when storage is unavailable.
-    }
+    cachedSnapshot = null;
+    removeSavedSnapshot();
     syncSavedGameButton();
   }
 
   function syncSavedGameButton() {
     if (!ntp.dom?.continueButton) return;
     ntp.dom.continueButton.hidden = !hasSavedGame();
+  }
+
+  function writeSavedSnapshot(snapshot) {
+    if (ntp.writePersistentJson) {
+      return ntp.writePersistentJson(SAVE_STORAGE_KEY, snapshot);
+    }
+
+    try {
+      window.localStorage.setItem(SAVE_STORAGE_KEY, JSON.stringify(snapshot));
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  function removeSavedSnapshot() {
+    if (ntp.removePersistentJson) {
+      ntp.removePersistentJson(SAVE_STORAGE_KEY);
+      return;
+    }
+
+    try {
+      window.localStorage.removeItem(SAVE_STORAGE_KEY);
+    } catch (error) {
+      // The in-memory game can continue even when storage is unavailable.
+    }
   }
 
   function createSaveSnapshot() {
@@ -192,29 +223,59 @@
   }
 
   function readSavedSnapshot() {
-    let snapshot;
+    if (isValidSnapshot(cachedSnapshot)) {
+      return cachedSnapshot;
+    }
+
+    const snapshot = readSavedSnapshotSync();
+    if (!isValidSnapshot(snapshot)) {
+      if (snapshot) clearCorruptSave();
+      cachedSnapshot = null;
+      return null;
+    }
+
+    cachedSnapshot = snapshot;
+    return snapshot;
+  }
+
+  function readSavedSnapshotSync() {
+    if (ntp.readPersistentJsonSync) {
+      return ntp.readPersistentJsonSync(SAVE_STORAGE_KEY);
+    }
 
     try {
-      snapshot = JSON.parse(window.localStorage.getItem(SAVE_STORAGE_KEY) || "null");
+      return JSON.parse(window.localStorage.getItem(SAVE_STORAGE_KEY) || "null");
     } catch (error) {
       clearCorruptSave();
       return null;
     }
+  }
 
-    if (!isValidSnapshot(snapshot)) {
-      if (snapshot) clearCorruptSave();
-      return null;
+  async function refreshSavedGameFromStorage() {
+    let snapshot = null;
+
+    try {
+      snapshot = ntp.readPersistentJson
+        ? await ntp.readPersistentJson(SAVE_STORAGE_KEY)
+        : readSavedSnapshotSync();
+    } catch (error) {
+      snapshot = readSavedSnapshotSync();
     }
 
-    return snapshot;
+    if (isValidSnapshot(snapshot)) {
+      cachedSnapshot = snapshot;
+    } else {
+      if (snapshot) clearCorruptSave();
+      cachedSnapshot = null;
+    }
+
+    syncSavedGameButton();
+    return Boolean(cachedSnapshot);
   }
 
   function clearCorruptSave() {
-    try {
-      window.localStorage.removeItem(SAVE_STORAGE_KEY);
-    } catch (error) {
-      // Ignore corrupt storage cleanup failures.
-    }
+    cachedSnapshot = null;
+    removeSavedSnapshot();
   }
 
   function isValidSnapshot(snapshot) {
@@ -432,12 +493,49 @@
     return Number.isFinite(value) ? value : fallback;
   }
 
+  function autosaveGame(reason = "auto") {
+    if (!canSaveGame()) return false;
+
+    const now = Date.now();
+    if (reason === "interval" && now - lastAutosaveAt < AUTOSAVE_INTERVAL_MS) {
+      return false;
+    }
+
+    const saved = saveGame();
+    if (saved) {
+      ntp.debugLog?.("system", "Game autosaved", { reason });
+    }
+    return saved;
+  }
+
+  function bindAutosaveLifecycle() {
+    if (autosaveBound) return;
+    autosaveBound = true;
+
+    window.setInterval(() => autosaveGame("interval"), AUTOSAVE_INTERVAL_MS);
+
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "hidden") {
+        autosaveGame("visibilitychange");
+        return;
+      }
+
+      refreshSavedGameFromStorage();
+    });
+
+    window.addEventListener("pagehide", () => autosaveGame("pagehide"));
+    window.addEventListener("beforeunload", () => autosaveGame("beforeunload"));
+  }
+
   Object.assign(ntp, {
     canSaveGame,
     saveGame,
     loadSavedGame,
     hasSavedGame,
     clearSavedGame,
-    syncSavedGameButton
+    syncSavedGameButton,
+    refreshSavedGameFromStorage,
+    autosaveGame,
+    bindAutosaveLifecycle
   });
 })();

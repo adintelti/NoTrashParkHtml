@@ -53,6 +53,7 @@
     getSoundSettings,
     saveGame,
     showExitConfirm,
+    showMessage,
     showPauseSoundPanel,
     showRestartConfirm,
     showMenuNote,
@@ -119,6 +120,7 @@
   function saveAndExitFromPause() {
     if (!saveGame?.()) {
       syncPauseSaveButton?.();
+      showMessage?.(t("pause.saveUnavailable"));
       return;
     }
 
