@@ -79,11 +79,51 @@
       shopButtonCache = Array.from(document.querySelectorAll(".shop-button[data-tower]")).map((button) => ({
         button,
         labelEl: button.querySelector("span"),
-        priceEl: button.querySelector("strong")
+        priceEl: button.querySelector("strong"),
+        attackEl: ensureShopStatEl(button, "shop-attack"),
+        rangeEl: ensureShopStatEl(button, "shop-range")
       }));
     }
 
     return shopButtonCache;
+  }
+
+  function ensureShopStatEl(button, className) {
+    let statEl = button.querySelector(`.${className}`);
+    if (!statEl) {
+      statEl = document.createElement("small");
+      button.appendChild(statEl);
+    }
+
+    statEl.classList.add("shop-stat", className);
+    return statEl;
+  }
+
+  function getTowerShopStats(towerKey) {
+    return ntp.getTowerCombatStats?.(towerKey) || towers[towerKey];
+  }
+
+  function getTowerAttackValue(towerKey) {
+    const towerStats = getTowerShopStats(towerKey);
+    return Number.isFinite(towerStats?.damage) ? Math.round(towerStats.damage) : null;
+  }
+
+  function getTowerRangeValue(towerKey) {
+    const towerStats = getTowerShopStats(towerKey);
+    return Number.isFinite(towerStats?.range) ? towerStats.range : null;
+  }
+
+  function formatTowerRangeValue(rangeValue) {
+    if (!Number.isFinite(rangeValue)) return "";
+    return Number.isInteger(rangeValue)
+      ? String(rangeValue)
+      : rangeValue.toFixed(1).replace(/\.0$/, "");
+  }
+
+  function getShopStatsSignature() {
+    return Object.keys(towers)
+      .map((towerKey) => `${towerKey}:${getTowerAttackValue(towerKey) ?? ""}:${formatTowerRangeValue(getTowerRangeValue(towerKey))}`)
+      .join(",");
   }
 
   function getUndoSecondsEl() {
@@ -145,7 +185,7 @@
       hudCache.shownLives = shownLives;
     }
 
-    const shopSignature = `${state.coins}|${state.theme}|${state.selectedTower}|${settings.language}`;
+    const shopSignature = `${state.coins}|${state.theme}|${state.selectedTower}|${settings.language}|${getShopStatsSignature()}`;
     if (hudCache.shopSignature !== shopSignature) {
       syncShopButtons();
       hudCache.shopSignature = shopSignature;
@@ -156,12 +196,15 @@
   }
 
   function syncShopButtons() {
-    getShopButtons().forEach(({ button, labelEl, priceEl }) => {
+    getShopButtons().forEach(({ button, labelEl, priceEl, attackEl, rangeEl }) => {
       const towerKey = button.dataset.tower;
       const towerDef = towers[towerKey];
       const towerLabel = getTowerLabel(towerKey);
       const isUnlocked = isTowerUnlocked(towerKey, state.theme);
       const isActive = isUnlocked && towerKey === state.selectedTower;
+      const attackValue = getTowerAttackValue(towerKey);
+      const rangeValue = getTowerRangeValue(towerKey);
+      const rangeLabel = formatTowerRangeValue(rangeValue);
       button.classList.toggle("is-active", isActive);
       button.classList.toggle("is-locked", !isUnlocked);
       button.disabled = !isUnlocked || state.coins < towerDef.cost;
@@ -169,7 +212,7 @@
       button.setAttribute(
         "aria-label",
         isUnlocked
-          ? t("shop.towerAria", { tower: towerLabel, price: towerDef.cost })
+          ? t("shop.towerAria", { tower: towerLabel, price: towerDef.cost, attack: attackValue, range: rangeLabel })
           : t("shop.towerLockedAria", { tower: towerLabel })
       );
       if (labelEl) {
@@ -177,6 +220,16 @@
       }
       if (priceEl) {
         priceEl.textContent = isUnlocked ? `$${towerDef.cost}` : t("shop.lockedShort");
+      }
+      if (attackEl) {
+        const showAttack = isUnlocked && attackValue !== null;
+        attackEl.hidden = !showAttack;
+        attackEl.textContent = showAttack ? t("shop.attackShort", { attack: attackValue }) : "";
+      }
+      if (rangeEl) {
+        const showRange = isUnlocked && rangeLabel !== "";
+        rangeEl.hidden = !showRange;
+        rangeEl.textContent = showRange ? t("shop.rangeShort", { range: rangeLabel }) : "";
       }
     });
   }

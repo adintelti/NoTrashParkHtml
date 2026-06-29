@@ -237,6 +237,15 @@
     font-size: 0.64rem;
   }
 
+  .tower-shop .shop-button {
+    min-height: 72px;
+  }
+
+  .shop-stat {
+    padding: 1px 3px;
+    font-size: 0.5rem;
+  }
+
   .shop-tools {
     gap: 6px;
     margin-top: 8px;

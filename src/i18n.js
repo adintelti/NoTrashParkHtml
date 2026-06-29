@@ -102,7 +102,9 @@
         select: "Selecionar",
         lockedShort: "Bloq.",
         lockedBiome: "Bloqueada neste bioma",
-        towerAria: "{tower} ${price}",
+        attackShort: "ATQ {attack}",
+        rangeShort: "ALC {range}",
+        towerAria: "{tower} ${price}, ataque {attack}, alcance {range}",
         towerLockedAria: "{tower} bloqueada",
         undoAria: "Desfazer ultima torre {seconds}"
       },
@@ -346,7 +348,9 @@
         select: "Select",
         lockedShort: "Lock",
         lockedBiome: "Locked in this biome",
-        towerAria: "{tower} ${price}",
+        attackShort: "ATK {attack}",
+        rangeShort: "RNG {range}",
+        towerAria: "{tower} ${price}, attack {attack}, range {range}",
         towerLockedAria: "{tower} locked",
         undoAria: "Undo last tower {seconds}"
       },
@@ -590,7 +594,9 @@
         select: "Seleccionar",
         lockedShort: "Bloq.",
         lockedBiome: "Bloqueada en este bioma",
-        towerAria: "{tower} ${price}",
+        attackShort: "ATQ {attack}",
+        rangeShort: "ALC {range}",
+        towerAria: "{tower} ${price}, ataque {attack}, alcance {range}",
         towerLockedAria: "{tower} bloqueada",
         undoAria: "Deshacer ultima torre {seconds}"
       },

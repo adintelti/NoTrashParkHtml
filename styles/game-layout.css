@@ -202,8 +202,35 @@
   text-align: left;
 }
 
+.tower-shop .shop-button {
+  min-height: 88px;
+}
+
 .shop-button strong {
   font-size: 0.8rem;
+}
+
+.shop-stat {
+  width: fit-content;
+  padding: 2px 4px;
+  border: 2px solid rgba(53, 29, 11, 0.58);
+  color: #fff7cc;
+  background: rgba(53, 29, 11, 0.46);
+  box-shadow:
+    inset 2px 2px 0 rgba(255, 240, 161, 0.18),
+    inset -2px -2px 0 rgba(22, 11, 0, 0.28);
+  font-size: 0.62rem;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.shop-range {
+  color: #dfffea;
+  background: rgba(13, 73, 47, 0.48);
+}
+
+.shop-stat[hidden] {
+  display: none;
 }
 
 .shop-tool-button {
