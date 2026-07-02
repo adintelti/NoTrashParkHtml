@@ -1,0 +1,474 @@
+{
+  "app": "No Trash Park HTML sprite export",
+  "scaleKey": "current_1x",
+  "scale": 1,
+  "tilePixels": 70,
+  "image": "current_1x/sheets/entities_effects.png",
+  "size": {
+    "width": 1461,
+    "height": 292
+  },
+  "paddingPx": 2,
+  "frames": {
+    "placement_range_sentinel_4_cells": {
+      "frame": {
+        "x": 2,
+        "y": 2,
+        "w": 288,
+        "h": 288
+      },
+      "pivotPx": {
+        "x": 144,
+        "y": 144
+      },
+      "originalPivotPx": {
+        "x": 170,
+        "y": 170
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 0,
+        "y": 0
+      },
+      "category": "effects",
+      "theme": null,
+      "individualPath": "current_1x/individual/effects/placement_range_sentinel_4_cells.png"
+    },
+    "range_ring_4_cells": {
+      "frame": {
+        "x": 292,
+        "y": 2,
+        "w": 286,
+        "h": 286
+      },
+      "pivotPx": {
+        "x": 143,
+        "y": 143
+      },
+      "originalPivotPx": {
+        "x": 170,
+        "y": 170
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 0,
+        "y": 0
+      },
+      "category": "effects",
+      "theme": null,
+      "individualPath": "current_1x/individual/effects/range_ring_4_cells.png"
+    },
+    "placement_range_unavailable_4_cells": {
+      "frame": {
+        "x": 580,
+        "y": 2,
+        "w": 286,
+        "h": 286
+      },
+      "pivotPx": {
+        "x": 143,
+        "y": 143
+      },
+      "originalPivotPx": {
+        "x": 170,
+        "y": 170
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 0,
+        "y": 0
+      },
+      "category": "effects",
+      "theme": null,
+      "individualPath": "current_1x/individual/effects/placement_range_unavailable_4_cells.png"
+    },
+    "tower_sentinel_delete_target": {
+      "frame": {
+        "x": 868,
+        "y": 2,
+        "w": 64,
+        "h": 84
+      },
+      "pivotPx": {
+        "x": 32,
+        "y": 49
+      },
+      "originalPivotPx": {
+        "x": 75,
+        "y": 75
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 0,
+        "y": 7
+      },
+      "category": "towers",
+      "theme": null,
+      "individualPath": "current_1x/individual/towers/tower_sentinel_delete_target.png"
+    },
+    "impact_frame_2": {
+      "frame": {
+        "x": 934,
+        "y": 2,
+        "w": 61,
+        "h": 61
+      },
+      "pivotPx": {
+        "x": 31,
+        "y": 31
+      },
+      "originalPivotPx": {
+        "x": 70,
+        "y": 70
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 1,
+        "y": 1
+      },
+      "category": "effects",
+      "theme": null,
+      "individualPath": "current_1x/individual/effects/impact_frame_2.png"
+    },
+    "tower_sentinel": {
+      "frame": {
+        "x": 997,
+        "y": 2,
+        "w": 29,
+        "h": 52
+      },
+      "pivotPx": {
+        "x": 14,
+        "y": 34
+      },
+      "originalPivotPx": {
+        "x": 70,
+        "y": 70
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 0,
+        "y": 8
+      },
+      "category": "towers",
+      "theme": null,
+      "individualPath": "current_1x/individual/towers/tower_sentinel.png"
+    },
+    "tower_slow": {
+      "frame": {
+        "x": 1028,
+        "y": 2,
+        "w": 29,
+        "h": 52
+      },
+      "pivotPx": {
+        "x": 14,
+        "y": 34
+      },
+      "originalPivotPx": {
+        "x": 70,
+        "y": 70
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 0,
+        "y": 8
+      },
+      "category": "towers",
+      "theme": null,
+      "individualPath": "current_1x/individual/towers/tower_slow.png"
+    },
+    "tower_splash": {
+      "frame": {
+        "x": 1059,
+        "y": 2,
+        "w": 29,
+        "h": 52
+      },
+      "pivotPx": {
+        "x": 14,
+        "y": 34
+      },
+      "originalPivotPx": {
+        "x": 70,
+        "y": 70
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 0,
+        "y": 8
+      },
+      "category": "towers",
+      "theme": null,
+      "individualPath": "current_1x/individual/towers/tower_splash.png"
+    },
+    "tower_flame": {
+      "frame": {
+        "x": 1090,
+        "y": 2,
+        "w": 29,
+        "h": 52
+      },
+      "pivotPx": {
+        "x": 14,
+        "y": 34
+      },
+      "originalPivotPx": {
+        "x": 70,
+        "y": 70
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 0,
+        "y": 8
+      },
+      "category": "towers",
+      "theme": null,
+      "individualPath": "current_1x/individual/towers/tower_flame.png"
+    },
+    "enemy_runner_with_health": {
+      "frame": {
+        "x": 1121,
+        "y": 2,
+        "w": 42,
+        "h": 46
+      },
+      "pivotPx": {
+        "x": 20,
+        "y": 23
+      },
+      "originalPivotPx": {
+        "x": 75,
+        "y": 80
+      },
+      "godotOffsetFromCenterPx": {
+        "x": -1,
+        "y": 0
+      },
+      "category": "enemies",
+      "theme": null,
+      "individualPath": "current_1x/individual/enemies/enemy_runner_with_health.png"
+    },
+    "enemy_runner_slowed": {
+      "frame": {
+        "x": 1165,
+        "y": 2,
+        "w": 44,
+        "h": 45
+      },
+      "pivotPx": {
+        "x": 22,
+        "y": 22
+      },
+      "originalPivotPx": {
+        "x": 75,
+        "y": 75
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 0,
+        "y": 0
+      },
+      "category": "enemies",
+      "theme": null,
+      "individualPath": "current_1x/individual/enemies/enemy_runner_slowed.png"
+    },
+    "enemy_runner": {
+      "frame": {
+        "x": 1211,
+        "y": 2,
+        "w": 40,
+        "h": 41
+      },
+      "pivotPx": {
+        "x": 18,
+        "y": 18
+      },
+      "originalPivotPx": {
+        "x": 70,
+        "y": 70
+      },
+      "godotOffsetFromCenterPx": {
+        "x": -2,
+        "y": -2
+      },
+      "category": "enemies",
+      "theme": null,
+      "individualPath": "current_1x/individual/enemies/enemy_runner.png"
+    },
+    "enemy_brute": {
+      "frame": {
+        "x": 1253,
+        "y": 2,
+        "w": 40,
+        "h": 41
+      },
+      "pivotPx": {
+        "x": 18,
+        "y": 18
+      },
+      "originalPivotPx": {
+        "x": 70,
+        "y": 70
+      },
+      "godotOffsetFromCenterPx": {
+        "x": -2,
+        "y": -2
+      },
+      "category": "enemies",
+      "theme": null,
+      "individualPath": "current_1x/individual/enemies/enemy_brute.png"
+    },
+    "enemy_shield": {
+      "frame": {
+        "x": 1295,
+        "y": 2,
+        "w": 40,
+        "h": 41
+      },
+      "pivotPx": {
+        "x": 18,
+        "y": 18
+      },
+      "originalPivotPx": {
+        "x": 70,
+        "y": 70
+      },
+      "godotOffsetFromCenterPx": {
+        "x": -2,
+        "y": -2
+      },
+      "category": "enemies",
+      "theme": null,
+      "individualPath": "current_1x/individual/enemies/enemy_shield.png"
+    },
+    "impact_frame_1": {
+      "frame": {
+        "x": 1337,
+        "y": 2,
+        "w": 41,
+        "h": 41
+      },
+      "pivotPx": {
+        "x": 21,
+        "y": 21
+      },
+      "originalPivotPx": {
+        "x": 70,
+        "y": 70
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 1,
+        "y": 1
+      },
+      "category": "effects",
+      "theme": null,
+      "individualPath": "current_1x/individual/effects/impact_frame_1.png"
+    },
+    "impact_frame_0": {
+      "frame": {
+        "x": 1380,
+        "y": 2,
+        "w": 21,
+        "h": 21
+      },
+      "pivotPx": {
+        "x": 11,
+        "y": 11
+      },
+      "originalPivotPx": {
+        "x": 70,
+        "y": 70
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 1,
+        "y": 1
+      },
+      "category": "effects",
+      "theme": null,
+      "individualPath": "current_1x/individual/effects/impact_frame_0.png"
+    },
+    "projectile_splash": {
+      "frame": {
+        "x": 1403,
+        "y": 2,
+        "w": 14,
+        "h": 14
+      },
+      "pivotPx": {
+        "x": 7,
+        "y": 7
+      },
+      "originalPivotPx": {
+        "x": 45,
+        "y": 45
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 0,
+        "y": 0
+      },
+      "category": "projectiles",
+      "theme": null,
+      "individualPath": "current_1x/individual/projectiles/projectile_splash.png"
+    },
+    "projectile_default": {
+      "frame": {
+        "x": 1419,
+        "y": 2,
+        "w": 12,
+        "h": 12
+      },
+      "pivotPx": {
+        "x": 6,
+        "y": 6
+      },
+      "originalPivotPx": {
+        "x": 45,
+        "y": 45
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 0,
+        "y": 0
+      },
+      "category": "projectiles",
+      "theme": null,
+      "individualPath": "current_1x/individual/projectiles/projectile_default.png"
+    },
+    "projectile_slow": {
+      "frame": {
+        "x": 1433,
+        "y": 2,
+        "w": 12,
+        "h": 12
+      },
+      "pivotPx": {
+        "x": 6,
+        "y": 6
+      },
+      "originalPivotPx": {
+        "x": 45,
+        "y": 45
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 0,
+        "y": 0
+      },
+      "category": "projectiles",
+      "theme": null,
+      "individualPath": "current_1x/individual/projectiles/projectile_slow.png"
+    },
+    "projectile_flame": {
+      "frame": {
+        "x": 1447,
+        "y": 2,
+        "w": 12,
+        "h": 12
+      },
+      "pivotPx": {
+        "x": 6,
+        "y": 6
+      },
+      "originalPivotPx": {
+        "x": 45,
+        "y": 45
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 0,
+        "y": 0
+      },
+      "category": "projectiles",
+      "theme": null,
+      "individualPath": "current_1x/individual/projectiles/projectile_flame.png"
+    }
+  }
+}

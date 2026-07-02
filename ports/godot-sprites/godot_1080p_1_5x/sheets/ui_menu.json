@@ -1,0 +1,451 @@
+{
+  "app": "No Trash Park HTML sprite export",
+  "scaleKey": "godot_1080p_1_5x",
+  "scale": 1.5,
+  "tilePixels": 105,
+  "image": "godot_1080p_1_5x/sheets/ui_menu.png",
+  "size": {
+    "width": 3051,
+    "height": 231
+  },
+  "paddingPx": 3,
+  "frames": {
+    "menu_path_curve": {
+      "frame": {
+        "x": 3,
+        "y": 3,
+        "w": 465,
+        "h": 225
+      },
+      "pivotPx": {
+        "x": 224,
+        "y": 107
+      },
+      "originalPivotPx": {
+        "x": 293,
+        "y": 188
+      },
+      "godotOffsetFromCenterPx": {
+        "x": -8,
+        "y": -5
+      },
+      "category": "menu",
+      "theme": null,
+      "individualPath": "godot_1080p_1_5x/individual/menu/menu_path_curve.png"
+    },
+    "menu_logo_block_ntp": {
+      "frame": {
+        "x": 471,
+        "y": 3,
+        "w": 405,
+        "h": 195
+      },
+      "pivotPx": {
+        "x": 188,
+        "y": 83
+      },
+      "originalPivotPx": {
+        "x": 233,
+        "y": 128
+      },
+      "godotOffsetFromCenterPx": {
+        "x": -14,
+        "y": -14
+      },
+      "category": "menu",
+      "theme": null,
+      "individualPath": "godot_1080p_1_5x/individual/menu/menu_logo_block_ntp.png"
+    },
+    "ui_victory_stat_panel": {
+      "frame": {
+        "x": 879,
+        "y": 3,
+        "w": 211,
+        "h": 121
+      },
+      "pivotPx": {
+        "x": 91,
+        "y": 46
+      },
+      "originalPivotPx": {
+        "x": 128,
+        "y": 83
+      },
+      "godotOffsetFromCenterPx": {
+        "x": -14,
+        "y": -14
+      },
+      "category": "ui",
+      "theme": null,
+      "individualPath": "godot_1080p_1_5x/individual/ui/ui_victory_stat_panel.png"
+    },
+    "ui_pixel_button_blank": {
+      "frame": {
+        "x": 1093,
+        "y": 3,
+        "w": 271,
+        "h": 118
+      },
+      "pivotPx": {
+        "x": 128,
+        "y": 53
+      },
+      "originalPivotPx": {
+        "x": 150,
+        "y": 75
+      },
+      "godotOffsetFromCenterPx": {
+        "x": -7,
+        "y": -6
+      },
+      "category": "ui",
+      "theme": null,
+      "individualPath": "godot_1080p_1_5x/individual/ui/ui_pixel_button_blank.png"
+    },
+    "ui_card_back": {
+      "frame": {
+        "x": 1367,
+        "y": 3,
+        "w": 105,
+        "h": 105
+      },
+      "pivotPx": {
+        "x": 53,
+        "y": 53
+      },
+      "originalPivotPx": {
+        "x": 98,
+        "y": 98
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 1,
+        "y": 1
+      },
+      "category": "ui",
+      "theme": null,
+      "individualPath": "godot_1080p_1_5x/individual/ui/ui_card_back.png"
+    },
+    "ui_shop_button_blank": {
+      "frame": {
+        "x": 1475,
+        "y": 3,
+        "w": 196,
+        "h": 100
+      },
+      "pivotPx": {
+        "x": 91,
+        "y": 53
+      },
+      "originalPivotPx": {
+        "x": 113,
+        "y": 75
+      },
+      "godotOffsetFromCenterPx": {
+        "x": -7,
+        "y": 3
+      },
+      "category": "ui",
+      "theme": null,
+      "individualPath": "godot_1080p_1_5x/individual/ui/ui_shop_button_blank.png"
+    },
+    "ui_shop_button_locked_blank": {
+      "frame": {
+        "x": 1674,
+        "y": 3,
+        "w": 196,
+        "h": 100
+      },
+      "pivotPx": {
+        "x": 91,
+        "y": 53
+      },
+      "originalPivotPx": {
+        "x": 113,
+        "y": 75
+      },
+      "godotOffsetFromCenterPx": {
+        "x": -7,
+        "y": 3
+      },
+      "category": "ui",
+      "theme": null,
+      "individualPath": "godot_1080p_1_5x/individual/ui/ui_shop_button_locked_blank.png"
+    },
+    "menu_creature_a": {
+      "frame": {
+        "x": 1873,
+        "y": 3,
+        "w": 109,
+        "h": 86
+      },
+      "pivotPx": {
+        "x": 32,
+        "y": 35
+      },
+      "originalPivotPx": {
+        "x": 113,
+        "y": 108
+      },
+      "godotOffsetFromCenterPx": {
+        "x": -22,
+        "y": -8
+      },
+      "category": "menu",
+      "theme": null,
+      "individualPath": "godot_1080p_1_5x/individual/menu/menu_creature_a.png"
+    },
+    "menu_tower_a": {
+      "frame": {
+        "x": 1985,
+        "y": 3,
+        "w": 57,
+        "h": 81
+      },
+      "pivotPx": {
+        "x": 12,
+        "y": 60
+      },
+      "originalPivotPx": {
+        "x": 90,
+        "y": 138
+      },
+      "godotOffsetFromCenterPx": {
+        "x": -16,
+        "y": 20
+      },
+      "category": "menu",
+      "theme": null,
+      "individualPath": "godot_1080p_1_5x/individual/menu/menu_tower_a.png"
+    },
+    "menu_creature_b": {
+      "frame": {
+        "x": 2045,
+        "y": 3,
+        "w": 84,
+        "h": 75
+      },
+      "pivotPx": {
+        "x": 24,
+        "y": 27
+      },
+      "originalPivotPx": {
+        "x": 113,
+        "y": 108
+      },
+      "godotOffsetFromCenterPx": {
+        "x": -18,
+        "y": -10
+      },
+      "category": "menu",
+      "theme": null,
+      "individualPath": "godot_1080p_1_5x/individual/menu/menu_creature_b.png"
+    },
+    "ui_stat_pill_blank": {
+      "frame": {
+        "x": 2132,
+        "y": 3,
+        "w": 186,
+        "h": 68
+      },
+      "pivotPx": {
+        "x": 86,
+        "y": 26
+      },
+      "originalPivotPx": {
+        "x": 113,
+        "y": 53
+      },
+      "godotOffsetFromCenterPx": {
+        "x": -7,
+        "y": -8
+      },
+      "category": "ui",
+      "theme": null,
+      "individualPath": "godot_1080p_1_5x/individual/ui/ui_stat_pill_blank.png"
+    },
+    "ui_shop_title_loja": {
+      "frame": {
+        "x": 2321,
+        "y": 3,
+        "w": 134,
+        "h": 65
+      },
+      "pivotPx": {
+        "x": 84,
+        "y": 30
+      },
+      "originalPivotPx": {
+        "x": 120,
+        "y": 60
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 17,
+        "y": -2
+      },
+      "category": "ui",
+      "theme": null,
+      "individualPath": "godot_1080p_1_5x/individual/ui/ui_shop_title_loja.png"
+    },
+    "menu_tower_b": {
+      "frame": {
+        "x": 2458,
+        "y": 3,
+        "w": 45,
+        "h": 65
+      },
+      "pivotPx": {
+        "x": 6,
+        "y": 52
+      },
+      "originalPivotPx": {
+        "x": 90,
+        "y": 138
+      },
+      "godotOffsetFromCenterPx": {
+        "x": -16,
+        "y": 20
+      },
+      "category": "menu",
+      "theme": null,
+      "individualPath": "godot_1080p_1_5x/individual/menu/menu_tower_b.png"
+    },
+    "ui_menu_icon_button": {
+      "frame": {
+        "x": 2506,
+        "y": 3,
+        "w": 55,
+        "h": 57
+      },
+      "pivotPx": {
+        "x": 28,
+        "y": 26
+      },
+      "originalPivotPx": {
+        "x": 53,
+        "y": 53
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 1,
+        "y": -2
+      },
+      "category": "ui",
+      "theme": null,
+      "individualPath": "godot_1080p_1_5x/individual/ui/ui_menu_icon_button.png"
+    },
+    "ui_restart_icon_button": {
+      "frame": {
+        "x": 2564,
+        "y": 3,
+        "w": 55,
+        "h": 57
+      },
+      "pivotPx": {
+        "x": 28,
+        "y": 26
+      },
+      "originalPivotPx": {
+        "x": 53,
+        "y": 53
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 1,
+        "y": -2
+      },
+      "category": "ui",
+      "theme": null,
+      "individualPath": "godot_1080p_1_5x/individual/ui/ui_restart_icon_button.png"
+    },
+    "ui_coin_icon": {
+      "frame": {
+        "x": 2622,
+        "y": 3,
+        "w": 43,
+        "h": 43
+      },
+      "pivotPx": {
+        "x": 22,
+        "y": 22
+      },
+      "originalPivotPx": {
+        "x": 53,
+        "y": 53
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 1,
+        "y": 1
+      },
+      "category": "ui",
+      "theme": null,
+      "individualPath": "godot_1080p_1_5x/individual/ui/ui_coin_icon.png"
+    },
+    "menu_cloud_large": {
+      "frame": {
+        "x": 2668,
+        "y": 3,
+        "w": 191,
+        "h": 39
+      },
+      "pivotPx": {
+        "x": 0,
+        "y": 9
+      },
+      "originalPivotPx": {
+        "x": 36,
+        "y": 48
+      },
+      "godotOffsetFromCenterPx": {
+        "x": -95,
+        "y": -10
+      },
+      "category": "menu",
+      "theme": null,
+      "individualPath": "godot_1080p_1_5x/individual/menu/menu_cloud_large.png"
+    },
+    "menu_cloud_small": {
+      "frame": {
+        "x": 2862,
+        "y": 3,
+        "w": 164,
+        "h": 39
+      },
+      "pivotPx": {
+        "x": 0,
+        "y": 9
+      },
+      "originalPivotPx": {
+        "x": 36,
+        "y": 48
+      },
+      "godotOffsetFromCenterPx": {
+        "x": -82,
+        "y": -10
+      },
+      "category": "menu",
+      "theme": null,
+      "individualPath": "godot_1080p_1_5x/individual/menu/menu_cloud_small.png"
+    },
+    "ui_heart_dot": {
+      "frame": {
+        "x": 3029,
+        "y": 3,
+        "w": 19,
+        "h": 19
+      },
+      "pivotPx": {
+        "x": 14,
+        "y": 14
+      },
+      "originalPivotPx": {
+        "x": 38,
+        "y": 38
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 5,
+        "y": 5
+      },
+      "category": "ui",
+      "theme": null,
+      "individualPath": "godot_1080p_1_5x/individual/ui/ui_heart_dot.png"
+    }
+  }
+}
