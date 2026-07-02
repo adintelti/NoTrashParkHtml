@@ -16,7 +16,6 @@ class EnemyState:
 class TowerState:
 	var id: int = 0
 	var node: TextureRect
-	var range_node: TextureRect
 	var tile_position: Vector2i = Vector2i.ZERO
 	var tower_type: String = ""
 	var cost: int = 0
@@ -110,6 +109,11 @@ var placed_towers: Array[TowerState] = []
 var projectiles: Array[ProjectileState] = []
 var impacts: Array[ImpactState] = []
 var occupied_tiles: Array[Vector2i] = []
+var preview_visible: bool = false
+var preview_tile_position: Vector2i = Vector2i(-1, -1)
+var preview_range_node: TextureRect
+var preview_tower_node: TextureRect
+var preview_path_overlays: Array[ColorRect] = []
 
 var path_tiles: Array[Vector2i] = [
 	Vector2i(3, 0),
@@ -179,6 +183,7 @@ func _ready() -> void:
 	_apply_tower_button_icons()
 	_select_tower(selected_tower)
 	_start_run()
+	_ensure_placement_preview_nodes()
 
 func _process(delta: float) -> void:
 	if game_over or victory_pending:
@@ -201,6 +206,7 @@ func _process(delta: float) -> void:
 	_sync_hud()
 
 func _start_run() -> void:
+	_hide_placement_preview()
 	_clear_enemies()
 	_clear_projectiles()
 	_clear_impacts()
@@ -286,6 +292,7 @@ func _finish_victory() -> void:
 	victory_pending = true
 	wave_in_progress = false
 	spawn_remaining = 0
+	_hide_placement_preview()
 	_clear_enemies()
 	_clear_projectiles()
 	_clear_impacts()
@@ -297,6 +304,7 @@ func _end_game() -> void:
 	game_over = true
 	wave_in_progress = false
 	spawn_remaining = 0
+	_hide_placement_preview()
 	_clear_enemies()
 	_clear_projectiles()
 	_clear_impacts()
@@ -446,6 +454,8 @@ func _create_tile(tile_position: Vector2i) -> TextureRect:
 	tile.stretch_mode = TextureRect.STRETCH_KEEP
 	tile.mouse_filter = Control.MOUSE_FILTER_STOP
 	tile.gui_input.connect(_on_tile_gui_input.bind(tile_position))
+	tile.mouse_entered.connect(_show_placement_preview.bind(tile_position))
+	tile.mouse_exited.connect(_hide_placement_preview_if_tile.bind(tile_position))
 	return tile
 
 func _on_tile_gui_input(event: InputEvent, tile_position: Vector2i) -> void:
@@ -483,44 +493,51 @@ func _get_enemy_texture(tier: int) -> Texture2D:
 func _get_enemy_pivot(_tier: int) -> Vector2:
 	return ENEMY_PIVOT
 
-func _try_place_tower(tile_position: Vector2i) -> void:
+func _get_tower_placement_state(tile_position: Vector2i, tower_key: String) -> Dictionary:
 	if game_over or victory_pending:
-		_show_status("Partida encerrada.")
-		return
+		return _make_tower_placement_state(false, "Partida encerrada.")
 	if paused:
-		_show_status("Retome o jogo para construir.")
-		return
+		return _make_tower_placement_state(false, "Retome o jogo para construir.")
 	if _delete_button.button_pressed:
-		_show_status("Remocao de torres ainda nao implementada.")
-		return
+		return _make_tower_placement_state(false, "Remocao de torres ainda nao implementada.")
 
-	var tower_key: String = selected_tower
 	var tower_cost: int = _get_tower_cost(tower_key)
 	if tower_cost <= 0:
-		_show_status("Selecione uma torre.")
-		return
+		return _make_tower_placement_state(false, "Selecione uma torre.")
 	if path_tiles.has(tile_position) or blocked_tiles.has(tile_position):
-		_show_status("Espaco bloqueado.")
-		return
+		return _make_tower_placement_state(false, "Espaco bloqueado.")
 	if occupied_tiles.has(tile_position):
-		_show_status("Ja existe uma torre aqui.")
-		return
+		return _make_tower_placement_state(false, "Ja existe uma torre aqui.")
 	if coins < tower_cost:
-		_show_status("Moedas insuficientes.")
-		return
+		return _make_tower_placement_state(false, "Moedas insuficientes.")
 
 	var tower_range: float = _get_tower_range(tower_key)
 	if not _does_tower_reach_path(tile_position, tower_range):
-		_show_status("Torre nao alcanca o caminho.")
+		return _make_tower_placement_state(false, "Torre nao alcanca o caminho.")
+
+	return _make_tower_placement_state(true, "")
+
+func _make_tower_placement_state(available: bool, message: String) -> Dictionary:
+	var placement_state: Dictionary = {}
+	placement_state["available"] = available
+	placement_state["message"] = message
+	return placement_state
+
+func _try_place_tower(tile_position: Vector2i) -> void:
+	var tower_key: String = selected_tower
+	var placement_state: Dictionary = _get_tower_placement_state(tile_position, tower_key)
+	var available: bool = bool(placement_state.get("available", false))
+	if not available:
+		_show_status(String(placement_state.get("message", "Espaco indisponivel.")))
 		return
 
+	var tower_cost: int = _get_tower_cost(tower_key)
+	var tower_range: float = _get_tower_range(tower_key)
 	_place_tower(tile_position, tower_key, tower_cost, tower_range)
+	_refresh_placement_preview()
 
 func _place_tower(tile_position: Vector2i, tower_key: String, tower_cost: int, tower_range: float) -> void:
 	var tower_texture: Texture2D = _get_tower_texture(tower_key)
-	var range_node: TextureRect = _create_range_ring(tile_position, tower_range)
-	_range_layer.add_child(range_node)
-
 	var tower_node: TextureRect = TextureRect.new()
 	tower_node.name = "Tower_%03d_%s" % [next_tower_id, tower_key]
 	tower_node.texture = tower_texture
@@ -532,7 +549,6 @@ func _place_tower(tile_position: Vector2i, tower_key: String, tower_cost: int, t
 	var tower_data: TowerState = TowerState.new()
 	tower_data.id = next_tower_id
 	tower_data.node = tower_node
-	tower_data.range_node = range_node
 	tower_data.tile_position = tile_position
 	tower_data.tower_type = tower_key
 	tower_data.cost = tower_cost
@@ -559,10 +575,13 @@ func _create_range_ring(tile_position: Vector2i, tower_range: float) -> TextureR
 	range_node.size = RANGE_RING_TEXTURE.get_size()
 	range_node.stretch_mode = TextureRect.STRETCH_KEEP
 	range_node.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	range_node.modulate = Color(1.0, 0.95, 0.45, 0.22)
+	_configure_range_ring(range_node, tile_position, tower_range, Color(1.0, 0.95, 0.45, 0.22))
+	return range_node
 
+func _configure_range_ring(range_node: TextureRect, tile_position: Vector2i, tower_range: float, color: Color) -> void:
 	var diameter_pixels: float = tower_range * 2.0 * TILE_SIZE.x
 	var ring_scale: float = diameter_pixels / RANGE_RING_BASE_DIAMETER
+	range_node.modulate = color
 	range_node.scale = Vector2(ring_scale, ring_scale)
 
 	var center: Vector2 = Vector2(float(tile_position.x) + 0.5, float(tile_position.y) + 0.5)
@@ -570,18 +589,149 @@ func _create_range_ring(tile_position: Vector2i, tower_range: float) -> TextureR
 		center.x * TILE_SIZE.x - RANGE_RING_PIVOT.x * ring_scale,
 		center.y * TILE_SIZE.y - RANGE_RING_PIVOT.y * ring_scale
 	)
-	return range_node
+
+func _ensure_placement_preview_nodes() -> void:
+	if not is_instance_valid(preview_range_node):
+		preview_range_node = _create_range_ring(Vector2i.ZERO, _get_tower_range(selected_tower))
+		preview_range_node.name = "PreviewRange"
+		_range_layer.add_child(preview_range_node)
+		preview_range_node.hide()
+
+	if not is_instance_valid(preview_tower_node):
+		preview_tower_node = TextureRect.new()
+		preview_tower_node.name = "PreviewTower"
+		preview_tower_node.stretch_mode = TextureRect.STRETCH_KEEP
+		preview_tower_node.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		_tower_layer.add_child(preview_tower_node)
+		preview_tower_node.hide()
+
+func _show_placement_preview(tile_position: Vector2i) -> void:
+	if _should_hide_placement_preview():
+		_hide_placement_preview()
+		return
+
+	preview_visible = true
+	preview_tile_position = tile_position
+	_render_placement_preview(tile_position)
+
+func _hide_placement_preview_if_tile(tile_position: Vector2i) -> void:
+	if preview_visible and preview_tile_position == tile_position:
+		_hide_placement_preview()
+
+func _refresh_placement_preview() -> void:
+	if not preview_visible:
+		return
+	if _should_hide_placement_preview():
+		_hide_placement_preview()
+		return
+	_render_placement_preview(preview_tile_position)
+
+func _hide_placement_preview() -> void:
+	preview_visible = false
+	preview_tile_position = Vector2i(-1, -1)
+	if is_instance_valid(preview_range_node):
+		preview_range_node.hide()
+	if is_instance_valid(preview_tower_node):
+		preview_tower_node.hide()
+	_clear_preview_path_overlays()
+
+func _should_hide_placement_preview() -> bool:
+	return paused or game_over or victory_pending or _delete_button.button_pressed
+
+func _render_placement_preview(tile_position: Vector2i) -> void:
+	_ensure_placement_preview_nodes()
+
+	var tower_key: String = selected_tower
+	var tower_range: float = _get_tower_range(tower_key)
+	var tower_texture: Texture2D = _get_tower_texture(tower_key)
+	var placement_state: Dictionary = _get_tower_placement_state(tile_position, tower_key)
+	var available: bool = bool(placement_state.get("available", false))
+	var preview_color: Color = _get_preview_color(tower_key, available)
+	var ghost_color: Color = Color(1.0, 1.0, 1.0, 0.70) if available else Color(1.0, 0.36, 0.32, 0.42)
+
+	preview_range_node.texture = RANGE_RING_TEXTURE
+	preview_range_node.size = RANGE_RING_TEXTURE.get_size()
+	_configure_range_ring(preview_range_node, tile_position, tower_range, preview_color)
+	preview_range_node.show()
+
+	preview_tower_node.texture = tower_texture
+	preview_tower_node.size = tower_texture.get_size()
+	preview_tower_node.modulate = ghost_color
+	preview_tower_node.position = _get_tower_position_for_tile(tile_position)
+	preview_tower_node.show()
+
+	_range_layer.move_child(preview_range_node, _range_layer.get_child_count() - 1)
+	_tower_layer.move_child(preview_tower_node, _tower_layer.get_child_count() - 1)
+	_render_preview_path_overlays(tile_position, tower_range, available)
+
+func _render_preview_path_overlays(tile_position: Vector2i, tower_range: float, available: bool) -> void:
+	_clear_preview_path_overlays()
+	var overlay_color: Color = _get_preview_path_color(selected_tower, available)
+	var path_tiles_in_range: Array[Vector2i] = _get_path_tiles_in_range(tile_position, tower_range)
+	for path_tile in path_tiles_in_range:
+		var overlay: ColorRect = ColorRect.new()
+		overlay.name = "PreviewPath_%02d_%02d" % [path_tile.x, path_tile.y]
+		overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		overlay.color = overlay_color
+		overlay.size = TILE_SIZE
+		overlay.position = Vector2(float(path_tile.x) * TILE_SIZE.x, float(path_tile.y) * TILE_SIZE.y)
+		_range_layer.add_child(overlay)
+		preview_path_overlays.append(overlay)
+
+func _clear_preview_path_overlays() -> void:
+	for overlay in preview_path_overlays:
+		if is_instance_valid(overlay):
+			overlay.queue_free()
+	preview_path_overlays.clear()
+
+func _get_path_tiles_in_range(tile_position: Vector2i, tower_range: float) -> Array[Vector2i]:
+	var tiles_in_range: Array[Vector2i] = []
+	var tower_center: Vector2 = Vector2(float(tile_position.x) + 0.5, float(tile_position.y) + 0.5)
+	for path_tile in path_tiles:
+		var path_center: Vector2 = Vector2(float(path_tile.x) + 0.5, float(path_tile.y) + 0.5)
+		if tower_center.distance_to(path_center) <= tower_range:
+			tiles_in_range.append(path_tile)
+	return tiles_in_range
+
+func _get_preview_color(tower_key: String, available: bool) -> Color:
+	if not available:
+		return Color(1.0, 0.40, 0.36, 0.42)
+	match tower_key:
+		"slow":
+			return Color(0.49, 0.90, 1.0, 0.38)
+		"splash":
+			return Color(0.91, 0.71, 0.38, 0.40)
+		"flame":
+			return Color(1.0, 0.50, 0.19, 0.42)
+		_:
+			return Color(1.0, 0.97, 0.67, 0.38)
+
+func _get_preview_path_color(tower_key: String, available: bool) -> Color:
+	if not available:
+		return Color(1.0, 0.40, 0.36, 0.18)
+	match tower_key:
+		"slow":
+			return Color(0.49, 0.90, 1.0, 0.18)
+		"splash":
+			return Color(0.91, 0.71, 0.38, 0.18)
+		"flame":
+			return Color(1.0, 0.50, 0.19, 0.19)
+		_:
+			return Color(1.0, 0.97, 0.67, 0.18)
 
 func _position_tower(tower_data: TowerState) -> void:
 	var tower_node: Control = tower_data.node
 	if not is_instance_valid(tower_node):
 		return
 
+	tower_node.position = _get_tower_position_for_tile(tower_data.tile_position)
+
+func _get_tower_position_for_tile(tile_position: Vector2i) -> Vector2:
 	var center: Vector2 = Vector2(
-		float(tower_data.tile_position.x) + 0.5,
-		float(tower_data.tile_position.y) + 0.5
+		float(tile_position.x) + 0.5,
+		float(tile_position.y) + 0.5
 	)
-	tower_node.position = Vector2(
+	return Vector2(
 		center.x * TILE_SIZE.x - TOWER_PIVOT.x,
 		center.y * TILE_SIZE.y - TOWER_PIVOT.y
 	)
@@ -930,14 +1080,23 @@ func _select_tower(tower_key: String) -> void:
 		var tower_key_string: String = str(key)
 		var button: Button = _tower_buttons[tower_key_string] as Button
 		button.button_pressed = tower_key_string == selected_tower
+	_refresh_placement_preview()
 	_show_status("Torre selecionada: " + _format_tower_name(selected_tower))
 
 func _toggle_delete_mode() -> void:
+	if _delete_button.button_pressed:
+		_hide_placement_preview()
+	else:
+		_refresh_placement_preview()
 	var text: String = "Modo excluir ligado." if _delete_button.button_pressed else "Modo excluir desligado."
 	_show_status(text)
 
 func _toggle_pause() -> void:
 	paused = _pause_button.button_pressed
+	if paused:
+		_hide_placement_preview()
+	else:
+		_refresh_placement_preview()
 	_pause_button.text = "Retomar" if paused else "Pause"
 	_show_status("Jogo pausado." if paused else "Jogo retomado.")
 
@@ -978,18 +1137,14 @@ func _clear_towers() -> void:
 		var tower_node: Node = tower_data.node
 		if is_instance_valid(tower_node):
 			tower_node.queue_free()
-		var range_node: Node = tower_data.range_node
-		if is_instance_valid(range_node):
-			range_node.queue_free()
 	placed_towers.clear()
 	occupied_tiles.clear()
 	next_tower_id = 1
 	for child_index in range(_tower_layer.get_child_count()):
 		var child: Node = _tower_layer.get_child(child_index)
-		child.queue_free()
-	for range_child_index in range(_range_layer.get_child_count()):
-		var range_child: Node = _range_layer.get_child(range_child_index)
-		range_child.queue_free()
+		if child != preview_tower_node:
+			child.queue_free()
+	_clear_preview_path_overlays()
 
 func _clear_projectiles() -> void:
 	for projectile_data in projectiles:
