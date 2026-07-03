@@ -156,6 +156,15 @@ var blocked_tiles: Array[Vector2i] = [
 @onready var _wave_banner_label: Label = get_node("AppBackground/GameFrame/GameLayout/BoardStage/WaveBanner/WaveBannerLabel")
 @onready var _floating_message: PanelContainer = get_node("AppBackground/GameFrame/GameLayout/BoardStage/FloatingMessage")
 @onready var _floating_message_label: Label = get_node("AppBackground/GameFrame/GameLayout/BoardStage/FloatingMessage/FloatingMessageLabel")
+@onready var _victory_overlay: Control = get_node("AppBackground/GameFrame/GameLayout/BoardStage/VictoryOverlay")
+@onready var _victory_title: Label = get_node("AppBackground/GameFrame/GameLayout/BoardStage/VictoryOverlay/VictoryCard/VictoryInset/VictoryContent/VictoryTitle")
+@onready var _victory_summary: Label = get_node("AppBackground/GameFrame/GameLayout/BoardStage/VictoryOverlay/VictoryCard/VictoryInset/VictoryContent/VictorySummary")
+@onready var _victory_time_value: Label = get_node("AppBackground/GameFrame/GameLayout/BoardStage/VictoryOverlay/VictoryCard/VictoryInset/VictoryContent/VictoryStats/TimeStat/TimeBox/TimeValue")
+@onready var _victory_wave_value: Label = get_node("AppBackground/GameFrame/GameLayout/BoardStage/VictoryOverlay/VictoryCard/VictoryInset/VictoryContent/VictoryStats/WaveStat/WaveBox/WaveValue")
+@onready var _victory_defeated_value: Label = get_node("AppBackground/GameFrame/GameLayout/BoardStage/VictoryOverlay/VictoryCard/VictoryInset/VictoryContent/VictoryStats/DefeatedStat/DefeatedBox/DefeatedValue")
+@onready var _victory_continue_button: Button = get_node("AppBackground/GameFrame/GameLayout/BoardStage/VictoryOverlay/VictoryCard/VictoryInset/VictoryContent/VictoryActions/VictoryContinueButton")
+@onready var _victory_restart_button: Button = get_node("AppBackground/GameFrame/GameLayout/BoardStage/VictoryOverlay/VictoryCard/VictoryInset/VictoryContent/VictoryActions/VictoryRestartButton")
+@onready var _victory_menu_button: Button = get_node("AppBackground/GameFrame/GameLayout/BoardStage/VictoryOverlay/VictoryCard/VictoryInset/VictoryContent/VictoryActions/VictoryMenuButton")
 @onready var _floating_message_timer: Timer = get_node("FloatingMessageTimer")
 @onready var _wave_banner_timer: Timer = get_node("WaveBannerTimer")
 @onready var _difficulty_value: Label = get_node("AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent/SessionInfo/SessionRows/DifficultyValue")
@@ -178,6 +187,7 @@ var blocked_tiles: Array[Vector2i] = [
 func _ready() -> void:
 	_floating_message.hide()
 	_wave_banner.hide()
+	_victory_overlay.hide()
 	_build_board()
 	_connect_buttons()
 	_apply_tower_button_icons()
@@ -206,6 +216,7 @@ func _process(delta: float) -> void:
 	_sync_hud()
 
 func _start_run() -> void:
+	_hide_victory_overlay()
 	_hide_placement_preview()
 	_clear_enemies()
 	_clear_projectiles()
@@ -234,6 +245,7 @@ func _start_run() -> void:
 	_pause_button.text = "Pause"
 	_speed_button.button_pressed = false
 	_speed_button.text = "1x"
+	_delete_button.button_pressed = false
 	_sync_session_labels()
 	_sync_hud()
 	_show_status("Preparando onda 1.")
@@ -296,9 +308,9 @@ func _finish_victory() -> void:
 	_clear_enemies()
 	_clear_projectiles()
 	_clear_impacts()
-	_show_wave_banner("Parque Protegido!")
 	_show_status("Todas as ondas foram concluidas.")
 	_sync_hud()
+	_show_victory_overlay()
 
 func _end_game() -> void:
 	game_over = true
@@ -1050,6 +1062,8 @@ func _connect_buttons() -> void:
 
 	_restart_button.pressed.connect(_start_run)
 	_menu_button.pressed.connect(_return_to_menu)
+	_victory_restart_button.pressed.connect(_start_run)
+	_victory_menu_button.pressed.connect(_return_to_menu)
 	_delete_button.pressed.connect(_toggle_delete_mode)
 	_pause_button.pressed.connect(_toggle_pause)
 	_speed_button.pressed.connect(_toggle_speed)
@@ -1073,6 +1087,22 @@ func _sync_hud() -> void:
 	_defeated_label.text = "Derrotou %d" % session_defeated
 	_time_label.text = "Tempo " + _format_session_time(session_time)
 	_money_label.text = "Moedas %d" % coins
+
+func _show_victory_overlay() -> void:
+	_victory_title.text = _get_victory_title()
+	_victory_summary.text = "Todas as ondas foram concluidas."
+	_victory_time_value.text = _format_session_time(session_time)
+	_victory_wave_value.text = "%d/%d" % [wave, wave_limit]
+	_victory_defeated_value.text = str(session_defeated)
+	_victory_continue_button.hide()
+	_victory_continue_button.disabled = true
+	_hide_floating_message()
+	_hide_wave_banner()
+	_victory_overlay.show()
+	_victory_restart_button.call_deferred("grab_focus")
+
+func _hide_victory_overlay() -> void:
+	_victory_overlay.hide()
 
 func _select_tower(tower_key: String) -> void:
 	selected_tower = tower_key
@@ -1177,6 +1207,9 @@ func _format_session_time(value: float) -> String:
 	var minutes: int = int(total_seconds / 60)
 	var seconds: int = total_seconds % 60
 	return "%02d:%02d" % [minutes, seconds]
+
+func _get_victory_title() -> String:
+	return "Parque Protegido!"
 
 func _format_difficulty(difficulty: String) -> String:
 	match difficulty:

@@ -61,7 +61,7 @@ func _ready() -> void:
 
 	_play_button.pressed.connect(_open_difficulty_panel)
 	_config_button.pressed.connect(_toggle_config_panel)
-	_exit_button.pressed.connect(_show_demo_ready_note)
+	_exit_button.pressed.connect(_quit_game)
 	_difficulty_back_button.pressed.connect(_close_difficulty_panel)
 	_config_back_button.pressed.connect(_close_config_panel)
 	_start_button.pressed.connect(_start_selected_game)
@@ -235,10 +235,8 @@ func _start_selected_game() -> void:
 	if error != OK:
 		_show_menu_note("Erro ao abrir gameplay.")
 
-func _show_demo_ready_note() -> void:
-	_config_panel.hide()
-	_difficulty_panel.hide()
-	_show_menu_note("Demo pronta no Godot.")
+func _quit_game() -> void:
+	get_tree().quit(0)
 
 func _show_menu_note(text: String) -> void:
 	_menu_note_label.text = text

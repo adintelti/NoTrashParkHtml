@@ -124,6 +124,32 @@ corner_radius_top_right = 4
 corner_radius_bottom_right = 4
 corner_radius_bottom_left = 4
 
+[sub_resource type="StyleBoxFlat" id="VictoryCardStyle"]
+bg_color = Color(0.9411765, 0.7529412, 0.28627452, 1)
+border_width_left = 20
+border_width_top = 20
+border_width_right = 20
+border_width_bottom = 20
+border_color = Color(0.07450981, 0.07450981, 0.07450981, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+shadow_color = Color(1, 0.7176471, 0.011764706, 1)
+shadow_size = 14
+
+[sub_resource type="StyleBoxFlat" id="VictoryStatStyle"]
+bg_color = Color(0.08627451, 0.043137256, 0, 1)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(1, 0.90588236, 0.41960785, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
 [node name="Gameplay" type="Control"]
 layout_mode = 3
 anchors_preset = 15
@@ -296,6 +322,176 @@ layout_mode = 2
 theme_override_colors/font_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
 theme_override_font_sizes/font_size = 18
 text = "Preparando onda 1."
+
+[node name="VictoryOverlay" type="Control" parent="AppBackground/GameFrame/GameLayout/BoardStage"]
+visible = false
+layout_mode = 0
+offset_right = 1260.0
+offset_bottom = 1035.0
+
+[node name="VictoryDimmer" type="ColorRect" parent="AppBackground/GameFrame/GameLayout/BoardStage/VictoryOverlay"]
+layout_mode = 0
+offset_right = 1260.0
+offset_bottom = 1035.0
+color = Color(0.05882353, 0.15686275, 0.043137256, 0.42)
+
+[node name="VictoryCard" type="PanelContainer" parent="AppBackground/GameFrame/GameLayout/BoardStage/VictoryOverlay"]
+layout_mode = 0
+offset_left = 351.0
+offset_top = 168.0
+offset_right = 909.0
+offset_bottom = 867.0
+theme_override_styles/panel = SubResource("VictoryCardStyle")
+
+[node name="VictoryInset" type="MarginContainer" parent="AppBackground/GameFrame/GameLayout/BoardStage/VictoryOverlay/VictoryCard"]
+layout_mode = 2
+theme_override_constants/margin_left = 48
+theme_override_constants/margin_top = 48
+theme_override_constants/margin_right = 48
+theme_override_constants/margin_bottom = 48
+
+[node name="VictoryContent" type="VBoxContainer" parent="AppBackground/GameFrame/GameLayout/BoardStage/VictoryOverlay/VictoryCard/VictoryInset"]
+layout_mode = 2
+theme_override_constants/separation = 24
+alignment = 1
+
+[node name="VictoryTitle" type="Label" parent="AppBackground/GameFrame/GameLayout/BoardStage/VictoryOverlay/VictoryCard/VictoryInset/VictoryContent"]
+custom_minimum_size = Vector2(0, 112)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.02745098, 0.10980392, 0.043137256, 1)
+theme_override_font_sizes/font_size = 48
+text = "Parque Protegido!"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="VictorySummary" type="Label" parent="AppBackground/GameFrame/GameLayout/BoardStage/VictoryOverlay/VictoryCard/VictoryInset/VictoryContent"]
+custom_minimum_size = Vector2(0, 52)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.09411765, 0.047058824, 0.011764706, 1)
+theme_override_font_sizes/font_size = 22
+text = "Todas as ondas foram concluidas."
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="VictoryStats" type="HBoxContainer" parent="AppBackground/GameFrame/GameLayout/BoardStage/VictoryOverlay/VictoryCard/VictoryInset/VictoryContent"]
+custom_minimum_size = Vector2(0, 86)
+layout_mode = 2
+theme_override_constants/separation = 12
+alignment = 1
+
+[node name="TimeStat" type="PanelContainer" parent="AppBackground/GameFrame/GameLayout/BoardStage/VictoryOverlay/VictoryCard/VictoryInset/VictoryContent/VictoryStats"]
+custom_minimum_size = Vector2(136, 82)
+layout_mode = 2
+theme_override_styles/panel = SubResource("VictoryStatStyle")
+
+[node name="TimeBox" type="VBoxContainer" parent="AppBackground/GameFrame/GameLayout/BoardStage/VictoryOverlay/VictoryCard/VictoryInset/VictoryContent/VictoryStats/TimeStat"]
+layout_mode = 2
+theme_override_constants/separation = 4
+alignment = 1
+
+[node name="TimeLabel" type="Label" parent="AppBackground/GameFrame/GameLayout/BoardStage/VictoryOverlay/VictoryCard/VictoryInset/VictoryContent/VictoryStats/TimeStat/TimeBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.9529412, 0.7490196, 1)
+theme_override_font_sizes/font_size = 16
+text = "Tempo"
+horizontal_alignment = 1
+
+[node name="TimeValue" type="Label" parent="AppBackground/GameFrame/GameLayout/BoardStage/VictoryOverlay/VictoryCard/VictoryInset/VictoryContent/VictoryStats/TimeStat/TimeBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.9529412, 0.7490196, 1)
+theme_override_font_sizes/font_size = 28
+text = "00:00"
+horizontal_alignment = 1
+
+[node name="WaveStat" type="PanelContainer" parent="AppBackground/GameFrame/GameLayout/BoardStage/VictoryOverlay/VictoryCard/VictoryInset/VictoryContent/VictoryStats"]
+custom_minimum_size = Vector2(136, 82)
+layout_mode = 2
+theme_override_styles/panel = SubResource("VictoryStatStyle")
+
+[node name="WaveBox" type="VBoxContainer" parent="AppBackground/GameFrame/GameLayout/BoardStage/VictoryOverlay/VictoryCard/VictoryInset/VictoryContent/VictoryStats/WaveStat"]
+layout_mode = 2
+theme_override_constants/separation = 4
+alignment = 1
+
+[node name="WaveLabel" type="Label" parent="AppBackground/GameFrame/GameLayout/BoardStage/VictoryOverlay/VictoryCard/VictoryInset/VictoryContent/VictoryStats/WaveStat/WaveBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.9529412, 0.7490196, 1)
+theme_override_font_sizes/font_size = 16
+text = "Onda"
+horizontal_alignment = 1
+
+[node name="WaveValue" type="Label" parent="AppBackground/GameFrame/GameLayout/BoardStage/VictoryOverlay/VictoryCard/VictoryInset/VictoryContent/VictoryStats/WaveStat/WaveBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.9529412, 0.7490196, 1)
+theme_override_font_sizes/font_size = 28
+text = "0/0"
+horizontal_alignment = 1
+
+[node name="DefeatedStat" type="PanelContainer" parent="AppBackground/GameFrame/GameLayout/BoardStage/VictoryOverlay/VictoryCard/VictoryInset/VictoryContent/VictoryStats"]
+custom_minimum_size = Vector2(136, 82)
+layout_mode = 2
+theme_override_styles/panel = SubResource("VictoryStatStyle")
+
+[node name="DefeatedBox" type="VBoxContainer" parent="AppBackground/GameFrame/GameLayout/BoardStage/VictoryOverlay/VictoryCard/VictoryInset/VictoryContent/VictoryStats/DefeatedStat"]
+layout_mode = 2
+theme_override_constants/separation = 4
+alignment = 1
+
+[node name="DefeatedLabel" type="Label" parent="AppBackground/GameFrame/GameLayout/BoardStage/VictoryOverlay/VictoryCard/VictoryInset/VictoryContent/VictoryStats/DefeatedStat/DefeatedBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.9529412, 0.7490196, 1)
+theme_override_font_sizes/font_size = 16
+text = "Derrotou"
+horizontal_alignment = 1
+
+[node name="DefeatedValue" type="Label" parent="AppBackground/GameFrame/GameLayout/BoardStage/VictoryOverlay/VictoryCard/VictoryInset/VictoryContent/VictoryStats/DefeatedStat/DefeatedBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.9529412, 0.7490196, 1)
+theme_override_font_sizes/font_size = 28
+text = "0"
+horizontal_alignment = 1
+
+[node name="VictoryActions" type="VBoxContainer" parent="AppBackground/GameFrame/GameLayout/BoardStage/VictoryOverlay/VictoryCard/VictoryInset/VictoryContent"]
+layout_mode = 2
+theme_override_constants/separation = 18
+alignment = 1
+
+[node name="VictoryContinueButton" type="Button" parent="AppBackground/GameFrame/GameLayout/BoardStage/VictoryOverlay/VictoryCard/VictoryInset/VictoryContent/VictoryActions"]
+visible = false
+custom_minimum_size = Vector2(430, 70)
+layout_mode = 2
+disabled = true
+theme_override_colors/font_color = Color(0.023529412, 0.023529412, 0.023529412, 1)
+theme_override_font_sizes/font_size = 32
+theme_override_styles/normal = SubResource("ButtonNormal")
+theme_override_styles/pressed = SubResource("ButtonPressed")
+theme_override_styles/hover = SubResource("ButtonHover")
+theme_override_styles/disabled = SubResource("ButtonDisabled")
+text = "Continuar"
+
+[node name="VictoryRestartButton" type="Button" parent="AppBackground/GameFrame/GameLayout/BoardStage/VictoryOverlay/VictoryCard/VictoryInset/VictoryContent/VictoryActions"]
+custom_minimum_size = Vector2(430, 70)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.023529412, 0.023529412, 0.023529412, 1)
+theme_override_font_sizes/font_size = 32
+theme_override_styles/normal = SubResource("ButtonNormal")
+theme_override_styles/pressed = SubResource("ButtonPressed")
+theme_override_styles/hover = SubResource("ButtonHover")
+theme_override_styles/disabled = SubResource("ButtonDisabled")
+text = "Jogar novamente!"
+
+[node name="VictoryMenuButton" type="Button" parent="AppBackground/GameFrame/GameLayout/BoardStage/VictoryOverlay/VictoryCard/VictoryInset/VictoryContent/VictoryActions"]
+custom_minimum_size = Vector2(430, 70)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.023529412, 0.023529412, 0.023529412, 1)
+theme_override_font_sizes/font_size = 32
+theme_override_styles/normal = SubResource("ButtonNormal")
+theme_override_styles/pressed = SubResource("ButtonPressed")
+theme_override_styles/hover = SubResource("ButtonHover")
+theme_override_styles/disabled = SubResource("ButtonDisabled")
+text = "Menu"
 
 [node name="ShopPanel" type="Panel" parent="AppBackground/GameFrame/GameLayout"]
 layout_mode = 0
