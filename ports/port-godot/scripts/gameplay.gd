@@ -60,12 +60,23 @@ const RANGE_RING_PIVOT: Vector2 = Vector2(215, 215)
 const RANGE_RING_BASE_DIAMETER: float = 430.0
 const INITIAL_WAVE_COOLDOWN: float = 1.2
 const BETWEEN_WAVE_COOLDOWN: float = 2.4
+const UNDO_PLACEMENT_WINDOW: float = 5.0
 
 const TILE_PARK_A: Texture2D = preload("res://assets/tiles/park_terrain_detail_a.png")
 const TILE_PARK_B: Texture2D = preload("res://assets/tiles/park_terrain_detail_b.png")
 const TILE_PARK_C: Texture2D = preload("res://assets/tiles/park_terrain_detail_c.png")
-const TILE_PATH: Texture2D = preload("res://assets/tiles/park_path.png")
-const TILE_BLOCKED: Texture2D = preload("res://assets/tiles/park_terrain_blocked.png")
+const TILE_PARK_PATH: Texture2D = preload("res://assets/tiles/park_path.png")
+const TILE_PARK_BLOCKED: Texture2D = preload("res://assets/tiles/park_terrain_blocked.png")
+const TILE_LAGOON_A: Texture2D = preload("res://assets/tiles/lagoon_terrain_detail_a.png")
+const TILE_LAGOON_B: Texture2D = preload("res://assets/tiles/lagoon_terrain_detail_b.png")
+const TILE_LAGOON_C: Texture2D = preload("res://assets/tiles/lagoon_terrain_detail_c.png")
+const TILE_LAGOON_PATH: Texture2D = preload("res://assets/tiles/lagoon_path.png")
+const TILE_LAGOON_BLOCKED: Texture2D = preload("res://assets/tiles/lagoon_terrain_blocked.png")
+const TILE_LAVA_A: Texture2D = preload("res://assets/tiles/lava_terrain_detail_a.png")
+const TILE_LAVA_B: Texture2D = preload("res://assets/tiles/lava_terrain_detail_b.png")
+const TILE_LAVA_C: Texture2D = preload("res://assets/tiles/lava_terrain_detail_c.png")
+const TILE_LAVA_PATH: Texture2D = preload("res://assets/tiles/lava_path.png")
+const TILE_LAVA_BLOCKED: Texture2D = preload("res://assets/tiles/lava_terrain_blocked.png")
 
 const ENEMY_RUNNER_TEXTURE: Texture2D = preload("res://assets/enemies/enemy_runner.png")
 const ENEMY_BRUTE_TEXTURE: Texture2D = preload("res://assets/enemies/enemy_brute.png")
@@ -84,6 +95,8 @@ const PROJECTILE_FLAME_TEXTURE: Texture2D = preload("res://assets/projectiles/pr
 const IMPACT_TEXTURE: Texture2D = preload("res://assets/effects/impact_frame_1.png")
 const RANGE_RING_TEXTURE: Texture2D = preload("res://assets/effects/range_ring_4_cells.png")
 
+var current_theme: String = "park"
+var transition_active: bool = false
 var selected_tower: String = "sentinel"
 var wave_limit: int = 12
 var wave: int = 0
@@ -109,6 +122,9 @@ var placed_towers: Array[TowerState] = []
 var projectiles: Array[ProjectileState] = []
 var impacts: Array[ImpactState] = []
 var occupied_tiles: Array[Vector2i] = []
+var last_placed_tower: TowerState = null
+var pending_delete_tower: TowerState = null
+var delete_confirm_previous_paused: bool = false
 var preview_visible: bool = false
 var preview_tile_position: Vector2i = Vector2i(-1, -1)
 var preview_range_node: TextureRect
@@ -142,6 +158,7 @@ var blocked_tiles: Array[Vector2i] = [
 	Vector2i(9, 8)
 ]
 
+@onready var _board_stage: ColorRect = get_node("AppBackground/GameFrame/GameLayout/BoardStage")
 @onready var _board: GridContainer = get_node("AppBackground/GameFrame/GameLayout/BoardStage/Board")
 @onready var _range_layer: Control = get_node("AppBackground/GameFrame/GameLayout/BoardStage/RangeLayer")
 @onready var _tower_layer: Control = get_node("AppBackground/GameFrame/GameLayout/BoardStage/TowerLayer")
@@ -165,15 +182,31 @@ var blocked_tiles: Array[Vector2i] = [
 @onready var _victory_continue_button: Button = get_node("AppBackground/GameFrame/GameLayout/BoardStage/VictoryOverlay/VictoryCard/VictoryInset/VictoryContent/VictoryActions/VictoryContinueButton")
 @onready var _victory_restart_button: Button = get_node("AppBackground/GameFrame/GameLayout/BoardStage/VictoryOverlay/VictoryCard/VictoryInset/VictoryContent/VictoryActions/VictoryRestartButton")
 @onready var _victory_menu_button: Button = get_node("AppBackground/GameFrame/GameLayout/BoardStage/VictoryOverlay/VictoryCard/VictoryInset/VictoryContent/VictoryActions/VictoryMenuButton")
+@onready var _victory_time_label: Label = get_node("AppBackground/GameFrame/GameLayout/BoardStage/VictoryOverlay/VictoryCard/VictoryInset/VictoryContent/VictoryStats/TimeStat/TimeBox/TimeLabel")
+@onready var _victory_wave_label: Label = get_node("AppBackground/GameFrame/GameLayout/BoardStage/VictoryOverlay/VictoryCard/VictoryInset/VictoryContent/VictoryStats/WaveStat/WaveBox/WaveLabel")
+@onready var _victory_defeated_label: Label = get_node("AppBackground/GameFrame/GameLayout/BoardStage/VictoryOverlay/VictoryCard/VictoryInset/VictoryContent/VictoryStats/DefeatedStat/DefeatedBox/DefeatedLabel")
+@onready var _tower_delete_confirm_overlay: Control = get_node("AppBackground/GameFrame/GameLayout/BoardStage/TowerDeleteConfirmOverlay")
+@onready var _tower_delete_confirm_title: Label = get_node("AppBackground/GameFrame/GameLayout/BoardStage/TowerDeleteConfirmOverlay/TowerDeleteCard/TowerDeleteInset/TowerDeleteContent/TowerDeleteTitle")
+@onready var _tower_delete_confirm_summary: Label = get_node("AppBackground/GameFrame/GameLayout/BoardStage/TowerDeleteConfirmOverlay/TowerDeleteCard/TowerDeleteInset/TowerDeleteContent/TowerDeleteSummary")
+@onready var _tower_delete_confirm_remove_button: Button = get_node("AppBackground/GameFrame/GameLayout/BoardStage/TowerDeleteConfirmOverlay/TowerDeleteCard/TowerDeleteInset/TowerDeleteContent/TowerDeleteActions/TowerDeleteRemoveButton")
+@onready var _tower_delete_confirm_cancel_button: Button = get_node("AppBackground/GameFrame/GameLayout/BoardStage/TowerDeleteConfirmOverlay/TowerDeleteCard/TowerDeleteInset/TowerDeleteContent/TowerDeleteActions/TowerDeleteCancelButton")
+@onready var _theme_transition_overlay: Control = get_node("AppBackground/GameFrame/GameLayout/ThemeTransitionOverlay")
+@onready var _theme_transition_dimmer: ColorRect = get_node("AppBackground/GameFrame/GameLayout/ThemeTransitionOverlay/ThemeTransitionDimmer")
+@onready var _theme_transition_label: Label = get_node("AppBackground/GameFrame/GameLayout/ThemeTransitionOverlay/ThemeTransitionLabel")
 @onready var _floating_message_timer: Timer = get_node("FloatingMessageTimer")
 @onready var _wave_banner_timer: Timer = get_node("WaveBannerTimer")
+@onready var _undo_placement_timer: Timer = get_node("UndoPlacementTimer")
+@onready var _difficulty_label: Label = get_node("AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent/SessionInfo/SessionRows/DifficultyLabel")
 @onready var _difficulty_value: Label = get_node("AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent/SessionInfo/SessionRows/DifficultyValue")
+@onready var _waves_label: Label = get_node("AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent/SessionInfo/SessionRows/WavesLabel")
 @onready var _waves_value: Label = get_node("AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent/SessionInfo/SessionRows/WavesValue")
+@onready var _cards_label: Label = get_node("AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent/SessionInfo/SessionRows/CardsLabel")
 @onready var _cards_value: Label = get_node("AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent/SessionInfo/SessionRows/CardsValue")
 @onready var _status_label: Label = get_node("AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent/StatusLabel")
 @onready var _money_label: Label = get_node("AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent/ShopTop/MoneyPanel/MoneyContent/MoneyLabel")
 @onready var _restart_button: Button = get_node("AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent/ShopTop/ShopActions/RestartButton")
 @onready var _menu_button: Button = get_node("AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent/ShopTop/ShopActions/MenuButton")
+@onready var _undo_button: Button = get_node("AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent/ToolsGrid/UndoButton")
 @onready var _delete_button: Button = get_node("AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent/ToolsGrid/DeleteButton")
 @onready var _pause_button: Button = get_node("AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent/ControlRow/PauseButton")
 @onready var _speed_button: Button = get_node("AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent/ControlRow/SpeedButton")
@@ -185,17 +218,22 @@ var blocked_tiles: Array[Vector2i] = [
 }
 
 func _ready() -> void:
+	GameSession.apply_language(GameSession.language, false)
 	_floating_message.hide()
 	_wave_banner.hide()
 	_victory_overlay.hide()
-	_build_board()
+	_tower_delete_confirm_overlay.hide()
+	_theme_transition_overlay.hide()
+	_theme_transition_dimmer.color = Color(0.015686275, 0.05490196, 0.078431375, 0.92)
+	_theme_transition_overlay.modulate = Color(1.0, 1.0, 1.0, 0.0)
 	_connect_buttons()
-	_apply_tower_button_icons()
-	_select_tower(selected_tower)
+	_apply_static_translations()
 	_start_run()
 	_ensure_placement_preview_nodes()
 
 func _process(delta: float) -> void:
+	if transition_active:
+		return
 	if game_over or victory_pending:
 		return
 
@@ -217,6 +255,8 @@ func _process(delta: float) -> void:
 
 func _start_run() -> void:
 	_hide_victory_overlay()
+	_hide_tower_delete_confirm_overlay()
+	_clear_undo_placement()
 	_hide_placement_preview()
 	_clear_enemies()
 	_clear_projectiles()
@@ -241,14 +281,14 @@ func _start_run() -> void:
 	next_tower_id = 1
 	next_projectile_id = 1
 	speed_multiplier = 1.0
-	_pause_button.button_pressed = false
-	_pause_button.text = "Pause"
-	_speed_button.button_pressed = false
+	_load_theme(GameSession.theme)
+	_set_pause_state(false)
+	_speed_button.set_pressed_no_signal(false)
 	_speed_button.text = "1x"
-	_delete_button.button_pressed = false
+	_set_delete_mode(false, "", false)
 	_sync_session_labels()
 	_sync_hud()
-	_show_status("Preparando onda 1.")
+	_show_status(GameSession.t("messages.prepareWave", {"wave": 1}))
 
 func _update_wave_flow(dt: float) -> void:
 	if wave_in_progress:
@@ -272,8 +312,8 @@ func _start_next_wave() -> void:
 	spawn_remaining = 6 + wave * 2
 	spawn_timer = 0.0
 	wave_in_progress = true
-	_show_wave_banner("Onda %d" % wave)
-	_show_status("Onda %d iniciada." % wave)
+	_show_wave_banner(GameSession.t("hud.wave") + " %d" % wave)
+	_show_status(GameSession.t("messages.waveStarted", {"wave": wave}))
 
 func _update_spawn(dt: float) -> void:
 	if spawn_remaining <= 0:
@@ -291,24 +331,27 @@ func _complete_current_wave() -> void:
 	wave_in_progress = false
 	session_defeated += wave_defeated
 	wave_defeated = 0
-	_show_wave_banner("Onda %d concluida" % wave)
+	_show_wave_banner(GameSession.t("messages.waveCompleted", {"wave": wave}))
 
 	if wave >= wave_limit:
 		_finish_victory()
 		return
 
 	wave_cooldown = BETWEEN_WAVE_COOLDOWN
-	_show_status("Onda %d concluida. Proxima onda em breve." % wave)
+	_show_status(GameSession.t("messages.nextWaveSoon", {"wave": wave}))
 
 func _finish_victory() -> void:
 	victory_pending = true
 	wave_in_progress = false
 	spawn_remaining = 0
+	_set_delete_mode(false, "", false)
+	_hide_tower_delete_confirm_overlay()
+	_clear_undo_placement()
 	_hide_placement_preview()
 	_clear_enemies()
 	_clear_projectiles()
 	_clear_impacts()
-	_show_status("Todas as ondas foram concluidas.")
+	_show_status(GameSession.t("messages.allWavesDone"))
 	_sync_hud()
 	_show_victory_overlay()
 
@@ -316,12 +359,15 @@ func _end_game() -> void:
 	game_over = true
 	wave_in_progress = false
 	spawn_remaining = 0
+	_set_delete_mode(false, "", false)
+	_hide_tower_delete_confirm_overlay()
+	_clear_undo_placement()
 	_hide_placement_preview()
 	_clear_enemies()
 	_clear_projectiles()
 	_clear_impacts()
-	_show_wave_banner("Fim de jogo")
-	_show_status("O parque perdeu todas as vidas.")
+	_show_wave_banner(GameSession.t("victory.gameOver"))
+	_show_status(GameSession.t("messages.themeLostLives", {"theme": GameSession.get_theme_name(current_theme)}))
 	_sync_hud()
 
 func _spawn_enemy() -> void:
@@ -445,6 +491,25 @@ func _get_path_point(path_index: int) -> Vector2:
 	var tile_position: Vector2i = path_tiles[path_index]
 	return Vector2(float(tile_position.x) + 0.5, float(tile_position.y) + 0.5)
 
+func _load_theme(theme_key: String) -> void:
+	GameSession.set_theme(theme_key)
+	current_theme = GameSession.theme
+	path_tiles = _get_theme_path_tiles(current_theme)
+	blocked_tiles = _get_theme_blocked_tiles(current_theme)
+	_apply_theme_visuals()
+	_build_board()
+	_ensure_selected_tower_unlocked()
+	_sync_tower_shop_buttons()
+
+func _apply_theme_visuals() -> void:
+	match current_theme:
+		"lagoon":
+			_board_stage.color = Color(0.039215688, 0.23529412, 0.3019608, 1.0)
+		"lava":
+			_board_stage.color = Color(0.21176471, 0.07450981, 0.03529412, 1.0)
+		_:
+			_board_stage.color = Color(0.05882353, 0.25490198, 0.101960786, 1.0)
+
 func _build_board() -> void:
 	for child_index in range(_board.get_child_count()):
 		var child: Node = _board.get_child(child_index)
@@ -480,20 +545,144 @@ func _on_tile_gui_input(event: InputEvent, tile_position: Vector2i) -> void:
 		return
 
 	accept_event()
-	_try_place_tower(tile_position)
+	if _delete_button.button_pressed:
+		_request_tower_delete_at(tile_position)
+	else:
+		_try_place_tower(tile_position)
 
 func _get_tile_texture(tile_position: Vector2i) -> Texture2D:
 	if path_tiles.has(tile_position):
-		return TILE_PATH
+		return _get_theme_path_texture()
 	if blocked_tiles.has(tile_position):
-		return TILE_BLOCKED
+		return _get_theme_blocked_texture()
 
 	var detail_index: int = (tile_position.x * 11 + tile_position.y * 17) % 3
-	if detail_index == 1:
-		return TILE_PARK_B
-	if detail_index == 2:
-		return TILE_PARK_C
-	return TILE_PARK_A
+	return _get_theme_detail_texture(detail_index)
+
+func _get_theme_detail_texture(detail_index: int) -> Texture2D:
+	match current_theme:
+		"lagoon":
+			if detail_index == 1:
+				return TILE_LAGOON_B
+			if detail_index == 2:
+				return TILE_LAGOON_C
+			return TILE_LAGOON_A
+		"lava":
+			if detail_index == 1:
+				return TILE_LAVA_B
+			if detail_index == 2:
+				return TILE_LAVA_C
+			return TILE_LAVA_A
+		_:
+			if detail_index == 1:
+				return TILE_PARK_B
+			if detail_index == 2:
+				return TILE_PARK_C
+			return TILE_PARK_A
+
+func _get_theme_path_texture() -> Texture2D:
+	match current_theme:
+		"lagoon":
+			return TILE_LAGOON_PATH
+		"lava":
+			return TILE_LAVA_PATH
+		_:
+			return TILE_PARK_PATH
+
+func _get_theme_blocked_texture() -> Texture2D:
+	match current_theme:
+		"lagoon":
+			return TILE_LAGOON_BLOCKED
+		"lava":
+			return TILE_LAVA_BLOCKED
+		_:
+			return TILE_PARK_BLOCKED
+
+func _get_theme_path_tiles(theme_key: String) -> Array[Vector2i]:
+	var tiles: Array[Vector2i] = []
+	match theme_key:
+		"lagoon":
+			tiles.append(Vector2i(4, 0))
+			tiles.append(Vector2i(5, 0))
+			tiles.append(Vector2i(6, 0))
+			tiles.append(Vector2i(7, 0))
+			tiles.append(Vector2i(7, 1))
+			tiles.append(Vector2i(7, 2))
+			tiles.append(Vector2i(6, 2))
+			tiles.append(Vector2i(5, 2))
+			tiles.append(Vector2i(5, 3))
+			tiles.append(Vector2i(5, 4))
+			tiles.append(Vector2i(6, 4))
+			tiles.append(Vector2i(7, 4))
+			tiles.append(Vector2i(8, 4))
+			tiles.append(Vector2i(8, 5))
+			tiles.append(Vector2i(8, 6))
+			tiles.append(Vector2i(9, 6))
+			tiles.append(Vector2i(10, 6))
+			tiles.append(Vector2i(11, 6))
+		"lava":
+			tiles.append(Vector2i(1, 0))
+			tiles.append(Vector2i(2, 0))
+			tiles.append(Vector2i(3, 0))
+			tiles.append(Vector2i(3, 1))
+			tiles.append(Vector2i(4, 1))
+			tiles.append(Vector2i(4, 2))
+			tiles.append(Vector2i(5, 2))
+			tiles.append(Vector2i(5, 3))
+			tiles.append(Vector2i(6, 3))
+			tiles.append(Vector2i(7, 3))
+			tiles.append(Vector2i(8, 3))
+			tiles.append(Vector2i(8, 4))
+			tiles.append(Vector2i(8, 5))
+			tiles.append(Vector2i(9, 5))
+			tiles.append(Vector2i(10, 5))
+			tiles.append(Vector2i(10, 6))
+			tiles.append(Vector2i(10, 7))
+			tiles.append(Vector2i(10, 8))
+		_:
+			tiles.append(Vector2i(3, 0))
+			tiles.append(Vector2i(3, 1))
+			tiles.append(Vector2i(3, 2))
+			tiles.append(Vector2i(4, 2))
+			tiles.append(Vector2i(4, 3))
+			tiles.append(Vector2i(5, 3))
+			tiles.append(Vector2i(6, 3))
+			tiles.append(Vector2i(6, 4))
+			tiles.append(Vector2i(7, 4))
+			tiles.append(Vector2i(8, 4))
+			tiles.append(Vector2i(8, 5))
+			tiles.append(Vector2i(8, 6))
+			tiles.append(Vector2i(9, 6))
+			tiles.append(Vector2i(10, 6))
+			tiles.append(Vector2i(10, 7))
+			tiles.append(Vector2i(10, 8))
+	return tiles
+
+func _get_theme_blocked_tiles(theme_key: String) -> Array[Vector2i]:
+	var tiles: Array[Vector2i] = []
+	match theme_key:
+		"lagoon":
+			tiles.append(Vector2i(0, 6))
+			tiles.append(Vector2i(1, 8))
+			tiles.append(Vector2i(3, 1))
+			tiles.append(Vector2i(4, 0))
+			tiles.append(Vector2i(6, 1))
+			tiles.append(Vector2i(8, 7))
+			tiles.append(Vector2i(10, 5))
+		"lava":
+			tiles.append(Vector2i(2, 2))
+			tiles.append(Vector2i(3, 2))
+			tiles.append(Vector2i(8, 2))
+			tiles.append(Vector2i(9, 5))
+			tiles.append(Vector2i(5, 7))
+		_:
+			tiles.append(Vector2i(0, 1))
+			tiles.append(Vector2i(1, 4))
+			tiles.append(Vector2i(10, 1))
+			tiles.append(Vector2i(11, 6))
+			tiles.append(Vector2i(2, 8))
+			tiles.append(Vector2i(9, 8))
+	return tiles
 
 func _get_enemy_texture(tier: int) -> Texture2D:
 	if tier == 1:
@@ -507,25 +696,27 @@ func _get_enemy_pivot(_tier: int) -> Vector2:
 
 func _get_tower_placement_state(tile_position: Vector2i, tower_key: String) -> Dictionary:
 	if game_over or victory_pending:
-		return _make_tower_placement_state(false, "Partida encerrada.")
+		return _make_tower_placement_state(false, GameSession.t("messages.gameEnded"))
 	if paused:
-		return _make_tower_placement_state(false, "Retome o jogo para construir.")
+		return _make_tower_placement_state(false, GameSession.t("messages.resumeToBuild"))
 	if _delete_button.button_pressed:
-		return _make_tower_placement_state(false, "Remocao de torres ainda nao implementada.")
+		return _make_tower_placement_state(false, GameSession.t("messages.selectTowerToRemove"))
+	if not GameSession.is_tower_unlocked(tower_key, current_theme):
+		return _make_tower_placement_state(false, GameSession.t("messages.towerLocked", {"tower": _format_tower_name(tower_key)}))
 
 	var tower_cost: int = _get_tower_cost(tower_key)
 	if tower_cost <= 0:
-		return _make_tower_placement_state(false, "Selecione uma torre.")
+		return _make_tower_placement_state(false, GameSession.t("messages.selectTower"))
 	if path_tiles.has(tile_position) or blocked_tiles.has(tile_position):
-		return _make_tower_placement_state(false, "Espaco bloqueado.")
+		return _make_tower_placement_state(false, GameSession.t("messages.spaceBlocked"))
 	if occupied_tiles.has(tile_position):
-		return _make_tower_placement_state(false, "Ja existe uma torre aqui.")
+		return _make_tower_placement_state(false, GameSession.t("messages.towerExists"))
 	if coins < tower_cost:
-		return _make_tower_placement_state(false, "Moedas insuficientes.")
+		return _make_tower_placement_state(false, GameSession.t("messages.notEnoughCoins"))
 
 	var tower_range: float = _get_tower_range(tower_key)
 	if not _does_tower_reach_path(tile_position, tower_range):
-		return _make_tower_placement_state(false, "Torre nao alcanca o caminho.")
+		return _make_tower_placement_state(false, GameSession.t("messages.towerNoTargets"))
 
 	return _make_tower_placement_state(true, "")
 
@@ -540,7 +731,7 @@ func _try_place_tower(tile_position: Vector2i) -> void:
 	var placement_state: Dictionary = _get_tower_placement_state(tile_position, tower_key)
 	var available: bool = bool(placement_state.get("available", false))
 	if not available:
-		_show_status(String(placement_state.get("message", "Espaco indisponivel.")))
+		_show_status(String(placement_state.get("message", GameSession.t("messages.spaceUnavailable"))))
 		return
 
 	var tower_cost: int = _get_tower_cost(tower_key)
@@ -577,8 +768,100 @@ func _place_tower(tile_position: Vector2i, tower_key: String, tower_cost: int, t
 	occupied_tiles.append(tile_position)
 	coins -= tower_cost
 	_position_tower(tower_data)
+	_start_undo_placement(tower_data)
 	_sync_hud()
-	_show_status("%s criada por %d moedas." % [_format_tower_name(tower_key), tower_cost])
+	_show_status(GameSession.t("messages.towerCreated", {"tower": _format_tower_name(tower_key), "cost": tower_cost}))
+
+func _start_undo_placement(tower_data: TowerState) -> void:
+	last_placed_tower = tower_data
+	_undo_placement_timer.start(UNDO_PLACEMENT_WINDOW)
+	_sync_tower_action_ui()
+
+func _expire_undo_placement() -> void:
+	last_placed_tower = null
+	_sync_tower_action_ui()
+
+func _clear_undo_placement() -> void:
+	last_placed_tower = null
+	if is_instance_valid(_undo_placement_timer):
+		_undo_placement_timer.stop()
+	_sync_tower_action_ui()
+
+func _is_undo_placement_available() -> bool:
+	if last_placed_tower == null:
+		return false
+	if game_over or victory_pending:
+		return false
+	if not placed_towers.has(last_placed_tower):
+		return false
+	return _undo_placement_timer.time_left > 0.0
+
+func _get_undo_seconds_remaining() -> int:
+	if not _is_undo_placement_available():
+		return 0
+	return maxi(1, int(ceil(_undo_placement_timer.time_left)))
+
+func _undo_last_tower_placement() -> void:
+	if not _is_undo_placement_available():
+		_clear_undo_placement()
+		_show_status(GameSession.t("messages.nothingToUndo"))
+		return
+
+	var tower_data: TowerState = last_placed_tower
+	var tower_name: String = _format_tower_name(tower_data.tower_type)
+	var refund: int = tower_data.cost
+	var removed: bool = _remove_tower(tower_data, refund)
+	_clear_undo_placement()
+
+	if removed:
+		_show_status(GameSession.t("messages.towerUndone", {"tower": tower_name, "refund": refund}))
+	else:
+		_show_status(GameSession.t("messages.nothingToUndo"))
+
+func _get_tower_at_tile(tile_position: Vector2i) -> TowerState:
+	for tower_data in placed_towers:
+		if tower_data.tile_position == tile_position:
+			return tower_data
+	return null
+
+func _remove_tower(tower_data: TowerState, refund: int) -> bool:
+	if tower_data == null:
+		return false
+	if not placed_towers.has(tower_data):
+		return false
+
+	if last_placed_tower != null and last_placed_tower.id == tower_data.id:
+		last_placed_tower = null
+		if is_instance_valid(_undo_placement_timer):
+			_undo_placement_timer.stop()
+
+	if pending_delete_tower != null and pending_delete_tower.id == tower_data.id:
+		pending_delete_tower = null
+
+	placed_towers.erase(tower_data)
+	occupied_tiles.erase(tower_data.tile_position)
+	_remove_projectiles_from_tower(tower_data.id)
+
+	var tower_node: Node = tower_data.node
+	if is_instance_valid(tower_node):
+		tower_node.queue_free()
+
+	if refund > 0:
+		coins += refund
+
+	_refresh_placement_preview()
+	_sync_delete_tower_highlights()
+	_sync_hud()
+	return true
+
+func _remove_projectiles_from_tower(tower_id: int) -> void:
+	var tower_projectiles: Array[ProjectileState] = []
+	for projectile_data in projectiles:
+		if projectile_data.source_tower_id == tower_id:
+			tower_projectiles.append(projectile_data)
+
+	for projectile_to_remove in tower_projectiles:
+		_remove_projectile(projectile_to_remove)
 
 func _create_range_ring(tile_position: Vector2i, tower_range: float) -> TextureRect:
 	var range_node: TextureRect = TextureRect.new()
@@ -648,7 +931,7 @@ func _hide_placement_preview() -> void:
 	_clear_preview_path_overlays()
 
 func _should_hide_placement_preview() -> bool:
-	return paused or game_over or victory_pending or _delete_button.button_pressed
+	return transition_active or paused or game_over or victory_pending or _delete_button.button_pressed
 
 func _render_placement_preview(tile_position: Vector2i) -> void:
 	_ensure_placement_preview_nodes()
@@ -1046,17 +1329,36 @@ func _apply_tower_button_icons() -> void:
 	_configure_tower_shop_button(_tower_buttons["splash"] as Button, "splash")
 	_configure_tower_shop_button(_tower_buttons["flame"] as Button, "flame")
 
+func _sync_tower_shop_buttons() -> void:
+	_apply_tower_button_icons()
+	for tower_key in _tower_buttons:
+		var tower_key_string: String = str(tower_key)
+		var button: Button = _tower_buttons[tower_key_string] as Button
+		var unlocked: bool = GameSession.is_tower_unlocked(tower_key_string, current_theme)
+		button.disabled = not unlocked
+		button.button_pressed = unlocked and tower_key_string == selected_tower
+
+func _ensure_selected_tower_unlocked() -> void:
+	if GameSession.is_tower_unlocked(selected_tower, current_theme):
+		return
+
+	var unlocked_towers: Array[String] = GameSession.get_unlocked_tower_keys(current_theme)
+	if unlocked_towers.is_empty():
+		selected_tower = "sentinel"
+		return
+	selected_tower = unlocked_towers[0]
+
 func _configure_tower_shop_button(button: Button, tower_key: String) -> void:
 	if button == null:
 		return
 
 	button.icon = null
 	button.expand_icon = false
-	button.text = "%s\n$%d\nATQ %d\nALC %.1f" % [
+	button.text = "%s\n$%d\n%s\n%s" % [
 		_format_tower_name(tower_key),
 		_get_tower_cost(tower_key),
-		_get_tower_damage(tower_key),
-		_get_tower_range(tower_key)
+		GameSession.t("shop.attackShort", {"attack": _get_tower_damage(tower_key)}),
+		GameSession.t("shop.rangeShort", {"range": "%.1f" % _get_tower_range(tower_key)})
 	]
 
 func _connect_buttons() -> void:
@@ -1066,9 +1368,14 @@ func _connect_buttons() -> void:
 
 	_restart_button.pressed.connect(_start_run)
 	_menu_button.pressed.connect(_return_to_menu)
+	_victory_continue_button.pressed.connect(_continue_to_next_theme)
 	_victory_restart_button.pressed.connect(_start_run)
 	_victory_menu_button.pressed.connect(_return_to_menu)
+	_undo_button.pressed.connect(_undo_last_tower_placement)
 	_delete_button.pressed.connect(_toggle_delete_mode)
+	_tower_delete_confirm_remove_button.pressed.connect(_confirm_tower_delete)
+	_tower_delete_confirm_cancel_button.pressed.connect(_cancel_tower_delete)
+	_undo_placement_timer.timeout.connect(_expire_undo_placement)
 	_pause_button.pressed.connect(_toggle_pause)
 	_speed_button.pressed.connect(_toggle_speed)
 	_floating_message_timer.timeout.connect(_hide_floating_message)
@@ -1080,64 +1387,240 @@ func _connect_buttons() -> void:
 		button.toggle_mode = true
 		button.pressed.connect(_select_tower.bind(tower_key_string))
 
+func _continue_to_next_theme() -> void:
+	if transition_active:
+		return
+
+	var next_theme: String = GameSession.get_next_theme(current_theme)
+	if next_theme.is_empty():
+		return
+
+	transition_active = true
+	_victory_continue_button.disabled = true
+	_theme_transition_label.text = GameSession.get_theme_name(next_theme)
+	_theme_transition_overlay.modulate = Color(1.0, 1.0, 1.0, 0.0)
+	_theme_transition_overlay.show()
+	_theme_transition_overlay.move_to_front()
+
+	var fade_out_tween: Tween = create_tween()
+	fade_out_tween.set_trans(Tween.TRANS_SINE)
+	fade_out_tween.set_ease(Tween.EASE_IN_OUT)
+	fade_out_tween.tween_property(_theme_transition_overlay, "modulate", Color.WHITE, 0.24)
+	await fade_out_tween.finished
+
+	GameSession.set_theme(next_theme)
+	_start_run()
+
+	var hold_tween: Tween = create_tween()
+	hold_tween.tween_interval(0.16)
+	await hold_tween.finished
+
+	var fade_in_tween: Tween = create_tween()
+	fade_in_tween.set_trans(Tween.TRANS_SINE)
+	fade_in_tween.set_ease(Tween.EASE_IN_OUT)
+	fade_in_tween.tween_property(_theme_transition_overlay, "modulate", Color(1.0, 1.0, 1.0, 0.0), 0.28)
+	await fade_in_tween.finished
+
+	_theme_transition_overlay.hide()
+	transition_active = false
+	_sync_tower_action_ui()
+
+func _apply_static_translations() -> void:
+	_restart_button.tooltip_text = GameSession.t("shop.restart")
+	_menu_button.tooltip_text = GameSession.t("common.menu")
+	_difficulty_label.text = GameSession.t("difficulty.title")
+	_waves_label.text = GameSession.t("difficulty.waves")
+	_cards_label.text = GameSession.t("settings.cards")
+	_victory_time_label.text = GameSession.t("hud.timeLabel")
+	_victory_wave_label.text = GameSession.t("hud.wave")
+	_victory_defeated_label.text = GameSession.t("hud.defeatedLabel")
+	_victory_continue_button.text = GameSession.t("common.continue")
+	_victory_restart_button.text = GameSession.t("victory.restart")
+	_victory_menu_button.text = GameSession.t("common.menu")
+	_tower_delete_confirm_title.text = GameSession.t("confirm.towerDeleteTitle")
+	_tower_delete_confirm_summary.text = GameSession.t("confirm.towerDeleteSummary")
+	_tower_delete_confirm_remove_button.text = GameSession.t("common.remove")
+	_tower_delete_confirm_cancel_button.text = GameSession.t("common.cancel")
+	_set_pause_state(paused)
+	_sync_session_labels()
+	_sync_hud()
+
 func _sync_session_labels() -> void:
 	_difficulty_value.text = _format_difficulty(GameSession.difficulty)
 	_waves_value.text = str(wave_limit)
 	_cards_value.text = _format_card_frequency(GameSession.card_frequency)
 
 func _sync_hud() -> void:
-	_lives_label.text = "Vidas %d" % lives
-	_wave_label.text = "Onda %d/%d" % [wave, wave_limit]
-	_defeated_label.text = "Derrotou %d" % session_defeated
-	_time_label.text = "Tempo " + _format_session_time(session_time)
+	_lives_label.text = GameSession.t("hud.lives", {"count": lives})
+	_wave_label.text = GameSession.t("hud.waveProgress", {"wave": wave, "limit": wave_limit})
+	_defeated_label.text = GameSession.t("hud.defeated", {"count": session_defeated})
+	_time_label.text = GameSession.t("hud.time", {"time": _format_session_time(session_time)})
 	_money_label.text = str(coins)
+	_sync_tower_action_ui()
+
+func _sync_tower_action_ui() -> void:
+	var can_undo: bool = _is_undo_placement_available()
+	_undo_button.visible = can_undo
+	_undo_button.disabled = not can_undo
+	if can_undo:
+		_undo_button.text = "%s\n%ds" % [GameSession.t("shop.undo"), _get_undo_seconds_remaining()]
+	else:
+		_undo_button.text = GameSession.t("shop.undo")
+
+	var delete_active: bool = _delete_button.button_pressed and not game_over and not victory_pending
+	if _delete_button.button_pressed != delete_active:
+		_delete_button.set_pressed_no_signal(delete_active)
+	_delete_button.disabled = transition_active or game_over or victory_pending or _tower_delete_confirm_overlay.visible
+	_delete_button.text = "%s\n%s" % [
+		GameSession.t("shop.delete"),
+		GameSession.t("common.cancel") if delete_active else GameSession.t("shop.select")
+	]
 
 func _show_victory_overlay() -> void:
+	var has_next_theme: bool = GameSession.has_next_theme(current_theme)
 	_victory_title.text = _get_victory_title()
-	_victory_summary.text = "Todas as ondas foram concluidas."
+	_victory_summary.text = GameSession.t("victory.summary")
 	_victory_time_value.text = _format_session_time(session_time)
 	_victory_wave_value.text = "%d/%d" % [wave, wave_limit]
 	_victory_defeated_value.text = str(session_defeated)
-	_victory_continue_button.hide()
-	_victory_continue_button.disabled = true
+	_victory_continue_button.visible = has_next_theme
+	_victory_continue_button.disabled = not has_next_theme
 	_hide_floating_message()
 	_hide_wave_banner()
 	_victory_overlay.show()
-	_victory_restart_button.call_deferred("grab_focus")
+	if has_next_theme:
+		_victory_continue_button.call_deferred("grab_focus")
+	else:
+		_victory_restart_button.call_deferred("grab_focus")
 
 func _hide_victory_overlay() -> void:
 	_victory_overlay.hide()
 
 func _select_tower(tower_key: String) -> void:
+	if not GameSession.is_tower_unlocked(tower_key, current_theme):
+		_sync_tower_shop_buttons()
+		_show_status(GameSession.t("messages.towerLocked", {"tower": _format_tower_name(tower_key)}))
+		return
+
 	selected_tower = tower_key
 	for key in _tower_buttons:
 		var tower_key_string: String = str(key)
 		var button: Button = _tower_buttons[tower_key_string] as Button
 		button.button_pressed = tower_key_string == selected_tower
 	_refresh_placement_preview()
-	_show_status("Torre selecionada: " + _format_tower_name(selected_tower))
+	_show_status(GameSession.t("messages.towerSelected", {"tower": _format_tower_name(selected_tower)}))
 
 func _toggle_delete_mode() -> void:
 	if _delete_button.button_pressed:
-		_hide_placement_preview()
+		if game_over or victory_pending:
+			_set_delete_mode(false, GameSession.t("messages.gameEnded"), true)
+			return
+		_set_delete_mode(true, GameSession.t("messages.selectTowerToRemove"), true)
 	else:
-		_refresh_placement_preview()
-	var text: String = "Modo excluir ligado." if _delete_button.button_pressed else "Modo excluir desligado."
-	_show_status(text)
+		_set_delete_mode(false, GameSession.t("messages.buildModeRestored"), true)
 
 func _toggle_pause() -> void:
-	paused = _pause_button.button_pressed
+	_set_pause_state(_pause_button.button_pressed)
+	_show_status(GameSession.t("messages.pause") if paused else GameSession.t("messages.resume"))
+
+func _set_pause_state(is_paused: bool) -> void:
+	paused = is_paused
+	_pause_button.set_pressed_no_signal(paused)
 	if paused:
 		_hide_placement_preview()
 	else:
 		_refresh_placement_preview()
-	_pause_button.text = "Retomar" if paused else "Pause"
-	_show_status("Jogo pausado." if paused else "Jogo retomado.")
+	_pause_button.text = GameSession.t("actions.resume") if paused else GameSession.t("actions.pause")
+
+func _set_delete_mode(active: bool, status_text: String, show_message: bool) -> void:
+	var allowed: bool = active and not game_over and not victory_pending
+	_delete_button.set_pressed_no_signal(allowed)
+	if allowed:
+		_hide_placement_preview()
+	else:
+		pending_delete_tower = null
+		_refresh_placement_preview()
+	_sync_delete_tower_highlights()
+	_sync_tower_action_ui()
+	if show_message and not status_text.is_empty():
+		_show_status(status_text)
+
+func _request_tower_delete_at(tile_position: Vector2i) -> void:
+	if game_over or victory_pending:
+		_set_delete_mode(false, GameSession.t("messages.gameEnded"), true)
+		return
+
+	var tower_data: TowerState = _get_tower_at_tile(tile_position)
+	if tower_data == null:
+		_show_status(GameSession.t("messages.selectTowerToRemove"))
+		return
+
+	_request_tower_delete(tower_data)
+
+func _request_tower_delete(tower_data: TowerState) -> void:
+	if tower_data == null or not placed_towers.has(tower_data):
+		_show_status(GameSession.t("messages.towerNotFound"))
+		return
+
+	pending_delete_tower = tower_data
+	delete_confirm_previous_paused = paused
+	_set_pause_state(true)
+	_hide_placement_preview()
+	_sync_delete_tower_highlights()
+	_show_tower_delete_confirm_overlay()
+	_show_status(GameSession.t("messages.removeThisTower"))
+
+func _confirm_tower_delete() -> void:
+	var tower_data: TowerState = pending_delete_tower
+	var restore_paused: bool = delete_confirm_previous_paused
+	var tower_name: String = GameSession.t("messages.selectTower")
+	if tower_data != null:
+		tower_name = _format_tower_name(tower_data.tower_type)
+
+	_hide_tower_delete_confirm_overlay()
+	var removed: bool = _remove_tower(tower_data, 0)
+	_set_pause_state(restore_paused)
+	_set_delete_mode(false, "", false)
+
+	if removed:
+		_show_status(GameSession.t("messages.towerRemoved", {"tower": tower_name}))
+	else:
+		_show_status(GameSession.t("messages.towerNotFound"))
+
+func _cancel_tower_delete() -> void:
+	var restore_paused: bool = delete_confirm_previous_paused
+	pending_delete_tower = null
+	_hide_tower_delete_confirm_overlay()
+	_set_pause_state(restore_paused)
+	_set_delete_mode(false, GameSession.t("messages.buildModeRestored"), true)
+
+func _show_tower_delete_confirm_overlay() -> void:
+	_tower_delete_confirm_overlay.show()
+	_tower_delete_confirm_overlay.move_to_front()
+	_sync_tower_action_ui()
+	_tower_delete_confirm_remove_button.call_deferred("grab_focus")
+
+func _hide_tower_delete_confirm_overlay() -> void:
+	_tower_delete_confirm_overlay.hide()
+	_sync_tower_action_ui()
+
+func _sync_delete_tower_highlights() -> void:
+	var delete_active: bool = _delete_button.button_pressed and not game_over and not victory_pending
+	for tower_data in placed_towers:
+		var tower_node: CanvasItem = tower_data.node
+		if not is_instance_valid(tower_node):
+			continue
+		if pending_delete_tower != null and pending_delete_tower.id == tower_data.id:
+			tower_node.modulate = Color(1.0, 0.48, 0.36, 1.0)
+		elif delete_active:
+			tower_node.modulate = Color(1.0, 0.84, 0.58, 1.0)
+		else:
+			tower_node.modulate = Color.WHITE
 
 func _toggle_speed() -> void:
 	speed_multiplier = 2.0 if _speed_button.button_pressed else 1.0
 	_speed_button.text = "2x" if _speed_button.button_pressed else "1x"
-	_show_status("Velocidade 2x." if _speed_button.button_pressed else "Velocidade 1x.")
+	_show_status(GameSession.t("messages.speedFast") if _speed_button.button_pressed else GameSession.t("messages.speedNormal"))
 
 func _show_status(text: String) -> void:
 	_status_label.text = text
@@ -1167,6 +1650,9 @@ func _clear_enemies() -> void:
 		child.queue_free()
 
 func _clear_towers() -> void:
+	last_placed_tower = null
+	pending_delete_tower = null
+	delete_confirm_previous_paused = false
 	for tower_data in placed_towers:
 		var tower_node: Node = tower_data.node
 		if is_instance_valid(tower_node):
@@ -1202,9 +1688,10 @@ func _clear_impacts() -> void:
 		child.queue_free()
 
 func _return_to_menu() -> void:
+	GameSession.set_theme(GameSession.get_first_theme())
 	var error: int = get_tree().change_scene_to_file(MAIN_MENU_SCENE)
 	if error != OK:
-		_show_status("Erro ao voltar ao menu.")
+		_show_status(GameSession.t("messages.returnMenuError"))
 
 func _format_session_time(value: float) -> String:
 	var total_seconds: int = int(floor(value))
@@ -1213,37 +1700,37 @@ func _format_session_time(value: float) -> String:
 	return "%02d:%02d" % [minutes, seconds]
 
 func _get_victory_title() -> String:
-	return "Parque Protegido!"
+	return GameSession.get_victory_title(current_theme)
 
 func _format_difficulty(difficulty: String) -> String:
 	match difficulty:
 		"easy":
-			return "Facil"
+			return GameSession.t("difficulty.easy")
 		"medium":
-			return "Medio"
+			return GameSession.t("difficulty.medium")
 		"hard":
-			return "Dificil"
+			return GameSession.t("difficulty.hard")
 		"custom":
-			return "Custom"
+			return GameSession.t("difficulty.custom")
 		_:
-			return "Medio"
+			return GameSession.t("difficulty.medium")
 
 func _format_tower_name(tower_key: String) -> String:
 	match tower_key:
 		"sentinel":
-			return "Sentinela"
+			return GameSession.t("towers.sentinel")
 		"slow":
-			return "Gelida"
+			return GameSession.t("towers.slow")
 		"splash":
-			return "Canhao"
+			return GameSession.t("towers.splash")
 		"flame":
-			return "Chama"
+			return GameSession.t("towers.flame")
 		_:
-			return "Sentinela"
+			return GameSession.t("towers.sentinel")
 
 func _format_card_frequency(value: int) -> String:
 	if value <= 0:
-		return "Off"
+		return GameSession.t("settings.cardFrequencyOff")
 	if value == 1:
-		return "1 onda"
-	return "%d ondas" % value
+		return GameSession.t("settings.cardFrequencyOne")
+	return GameSession.t("settings.cardFrequencyMany", {"count": value})

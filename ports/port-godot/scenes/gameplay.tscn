@@ -579,6 +579,88 @@ theme_override_styles/hover = SubResource("ButtonHover")
 theme_override_styles/disabled = SubResource("ButtonDisabled")
 text = "Menu"
 
+[node name="TowerDeleteConfirmOverlay" type="Control" parent="AppBackground/GameFrame/GameLayout/BoardStage"]
+visible = false
+layout_mode = 0
+offset_right = 1260.0
+offset_bottom = 1035.0
+mouse_filter = 0
+
+[node name="TowerDeleteDimmer" type="ColorRect" parent="AppBackground/GameFrame/GameLayout/BoardStage/TowerDeleteConfirmOverlay"]
+layout_mode = 0
+offset_right = 1260.0
+offset_bottom = 1035.0
+mouse_filter = 0
+color = Color(0.09411765, 0.047058824, 0.011764706, 0.48)
+
+[node name="TowerDeleteCard" type="PanelContainer" parent="AppBackground/GameFrame/GameLayout/BoardStage/TowerDeleteConfirmOverlay"]
+layout_mode = 0
+offset_left = 360.0
+offset_top = 342.0
+offset_right = 900.0
+offset_bottom = 682.0
+theme_override_styles/panel = SubResource("VictoryCardStyle")
+
+[node name="TowerDeleteInset" type="MarginContainer" parent="AppBackground/GameFrame/GameLayout/BoardStage/TowerDeleteConfirmOverlay/TowerDeleteCard"]
+layout_mode = 2
+theme_override_constants/margin_left = 40
+theme_override_constants/margin_top = 38
+theme_override_constants/margin_right = 40
+theme_override_constants/margin_bottom = 38
+
+[node name="TowerDeleteContent" type="VBoxContainer" parent="AppBackground/GameFrame/GameLayout/BoardStage/TowerDeleteConfirmOverlay/TowerDeleteCard/TowerDeleteInset"]
+layout_mode = 2
+theme_override_constants/separation = 18
+alignment = 1
+
+[node name="TowerDeleteTitle" type="Label" parent="AppBackground/GameFrame/GameLayout/BoardStage/TowerDeleteConfirmOverlay/TowerDeleteCard/TowerDeleteInset/TowerDeleteContent"]
+custom_minimum_size = Vector2(0, 72)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.02745098, 0.10980392, 0.043137256, 1)
+theme_override_font_sizes/font_size = 34
+text = "Remover esta torre?"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="TowerDeleteSummary" type="Label" parent="AppBackground/GameFrame/GameLayout/BoardStage/TowerDeleteConfirmOverlay/TowerDeleteCard/TowerDeleteInset/TowerDeleteContent"]
+custom_minimum_size = Vector2(0, 60)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.09411765, 0.047058824, 0.011764706, 1)
+theme_override_font_sizes/font_size = 20
+text = "A torre sera removida sem reembolso."
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="TowerDeleteActions" type="HBoxContainer" parent="AppBackground/GameFrame/GameLayout/BoardStage/TowerDeleteConfirmOverlay/TowerDeleteCard/TowerDeleteInset/TowerDeleteContent"]
+custom_minimum_size = Vector2(0, 74)
+layout_mode = 2
+theme_override_constants/separation = 18
+alignment = 1
+
+[node name="TowerDeleteRemoveButton" type="Button" parent="AppBackground/GameFrame/GameLayout/BoardStage/TowerDeleteConfirmOverlay/TowerDeleteCard/TowerDeleteInset/TowerDeleteContent/TowerDeleteActions"]
+custom_minimum_size = Vector2(210, 66)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.023529412, 0.023529412, 0.023529412, 1)
+theme_override_font_sizes/font_size = 24
+theme_override_styles/normal = SubResource("ButtonNormal")
+theme_override_styles/pressed = SubResource("ButtonPressed")
+theme_override_styles/hover = SubResource("ButtonHover")
+theme_override_styles/disabled = SubResource("ButtonDisabled")
+text = "Remover"
+
+[node name="TowerDeleteCancelButton" type="Button" parent="AppBackground/GameFrame/GameLayout/BoardStage/TowerDeleteConfirmOverlay/TowerDeleteCard/TowerDeleteInset/TowerDeleteContent/TowerDeleteActions"]
+custom_minimum_size = Vector2(210, 66)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.023529412, 0.023529412, 0.023529412, 1)
+theme_override_font_sizes/font_size = 24
+theme_override_styles/normal = SubResource("ButtonNormal")
+theme_override_styles/pressed = SubResource("ButtonPressed")
+theme_override_styles/hover = SubResource("ButtonHover")
+theme_override_styles/disabled = SubResource("ButtonDisabled")
+text = "Cancelar"
+
 [node name="ShopPanel" type="Panel" parent="AppBackground/GameFrame/GameLayout"]
 layout_mode = 0
 offset_left = 1260.0
@@ -758,6 +840,7 @@ theme_override_constants/v_separation = 10
 columns = 2
 
 [node name="UndoButton" type="Button" parent="AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent/ToolsGrid"]
+visible = false
 custom_minimum_size = Vector2(193, 62)
 layout_mode = 2
 disabled = true
@@ -778,7 +861,7 @@ theme_override_styles/normal = SubResource("ShopButtonNormal")
 theme_override_styles/pressed = SubResource("ShopButtonActive")
 theme_override_styles/hover = SubResource("ShopButtonHover")
 theme_override_styles/disabled = SubResource("ShopButtonDisabled")
-text = "Excluir"
+text = "Excluir\nSelecionar"
 
 [node name="ControlRow" type="HBoxContainer" parent="AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent"]
 layout_mode = 2
@@ -814,6 +897,34 @@ theme_override_font_sizes/font_size = 16
 text = "Preparando onda 1."
 autowrap_mode = 3
 
+[node name="ThemeTransitionOverlay" type="Control" parent="AppBackground/GameFrame/GameLayout"]
+visible = false
+layout_mode = 0
+offset_right = 1680.0
+offset_bottom = 1035.0
+mouse_filter = 0
+
+[node name="ThemeTransitionDimmer" type="ColorRect" parent="AppBackground/GameFrame/GameLayout/ThemeTransitionOverlay"]
+layout_mode = 0
+offset_right = 1680.0
+offset_bottom = 1035.0
+mouse_filter = 0
+color = Color(0.015686275, 0.05490196, 0.078431375, 0.92)
+
+[node name="ThemeTransitionLabel" type="Label" parent="AppBackground/GameFrame/GameLayout/ThemeTransitionOverlay"]
+layout_mode = 0
+offset_left = 510.0
+offset_top = 417.0
+offset_right = 1170.0
+offset_bottom = 554.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 0.9529412, 0.7490196, 1)
+theme_override_font_sizes/font_size = 56
+text = "Lagoa"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+
 [node name="FloatingMessageTimer" type="Timer" parent="."]
 wait_time = 1.8
 one_shot = true
@@ -821,3 +932,8 @@ one_shot = true
 [node name="WaveBannerTimer" type="Timer" parent="."]
 wait_time = 1.25
 one_shot = true
+
+[node name="UndoPlacementTimer" type="Timer" parent="."]
+wait_time = 5.0
+one_shot = true
+ignore_time_scale = true

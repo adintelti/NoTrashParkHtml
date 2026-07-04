@@ -16,15 +16,24 @@ var sfx_enabled: bool = true
 @onready var _menu_note: Control = get_node("AppBackground/GameFrame/MenuNote")
 @onready var _menu_note_label: Label = get_node("AppBackground/GameFrame/MenuNote/MenuNoteLabel")
 @onready var _menu_note_timer: Timer = get_node("MenuNoteTimer")
+@onready var _version_label: Label = get_node("AppBackground/GameFrame/VersionPanel/VersionLabel")
+@onready var _continue_button: Button = get_node("AppBackground/GameFrame/MenuButtons/ContinueButton")
 @onready var _play_button: Button = get_node("AppBackground/GameFrame/MenuButtons/PlayButton")
 @onready var _config_button: Button = get_node("AppBackground/GameFrame/MenuButtons/ConfigButton")
 @onready var _exit_button: Button = get_node("AppBackground/GameFrame/MenuButtons/ExitButton")
+@onready var _difficulty_title: Label = get_node("AppBackground/GameFrame/DifficultyPanel/DifficultyContent/DifficultyTitle")
 @onready var _difficulty_back_button: Button = get_node("AppBackground/GameFrame/DifficultyPanel/DifficultyContent/DifficultyActions/DifficultyBackButton")
 @onready var _start_button: Button = get_node("AppBackground/GameFrame/DifficultyPanel/DifficultyContent/DifficultyActions/StartButton")
+@onready var _waves_label: Label = get_node("AppBackground/GameFrame/DifficultyPanel/DifficultyContent/WavesRow/WavesLabel")
 @onready var _waves_input: LineEdit = get_node("AppBackground/GameFrame/DifficultyPanel/DifficultyContent/WavesRow/WavesInput")
 @onready var _config_back_button: Button = get_node("AppBackground/GameFrame/ConfigPanel/ConfigContent/ConfigBackButton")
+@onready var _controller_title: Label = get_node("AppBackground/GameFrame/ConfigPanel/ConfigContent/ControllerSection/ControllerTitle")
+@onready var _language_title: Label = get_node("AppBackground/GameFrame/ConfigPanel/ConfigContent/LanguageSection/LanguageTitle")
+@onready var _card_title: Label = get_node("AppBackground/GameFrame/ConfigPanel/ConfigContent/CardSection/CardTitle")
+@onready var _card_frequency_label: Label = get_node("AppBackground/GameFrame/ConfigPanel/ConfigContent/CardSection/CardFrequencyRow/CardFrequencyLabel")
 @onready var _card_frequency_slider: HSlider = get_node("AppBackground/GameFrame/ConfigPanel/ConfigContent/CardSection/CardFrequencyRow/CardFrequencySlider")
 @onready var _card_frequency_text: Label = get_node("AppBackground/GameFrame/ConfigPanel/ConfigContent/CardSection/CardFrequencyRow/CardFrequencyText")
+@onready var _sound_title: Label = get_node("AppBackground/GameFrame/ConfigPanel/ConfigContent/SoundSection/SoundTitle")
 @onready var _difficulty_buttons: Dictionary = {
 	"easy": get_node("AppBackground/GameFrame/DifficultyPanel/DifficultyContent/DifficultyGrid/EasyButton"),
 	"medium": get_node("AppBackground/GameFrame/DifficultyPanel/DifficultyContent/DifficultyGrid/MediumButton"),
@@ -54,6 +63,8 @@ var sfx_enabled: bool = true
 }
 
 func _ready() -> void:
+	selected_language = GameSession.language
+	GameSession.apply_language(selected_language, false)
 	_difficulty_panel.hide()
 	_config_panel.hide()
 	_menu_note.hide()
@@ -99,6 +110,7 @@ func _ready() -> void:
 	_sync_segment_buttons(_language_buttons, selected_language)
 	_sync_sound_buttons()
 	_sync_volume_labels()
+	_apply_translations()
 
 func _open_difficulty_panel() -> void:
 	selected_difficulty = ""
@@ -166,7 +178,9 @@ func _select_controller_layout(layout: String) -> void:
 
 func _select_language(language: String) -> void:
 	selected_language = language
+	GameSession.apply_language(selected_language)
 	_sync_segment_buttons(_language_buttons, selected_language)
+	_apply_translations()
 
 func _toggle_sound(sound_type: String) -> void:
 	if sound_type == "bgm":
@@ -191,7 +205,7 @@ func _sync_sound_buttons() -> void:
 func _sync_sound_button(sound_type: String, enabled: bool) -> void:
 	var button: Button = _sound_buttons[sound_type] as Button
 	var label: String = sound_type.to_upper()
-	var state_text: String = "Lig" if enabled else "Des"
+	var state_text: String = GameSession.t("sound.on") if enabled else GameSession.t("sound.off")
 	button.button_pressed = enabled
 	button.text = label + " " + state_text
 
@@ -202,10 +216,10 @@ func _sync_volume_labels() -> void:
 
 func _format_card_frequency(value: int) -> String:
 	if value <= 0:
-		return "Off"
+		return GameSession.t("settings.cardFrequencyOff")
 	if value == 1:
-		return "1 onda"
-	return "%d ondas" % value
+		return GameSession.t("settings.cardFrequencyOne")
+	return GameSession.t("settings.cardFrequencyMany", {"count": value})
 
 func _get_wave_limit() -> int:
 	match selected_difficulty:
@@ -227,13 +241,14 @@ func _start_selected_game() -> void:
 	GameSession.custom_waves = int(_waves_input.text)
 	GameSession.card_frequency = card_frequency
 	GameSession.controller_layout = selected_controller_layout
-	GameSession.language = selected_language
+	GameSession.set_theme(GameSession.get_first_theme())
+	GameSession.apply_language(selected_language)
 	GameSession.bgm_enabled = bgm_enabled
 	GameSession.sfx_enabled = sfx_enabled
 
 	var error: int = get_tree().change_scene_to_file(GAMEPLAY_SCENE)
 	if error != OK:
-		_show_menu_note("Erro ao abrir gameplay.")
+		_show_menu_note(GameSession.t("messages.openGameplayError"))
 
 func _quit_game() -> void:
 	get_tree().quit(0)
@@ -245,3 +260,33 @@ func _show_menu_note(text: String) -> void:
 
 func _hide_menu_note() -> void:
 	_menu_note.hide()
+
+func _apply_translations() -> void:
+	_version_label.text = GameSession.t("version.label", {"version": "2.1.5"})
+	_continue_button.text = GameSession.t("menu.continue")
+	_play_button.text = GameSession.t("menu.play")
+	_config_button.text = GameSession.t("menu.config")
+	_exit_button.text = GameSession.t("menu.exit")
+	_difficulty_title.text = GameSession.t("difficulty.title")
+	_waves_label.text = GameSession.t("difficulty.waves")
+	_difficulty_back_button.text = GameSession.t("common.back")
+	_start_button.text = GameSession.t("common.start")
+	_controller_title.text = GameSession.t("controls.controller")
+	_language_title.text = GameSession.t("settings.language")
+	_card_title.text = GameSession.t("settings.cards")
+	_card_frequency_label.text = GameSession.t("settings.frequency")
+	_sound_title.text = GameSession.t("settings.sound")
+	_config_back_button.text = GameSession.t("common.back")
+	_card_frequency_text.text = _format_card_frequency(card_frequency)
+	_sync_difficulty_button_labels()
+	_sync_sound_buttons()
+
+func _sync_difficulty_button_labels() -> void:
+	var easy_button: Button = _difficulty_buttons["easy"] as Button
+	var medium_button: Button = _difficulty_buttons["medium"] as Button
+	var hard_button: Button = _difficulty_buttons["hard"] as Button
+	var custom_button: Button = _difficulty_buttons["custom"] as Button
+	easy_button.text = "%s\n5" % GameSession.t("difficulty.easy")
+	medium_button.text = "%s\n12" % GameSession.t("difficulty.medium")
+	hard_button.text = "%s\n20" % GameSession.t("difficulty.hard")
+	custom_button.text = "%s\n20-99" % GameSession.t("difficulty.custom")
