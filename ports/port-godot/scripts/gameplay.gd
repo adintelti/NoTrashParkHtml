@@ -171,7 +171,7 @@ var blocked_tiles: Array[Vector2i] = [
 @onready var _waves_value: Label = get_node("AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent/SessionInfo/SessionRows/WavesValue")
 @onready var _cards_value: Label = get_node("AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent/SessionInfo/SessionRows/CardsValue")
 @onready var _status_label: Label = get_node("AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent/StatusLabel")
-@onready var _money_label: Label = get_node("AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent/ShopTop/MoneyPanel/MoneyLabel")
+@onready var _money_label: Label = get_node("AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent/ShopTop/MoneyPanel/MoneyContent/MoneyLabel")
 @onready var _restart_button: Button = get_node("AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent/ShopTop/ShopActions/RestartButton")
 @onready var _menu_button: Button = get_node("AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent/ShopTop/ShopActions/MenuButton")
 @onready var _delete_button: Button = get_node("AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent/ToolsGrid/DeleteButton")
@@ -1041,19 +1041,23 @@ func _remove_impact(impact_data: ImpactState) -> void:
 	impacts.erase(impact_data)
 
 func _apply_tower_button_icons() -> void:
-	_configure_tower_button_icon(_tower_buttons["sentinel"] as Button, TOWER_SENTINEL_TEXTURE)
-	_configure_tower_button_icon(_tower_buttons["slow"] as Button, TOWER_SLOW_TEXTURE)
-	_configure_tower_button_icon(_tower_buttons["splash"] as Button, TOWER_SPLASH_TEXTURE)
-	_configure_tower_button_icon(_tower_buttons["flame"] as Button, TOWER_FLAME_TEXTURE)
+	_configure_tower_shop_button(_tower_buttons["sentinel"] as Button, "sentinel")
+	_configure_tower_shop_button(_tower_buttons["slow"] as Button, "slow")
+	_configure_tower_shop_button(_tower_buttons["splash"] as Button, "splash")
+	_configure_tower_shop_button(_tower_buttons["flame"] as Button, "flame")
 
-func _configure_tower_button_icon(button: Button, texture: Texture2D) -> void:
+func _configure_tower_shop_button(button: Button, tower_key: String) -> void:
 	if button == null:
 		return
 
-	button.icon = texture
+	button.icon = null
 	button.expand_icon = false
-	button.icon_alignment = HORIZONTAL_ALIGNMENT_LEFT
-	button.vertical_icon_alignment = VERTICAL_ALIGNMENT_CENTER
+	button.text = "%s\n$%d\nATQ %d\nALC %.1f" % [
+		_format_tower_name(tower_key),
+		_get_tower_cost(tower_key),
+		_get_tower_damage(tower_key),
+		_get_tower_range(tower_key)
+	]
 
 func _connect_buttons() -> void:
 	_delete_button.toggle_mode = true
@@ -1086,7 +1090,7 @@ func _sync_hud() -> void:
 	_wave_label.text = "Onda %d/%d" % [wave, wave_limit]
 	_defeated_label.text = "Derrotou %d" % session_defeated
 	_time_label.text = "Tempo " + _format_session_time(session_time)
-	_money_label.text = "Moedas %d" % coins
+	_money_label.text = str(coins)
 
 func _show_victory_overlay() -> void:
 	_victory_title.text = _get_victory_title()
@@ -1229,11 +1233,11 @@ func _format_tower_name(tower_key: String) -> String:
 		"sentinel":
 			return "Sentinela"
 		"slow":
-			return "Lenta"
+			return "Gelida"
 		"splash":
-			return "Splash"
+			return "Canhao"
 		"flame":
-			return "Fogo"
+			return "Chama"
 		_:
 			return "Sentinela"
 

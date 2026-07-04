@@ -1,6 +1,14 @@
 [gd_scene format=3 uid="uid://c7n1g2r46p0xa"]
 
 [ext_resource type="Script" path="res://scripts/gameplay.gd" id="1_gameplay_script"]
+[ext_resource type="Texture2D" path="res://assets/ui/ui_shop_button_blank.png" id="2_shop_button"]
+[ext_resource type="Texture2D" path="res://assets/ui/ui_shop_button_locked_blank.png" id="3_shop_button_locked"]
+[ext_resource type="Texture2D" path="res://assets/ui/ui_pixel_button_blank.png" id="4_pixel_button"]
+[ext_resource type="Texture2D" path="res://assets/ui/ui_restart_icon_button.png" id="5_restart_icon_button"]
+[ext_resource type="Texture2D" path="res://assets/ui/ui_menu_icon_button.png" id="6_menu_icon_button"]
+[ext_resource type="Texture2D" path="res://assets/ui/ui_shop_title_loja.png" id="7_shop_title"]
+[ext_resource type="Texture2D" path="res://assets/ui/ui_coin_icon.png" id="8_coin_icon"]
+[ext_resource type="Texture2D" path="res://assets/ui/ui_stat_pill_blank.png" id="9_stat_pill"]
 
 [sub_resource type="StyleBoxFlat" id="FrameStyle"]
 bg_color = Color(0.050980393, 0.17254902, 0.2901961, 1)
@@ -123,6 +131,84 @@ corner_radius_top_left = 4
 corner_radius_top_right = 4
 corner_radius_bottom_right = 4
 corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxTexture" id="ShopButtonNormal"]
+texture = ExtResource("2_shop_button")
+texture_margin_left = 10.0
+texture_margin_top = 10.0
+texture_margin_right = 14.0
+texture_margin_bottom = 16.0
+
+[sub_resource type="StyleBoxTexture" id="ShopButtonPressed"]
+texture = ExtResource("2_shop_button")
+texture_margin_left = 10.0
+texture_margin_top = 10.0
+texture_margin_right = 14.0
+texture_margin_bottom = 16.0
+modulate_color = Color(0.82, 0.72, 0.52, 1)
+
+[sub_resource type="StyleBoxTexture" id="ShopButtonHover"]
+texture = ExtResource("2_shop_button")
+texture_margin_left = 10.0
+texture_margin_top = 10.0
+texture_margin_right = 14.0
+texture_margin_bottom = 16.0
+modulate_color = Color(1, 0.94, 0.72, 1)
+
+[sub_resource type="StyleBoxTexture" id="ShopButtonActive"]
+texture = ExtResource("2_shop_button")
+texture_margin_left = 10.0
+texture_margin_top = 10.0
+texture_margin_right = 14.0
+texture_margin_bottom = 16.0
+modulate_color = Color(1, 0.98, 0.55, 1)
+
+[sub_resource type="StyleBoxTexture" id="ShopButtonDisabled"]
+texture = ExtResource("3_shop_button_locked")
+texture_margin_left = 10.0
+texture_margin_top = 10.0
+texture_margin_right = 14.0
+texture_margin_bottom = 16.0
+
+[sub_resource type="StyleBoxTexture" id="PixelButtonNormal"]
+texture = ExtResource("4_pixel_button")
+texture_margin_left = 14.0
+texture_margin_top = 12.0
+texture_margin_right = 14.0
+texture_margin_bottom = 18.0
+
+[sub_resource type="StyleBoxTexture" id="PixelButtonPressed"]
+texture = ExtResource("4_pixel_button")
+texture_margin_left = 14.0
+texture_margin_top = 12.0
+texture_margin_right = 14.0
+texture_margin_bottom = 18.0
+modulate_color = Color(0.82, 0.72, 0.52, 1)
+
+[sub_resource type="StyleBoxTexture" id="PixelButtonHover"]
+texture = ExtResource("4_pixel_button")
+texture_margin_left = 14.0
+texture_margin_top = 12.0
+texture_margin_right = 14.0
+texture_margin_bottom = 18.0
+modulate_color = Color(1, 0.94, 0.72, 1)
+
+[sub_resource type="StyleBoxTexture" id="PixelButtonActive"]
+texture = ExtResource("4_pixel_button")
+texture_margin_left = 14.0
+texture_margin_top = 12.0
+texture_margin_right = 14.0
+texture_margin_bottom = 18.0
+modulate_color = Color(1, 0.98, 0.55, 1)
+
+[sub_resource type="StyleBoxTexture" id="MoneyPillStyle"]
+texture = ExtResource("9_stat_pill")
+texture_margin_left = 12.0
+texture_margin_top = 10.0
+texture_margin_right = 14.0
+texture_margin_bottom = 12.0
+
+[sub_resource type="StyleBoxEmpty" id="IconButtonEmpty"]
 
 [sub_resource type="StyleBoxFlat" id="VictoryCardStyle"]
 bg_color = Color(0.9411765, 0.7529412, 0.28627452, 1)
@@ -502,59 +588,75 @@ theme_override_styles/panel = SubResource("ShopStyle")
 
 [node name="ShopContent" type="VBoxContainer" parent="AppBackground/GameFrame/GameLayout/ShopPanel"]
 layout_mode = 0
-offset_left = 18.0
-offset_top = 18.0
-offset_right = 402.0
-offset_bottom = 1017.0
-theme_override_constants/separation = 14
+offset_left = 12.0
+offset_top = 12.0
+offset_right = 408.0
+offset_bottom = 1023.0
+theme_override_constants/separation = 10
 
 [node name="ShopTop" type="HBoxContainer" parent="AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent"]
 layout_mode = 2
-theme_override_constants/separation = 12
+theme_override_constants/separation = 8
 
 [node name="MoneyPanel" type="PanelContainer" parent="AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent/ShopTop"]
-custom_minimum_size = Vector2(174, 51)
+custom_minimum_size = Vector2(176, 57)
 layout_mode = 2
-theme_override_styles/panel = SubResource("HudStyle")
+theme_override_styles/panel = SubResource("MoneyPillStyle")
 
-[node name="MoneyLabel" type="Label" parent="AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent/ShopTop/MoneyPanel"]
+[node name="MoneyContent" type="HBoxContainer" parent="AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent/ShopTop/MoneyPanel"]
+layout_mode = 2
+theme_override_constants/separation = 7
+alignment = 1
+
+[node name="CoinIcon" type="TextureRect" parent="AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent/ShopTop/MoneyPanel/MoneyContent"]
+custom_minimum_size = Vector2(43, 43)
+layout_mode = 2
+texture = ExtResource("8_coin_icon")
+stretch_mode = 2
+
+[node name="MoneyLabel" type="Label" parent="AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent/ShopTop/MoneyPanel/MoneyContent"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.09411765, 0.047058824, 0.011764706, 1)
-theme_override_font_sizes/font_size = 20
-text = "Moedas 300"
+theme_override_font_sizes/font_size = 24
+text = "300"
+vertical_alignment = 1
 
 [node name="ShopActions" type="HBoxContainer" parent="AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent/ShopTop"]
 layout_mode = 2
-theme_override_constants/separation = 9
+theme_override_constants/separation = 8
 
 [node name="RestartButton" type="Button" parent="AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent/ShopTop/ShopActions"]
-custom_minimum_size = Vector2(84, 51)
+custom_minimum_size = Vector2(55, 57)
 layout_mode = 2
+tooltip_text = "Reiniciar"
 theme_override_colors/font_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
-theme_override_styles/normal = SubResource("ButtonNormal")
-theme_override_styles/pressed = SubResource("ButtonPressed")
-theme_override_styles/hover = SubResource("ButtonHover")
-theme_override_styles/disabled = SubResource("ButtonDisabled")
-text = "Reset"
+theme_override_styles/normal = SubResource("IconButtonEmpty")
+theme_override_styles/pressed = SubResource("IconButtonEmpty")
+theme_override_styles/hover = SubResource("IconButtonEmpty")
+theme_override_styles/disabled = SubResource("IconButtonEmpty")
+icon = ExtResource("5_restart_icon_button")
+expand_icon = true
 
 [node name="MenuButton" type="Button" parent="AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent/ShopTop/ShopActions"]
-custom_minimum_size = Vector2(84, 51)
+custom_minimum_size = Vector2(55, 57)
 layout_mode = 2
+tooltip_text = "Menu"
 theme_override_colors/font_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
-theme_override_styles/normal = SubResource("ButtonNormal")
-theme_override_styles/pressed = SubResource("ButtonPressed")
-theme_override_styles/hover = SubResource("ButtonHover")
-theme_override_styles/disabled = SubResource("ButtonDisabled")
-text = "Menu"
+theme_override_styles/normal = SubResource("IconButtonEmpty")
+theme_override_styles/pressed = SubResource("IconButtonEmpty")
+theme_override_styles/hover = SubResource("IconButtonEmpty")
+theme_override_styles/disabled = SubResource("IconButtonEmpty")
+icon = ExtResource("6_menu_icon_button")
+expand_icon = true
 
-[node name="ShopTitle" type="Label" parent="AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent"]
+[node name="ShopTitle" type="TextureRect" parent="AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent"]
+custom_minimum_size = Vector2(134, 65)
 layout_mode = 2
-theme_override_colors/font_color = Color(0.09411765, 0.047058824, 0.011764706, 1)
-theme_override_font_sizes/font_size = 42
-text = "LOJA"
-horizontal_alignment = 1
+texture = ExtResource("7_shop_title")
+stretch_mode = 3
 
 [node name="SessionInfo" type="PanelContainer" parent="AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent"]
+visible = false
 custom_minimum_size = Vector2(384, 132)
 layout_mode = 2
 theme_override_styles/panel = SubResource("InfoStyle")
@@ -602,44 +704,52 @@ theme_override_constants/v_separation = 10
 columns = 2
 
 [node name="SentinelButton" type="Button" parent="AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent/TowerGrid"]
-custom_minimum_size = Vector2(187, 120)
+custom_minimum_size = Vector2(193, 110)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
-theme_override_styles/normal = SubResource("ButtonNormal")
-theme_override_styles/pressed = SubResource("ButtonActive")
-theme_override_styles/hover = SubResource("ButtonHover")
-theme_override_styles/disabled = SubResource("ButtonDisabled")
-text = "Sentinela\nATQ 18\nALC 2.8"
+theme_override_font_sizes/font_size = 16
+theme_override_styles/normal = SubResource("ShopButtonNormal")
+theme_override_styles/pressed = SubResource("ShopButtonActive")
+theme_override_styles/hover = SubResource("ShopButtonHover")
+theme_override_styles/disabled = SubResource("ShopButtonDisabled")
+text = "Sentinela\n$100\nATQ 18\nALC 2.8"
+alignment = 0
 
 [node name="SlowButton" type="Button" parent="AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent/TowerGrid"]
-custom_minimum_size = Vector2(187, 120)
+custom_minimum_size = Vector2(193, 110)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
-theme_override_styles/normal = SubResource("ButtonNormal")
-theme_override_styles/pressed = SubResource("ButtonActive")
-theme_override_styles/hover = SubResource("ButtonHover")
-theme_override_styles/disabled = SubResource("ButtonDisabled")
-text = "Lenta\nATQ 7\nALC 2.4"
+theme_override_font_sizes/font_size = 16
+theme_override_styles/normal = SubResource("ShopButtonNormal")
+theme_override_styles/pressed = SubResource("ShopButtonActive")
+theme_override_styles/hover = SubResource("ShopButtonHover")
+theme_override_styles/disabled = SubResource("ShopButtonDisabled")
+text = "Gelida\n$75\nATQ 7\nALC 2.4"
+alignment = 0
 
 [node name="SplashButton" type="Button" parent="AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent/TowerGrid"]
-custom_minimum_size = Vector2(187, 120)
+custom_minimum_size = Vector2(193, 110)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
-theme_override_styles/normal = SubResource("ButtonNormal")
-theme_override_styles/pressed = SubResource("ButtonActive")
-theme_override_styles/hover = SubResource("ButtonHover")
-theme_override_styles/disabled = SubResource("ButtonDisabled")
-text = "Splash\nATQ 24\nALC 2.5"
+theme_override_font_sizes/font_size = 16
+theme_override_styles/normal = SubResource("ShopButtonNormal")
+theme_override_styles/pressed = SubResource("ShopButtonActive")
+theme_override_styles/hover = SubResource("ShopButtonHover")
+theme_override_styles/disabled = SubResource("ShopButtonDisabled")
+text = "Canhao\n$125\nATQ 24\nALC 2.5"
+alignment = 0
 
 [node name="FlameButton" type="Button" parent="AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent/TowerGrid"]
-custom_minimum_size = Vector2(187, 120)
+custom_minimum_size = Vector2(193, 110)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
-theme_override_styles/normal = SubResource("ButtonNormal")
-theme_override_styles/pressed = SubResource("ButtonActive")
-theme_override_styles/hover = SubResource("ButtonHover")
-theme_override_styles/disabled = SubResource("ButtonDisabled")
-text = "Fogo\nATQ 9\nALC 1.9"
+theme_override_font_sizes/font_size = 16
+theme_override_styles/normal = SubResource("ShopButtonNormal")
+theme_override_styles/pressed = SubResource("ShopButtonActive")
+theme_override_styles/hover = SubResource("ShopButtonHover")
+theme_override_styles/disabled = SubResource("ShopButtonDisabled")
+text = "Chama\n$150\nATQ 9\nALC 1.9"
+alignment = 0
 
 [node name="ToolsGrid" type="GridContainer" parent="AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent"]
 layout_mode = 2
@@ -648,24 +758,26 @@ theme_override_constants/v_separation = 10
 columns = 2
 
 [node name="UndoButton" type="Button" parent="AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent/ToolsGrid"]
-custom_minimum_size = Vector2(187, 66)
+custom_minimum_size = Vector2(193, 62)
 layout_mode = 2
 disabled = true
 theme_override_colors/font_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
-theme_override_styles/normal = SubResource("ButtonNormal")
-theme_override_styles/pressed = SubResource("ButtonPressed")
-theme_override_styles/hover = SubResource("ButtonHover")
-theme_override_styles/disabled = SubResource("ButtonDisabled")
+theme_override_font_sizes/font_size = 17
+theme_override_styles/normal = SubResource("ShopButtonNormal")
+theme_override_styles/pressed = SubResource("ShopButtonPressed")
+theme_override_styles/hover = SubResource("ShopButtonHover")
+theme_override_styles/disabled = SubResource("ShopButtonDisabled")
 text = "Desfazer"
 
 [node name="DeleteButton" type="Button" parent="AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent/ToolsGrid"]
-custom_minimum_size = Vector2(187, 66)
+custom_minimum_size = Vector2(193, 62)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
-theme_override_styles/normal = SubResource("ButtonNormal")
-theme_override_styles/pressed = SubResource("ButtonActive")
-theme_override_styles/hover = SubResource("ButtonHover")
-theme_override_styles/disabled = SubResource("ButtonDisabled")
+theme_override_font_sizes/font_size = 17
+theme_override_styles/normal = SubResource("ShopButtonNormal")
+theme_override_styles/pressed = SubResource("ShopButtonActive")
+theme_override_styles/hover = SubResource("ShopButtonHover")
+theme_override_styles/disabled = SubResource("ShopButtonDisabled")
 text = "Excluir"
 
 [node name="ControlRow" type="HBoxContainer" parent="AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent"]
@@ -673,30 +785,32 @@ layout_mode = 2
 theme_override_constants/separation = 10
 
 [node name="PauseButton" type="Button" parent="AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent/ControlRow"]
-custom_minimum_size = Vector2(187, 72)
+custom_minimum_size = Vector2(193, 68)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
-theme_override_styles/normal = SubResource("ButtonNormal")
-theme_override_styles/pressed = SubResource("ButtonActive")
-theme_override_styles/hover = SubResource("ButtonHover")
+theme_override_font_sizes/font_size = 20
+theme_override_styles/normal = SubResource("PixelButtonNormal")
+theme_override_styles/pressed = SubResource("PixelButtonActive")
+theme_override_styles/hover = SubResource("PixelButtonHover")
 theme_override_styles/disabled = SubResource("ButtonDisabled")
 text = "Pause"
 
 [node name="SpeedButton" type="Button" parent="AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent/ControlRow"]
-custom_minimum_size = Vector2(187, 72)
+custom_minimum_size = Vector2(193, 68)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
-theme_override_styles/normal = SubResource("ButtonNormal")
-theme_override_styles/pressed = SubResource("ButtonActive")
-theme_override_styles/hover = SubResource("ButtonHover")
+theme_override_font_sizes/font_size = 20
+theme_override_styles/normal = SubResource("PixelButtonNormal")
+theme_override_styles/pressed = SubResource("PixelButtonActive")
+theme_override_styles/hover = SubResource("PixelButtonHover")
 theme_override_styles/disabled = SubResource("ButtonDisabled")
 text = "1x"
 
 [node name="StatusLabel" type="Label" parent="AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent"]
-custom_minimum_size = Vector2(384, 72)
+custom_minimum_size = Vector2(396, 58)
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.9411765, 0.6901961, 1)
-theme_override_font_sizes/font_size = 18
+theme_override_font_sizes/font_size = 16
 text = "Preparando onda 1."
 autowrap_mode = 3
 
