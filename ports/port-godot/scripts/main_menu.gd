@@ -10,6 +10,8 @@ var selected_controller_layout: String = "xbox"
 var selected_language: String = "pt-BR"
 var bgm_enabled: bool = true
 var sfx_enabled: bool = true
+var bgm_volume: float = 1.0
+var sfx_volume: float = 1.0
 
 @onready var _config_panel: Control = get_node("AppBackground/GameFrame/ConfigPanel")
 @onready var _difficulty_panel: Control = get_node("AppBackground/GameFrame/DifficultyPanel")
@@ -64,6 +66,10 @@ var sfx_enabled: bool = true
 
 func _ready() -> void:
 	selected_language = GameSession.language
+	bgm_enabled = GameSession.bgm_enabled
+	sfx_enabled = GameSession.sfx_enabled
+	bgm_volume = GameSession.bgm_volume
+	sfx_volume = GameSession.sfx_volume
 	GameSession.apply_language(selected_language, false)
 	_difficulty_panel.hide()
 	_config_panel.hide()
@@ -106,11 +112,13 @@ func _ready() -> void:
 		slider.value_changed.connect(_set_sound_volume.bind(sound_type))
 
 	_set_card_frequency(card_frequency)
+	_sync_volume_sliders()
 	_sync_segment_buttons(_controller_buttons, selected_controller_layout)
 	_sync_segment_buttons(_language_buttons, selected_language)
 	_sync_sound_buttons()
 	_sync_volume_labels()
 	_apply_translations()
+	AudioManager.play_menu_music()
 
 func _open_difficulty_panel() -> void:
 	selected_difficulty = ""
@@ -185,11 +193,21 @@ func _select_language(language: String) -> void:
 func _toggle_sound(sound_type: String) -> void:
 	if sound_type == "bgm":
 		bgm_enabled = not bgm_enabled
+		AudioManager.set_bgm_enabled(bgm_enabled)
 	else:
 		sfx_enabled = not sfx_enabled
+		AudioManager.set_sfx_enabled(sfx_enabled)
 	_sync_sound_buttons()
 
 func _set_sound_volume(value: float, sound_type: String) -> void:
+	var normalized_volume: float = clampf(value / 100.0, 0.0, 1.0)
+	if sound_type == "bgm":
+		bgm_volume = normalized_volume
+		AudioManager.set_bgm_volume(bgm_volume)
+	else:
+		sfx_volume = normalized_volume
+		AudioManager.set_sfx_volume(sfx_volume)
+
 	var label: Label = _volume_labels[sound_type] as Label
 	label.text = str(int(value)) + "%"
 
@@ -213,6 +231,12 @@ func _sync_volume_labels() -> void:
 	for sound_type in _volume_sliders:
 		var slider: HSlider = _volume_sliders[sound_type] as HSlider
 		_set_sound_volume(slider.value, sound_type)
+
+func _sync_volume_sliders() -> void:
+	var bgm_slider: HSlider = _volume_sliders["bgm"] as HSlider
+	var sfx_slider: HSlider = _volume_sliders["sfx"] as HSlider
+	bgm_slider.set_value_no_signal(roundf(bgm_volume * 100.0))
+	sfx_slider.set_value_no_signal(roundf(sfx_volume * 100.0))
 
 func _format_card_frequency(value: int) -> String:
 	if value <= 0:
@@ -243,8 +267,10 @@ func _start_selected_game() -> void:
 	GameSession.controller_layout = selected_controller_layout
 	GameSession.set_theme(GameSession.get_first_theme())
 	GameSession.apply_language(selected_language)
-	GameSession.bgm_enabled = bgm_enabled
-	GameSession.sfx_enabled = sfx_enabled
+	GameSession.set_bgm_enabled(bgm_enabled)
+	GameSession.set_sfx_enabled(sfx_enabled)
+	GameSession.set_bgm_volume(bgm_volume)
+	GameSession.set_sfx_volume(sfx_volume)
 
 	var error: int = get_tree().change_scene_to_file(GAMEPLAY_SCENE)
 	if error != OK:

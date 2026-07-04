@@ -475,6 +475,7 @@ func _remove_enemy(enemy_data: EnemyState, award_reward: bool) -> void:
 	if award_reward:
 		wave_defeated += 1
 		coins += enemy_data.reward
+		AudioManager.play_sfx("enemyDeath")
 
 func _position_enemy(enemy_data: EnemyState) -> void:
 	var enemy_node: Control = enemy_data.node
@@ -494,6 +495,7 @@ func _get_path_point(path_index: int) -> Vector2:
 func _load_theme(theme_key: String) -> void:
 	GameSession.set_theme(theme_key)
 	current_theme = GameSession.theme
+	AudioManager.play_theme_music(current_theme)
 	path_tiles = _get_theme_path_tiles(current_theme)
 	blocked_tiles = _get_theme_blocked_tiles(current_theme)
 	_apply_theme_visuals()
@@ -1182,6 +1184,7 @@ func _fire_projectile(tower_data: TowerState, target: EnemyState) -> void:
 	next_projectile_id += 1
 	projectiles.append(projectile_data)
 	_position_projectile(projectile_data)
+	AudioManager.play_sfx("projectileThrow")
 
 func _update_projectiles(dt: float) -> void:
 	var finished_projectiles: Array[ProjectileState] = []
@@ -1689,6 +1692,7 @@ func _clear_impacts() -> void:
 
 func _return_to_menu() -> void:
 	GameSession.set_theme(GameSession.get_first_theme())
+	AudioManager.play_menu_music()
 	var error: int = get_tree().change_scene_to_file(MAIN_MENU_SCENE)
 	if error != OK:
 		_show_status(GameSession.t("messages.returnMenuError"))

@@ -19,6 +19,10 @@ border_width_bottom = 6
 border_color = Color(0.050980393, 0.17254902, 0.2901961, 1)
 
 [sub_resource type="StyleBoxFlat" id="PanelStyle"]
+content_margin_left = 24.0
+content_margin_top = 18.0
+content_margin_right = 24.0
+content_margin_bottom = 18.0
 bg_color = Color(0.9019608, 0.65882355, 0.2509804, 1)
 border_width_left = 6
 border_width_top = 6
@@ -29,6 +33,10 @@ shadow_color = Color(0, 0, 0, 0.25)
 shadow_size = 7
 
 [sub_resource type="StyleBoxFlat" id="VersionStyle"]
+content_margin_left = 8.0
+content_margin_top = 6.0
+content_margin_right = 8.0
+content_margin_bottom = 6.0
 bg_color = Color(1, 0.9411765, 0.6901961, 0.78)
 border_width_left = 4
 border_width_top = 4
@@ -247,10 +255,10 @@ text = "NO TRASH PARK"
 
 [node name="VersionPanel" type="PanelContainer" parent="AppBackground/GameFrame"]
 layout_mode = 0
-offset_left = 63.0
+offset_left = 60.0
 offset_top = 984.0
-offset_right = 243.0
-offset_bottom = 1029.0
+offset_right = 300.0
+offset_bottom = 1032.0
 theme_override_styles/panel = SubResource("VersionStyle")
 
 [node name="VersionLabel" type="Label" parent="AppBackground/GameFrame/VersionPanel"]
@@ -258,6 +266,8 @@ layout_mode = 2
 theme_override_colors/font_color = Color(0.078431375, 0.19215687, 0.16470589, 1)
 theme_override_font_sizes/font_size = 20
 text = "Versao 2.1.5"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="MenuButtons" type="VBoxContainer" parent="AppBackground/GameFrame"]
 layout_mode = 0
@@ -311,10 +321,10 @@ text = "Sair"
 [node name="DifficultyPanel" type="PanelContainer" parent="AppBackground/GameFrame"]
 visible = false
 layout_mode = 0
-offset_left = 849.0
-offset_top = 344.0
-offset_right = 1359.0
-offset_bottom = 737.0
+offset_left = 800.0
+offset_top = 330.0
+offset_right = 1320.0
+offset_bottom = 760.0
 theme_override_styles/panel = SubResource("PanelStyle")
 
 [node name="DifficultyContent" type="VBoxContainer" parent="AppBackground/GameFrame/DifficultyPanel"]
@@ -337,6 +347,8 @@ columns = 2
 custom_minimum_size = Vector2(225, 69)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+theme_override_colors/font_pressed_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+theme_override_colors/font_hover_pressed_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
 theme_override_styles/normal = SubResource("ButtonNormal")
 theme_override_styles/pressed = SubResource("ButtonActive")
 theme_override_styles/hover = SubResource("ButtonHover")
@@ -348,6 +360,8 @@ text = "Facil
 custom_minimum_size = Vector2(225, 69)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+theme_override_colors/font_pressed_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+theme_override_colors/font_hover_pressed_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
 theme_override_styles/normal = SubResource("ButtonNormal")
 theme_override_styles/pressed = SubResource("ButtonActive")
 theme_override_styles/hover = SubResource("ButtonHover")
@@ -359,6 +373,8 @@ text = "Medio
 custom_minimum_size = Vector2(225, 69)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+theme_override_colors/font_pressed_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+theme_override_colors/font_hover_pressed_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
 theme_override_styles/normal = SubResource("ButtonNormal")
 theme_override_styles/pressed = SubResource("ButtonActive")
 theme_override_styles/hover = SubResource("ButtonHover")
@@ -370,6 +386,8 @@ text = "Dificil
 custom_minimum_size = Vector2(225, 69)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+theme_override_colors/font_pressed_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+theme_override_colors/font_hover_pressed_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
 theme_override_styles/normal = SubResource("ButtonNormal")
 theme_override_styles/pressed = SubResource("ButtonActive")
 theme_override_styles/hover = SubResource("ButtonHover")
@@ -386,14 +404,17 @@ layout_mode = 2
 theme_override_colors/font_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
 theme_override_font_sizes/font_size = 18
 text = "Ondas"
+vertical_alignment = 1
 
 [node name="WavesInput" type="LineEdit" parent="AppBackground/GameFrame/DifficultyPanel/DifficultyContent/WavesRow"]
-custom_minimum_size = Vector2(300, 57)
+custom_minimum_size = Vector2(160, 57)
 layout_mode = 2
 text = "20"
+alignment = 1
 
 [node name="DifficultyActions" type="HBoxContainer" parent="AppBackground/GameFrame/DifficultyPanel/DifficultyContent"]
 layout_mode = 2
+theme_override_constants/separation = 9
 
 [node name="DifficultyBackButton" type="Button" parent="AppBackground/GameFrame/DifficultyPanel/DifficultyContent/DifficultyActions"]
 custom_minimum_size = Vector2(225, 72)
@@ -419,10 +440,10 @@ text = "Iniciar"
 [node name="ConfigPanel" type="PanelContainer" parent="AppBackground/GameFrame"]
 visible = false
 layout_mode = 0
-offset_left = 984.0
-offset_top = 219.0
-offset_right = 1449.0
-offset_bottom = 861.0
+offset_left = 800.0
+offset_top = 205.0
+offset_right = 1320.0
+offset_bottom = 875.0
 theme_override_styles/panel = SubResource("PanelStyle")
 
 [node name="ConfigContent" type="VBoxContainer" parent="AppBackground/GameFrame/ConfigPanel"]
@@ -447,6 +468,8 @@ theme_override_constants/separation = 9
 custom_minimum_size = Vector2(210, 57)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+theme_override_colors/font_pressed_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+theme_override_colors/font_hover_pressed_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
 theme_override_styles/normal = SubResource("ButtonNormal")
 theme_override_styles/pressed = SubResource("ButtonActive")
 theme_override_styles/hover = SubResource("ButtonHover")
@@ -457,6 +480,8 @@ text = "Xbox"
 custom_minimum_size = Vector2(210, 57)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+theme_override_colors/font_pressed_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+theme_override_colors/font_hover_pressed_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
 theme_override_styles/normal = SubResource("ButtonNormal")
 theme_override_styles/pressed = SubResource("ButtonActive")
 theme_override_styles/hover = SubResource("ButtonHover")
@@ -481,6 +506,8 @@ theme_override_constants/separation = 9
 custom_minimum_size = Vector2(135, 57)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+theme_override_colors/font_pressed_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+theme_override_colors/font_hover_pressed_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
 theme_override_styles/normal = SubResource("ButtonNormal")
 theme_override_styles/pressed = SubResource("ButtonActive")
 theme_override_styles/hover = SubResource("ButtonHover")
@@ -491,6 +518,8 @@ text = "PT-BR"
 custom_minimum_size = Vector2(135, 57)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+theme_override_colors/font_pressed_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+theme_override_colors/font_hover_pressed_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
 theme_override_styles/normal = SubResource("ButtonNormal")
 theme_override_styles/pressed = SubResource("ButtonActive")
 theme_override_styles/hover = SubResource("ButtonHover")
@@ -501,6 +530,8 @@ text = "EN"
 custom_minimum_size = Vector2(135, 57)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+theme_override_colors/font_pressed_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+theme_override_colors/font_hover_pressed_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
 theme_override_styles/normal = SubResource("ButtonNormal")
 theme_override_styles/pressed = SubResource("ButtonActive")
 theme_override_styles/hover = SubResource("ButtonHover")
@@ -522,10 +553,11 @@ layout_mode = 2
 theme_override_constants/separation = 12
 
 [node name="CardFrequencyLabel" type="Label" parent="AppBackground/GameFrame/ConfigPanel/ConfigContent/CardSection/CardFrequencyRow"]
-custom_minimum_size = Vector2(60, 0)
+custom_minimum_size = Vector2(70, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
 text = "Freq."
+vertical_alignment = 1
 
 [node name="CardFrequencySlider" type="HSlider" parent="AppBackground/GameFrame/ConfigPanel/ConfigContent/CardSection/CardFrequencyRow"]
 custom_minimum_size = Vector2(260, 0)
@@ -539,6 +571,7 @@ custom_minimum_size = Vector2(90, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
 text = "3 ondas"
+vertical_alignment = 1
 
 [node name="SoundSection" type="VBoxContainer" parent="AppBackground/GameFrame/ConfigPanel/ConfigContent"]
 layout_mode = 2
@@ -558,6 +591,8 @@ theme_override_constants/separation = 9
 custom_minimum_size = Vector2(210, 57)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+theme_override_colors/font_pressed_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+theme_override_colors/font_hover_pressed_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
 theme_override_styles/normal = SubResource("ButtonNormal")
 theme_override_styles/pressed = SubResource("ButtonActive")
 theme_override_styles/hover = SubResource("ButtonHover")
@@ -568,6 +603,8 @@ text = "BGM Lig"
 custom_minimum_size = Vector2(210, 57)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+theme_override_colors/font_pressed_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+theme_override_colors/font_hover_pressed_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
 theme_override_styles/normal = SubResource("ButtonNormal")
 theme_override_styles/pressed = SubResource("ButtonActive")
 theme_override_styles/hover = SubResource("ButtonHover")
@@ -579,10 +616,11 @@ layout_mode = 2
 theme_override_constants/separation = 12
 
 [node name="BgmLabel" type="Label" parent="AppBackground/GameFrame/ConfigPanel/ConfigContent/SoundSection/BgmVolumeRow"]
-custom_minimum_size = Vector2(60, 0)
+custom_minimum_size = Vector2(70, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
 text = "BGM"
+vertical_alignment = 1
 
 [node name="BgmVolumeSlider" type="HSlider" parent="AppBackground/GameFrame/ConfigPanel/ConfigContent/SoundSection/BgmVolumeRow"]
 custom_minimum_size = Vector2(260, 0)
@@ -596,16 +634,18 @@ custom_minimum_size = Vector2(90, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
 text = "100%"
+vertical_alignment = 1
 
 [node name="SfxVolumeRow" type="HBoxContainer" parent="AppBackground/GameFrame/ConfigPanel/ConfigContent/SoundSection"]
 layout_mode = 2
 theme_override_constants/separation = 12
 
 [node name="SfxLabel" type="Label" parent="AppBackground/GameFrame/ConfigPanel/ConfigContent/SoundSection/SfxVolumeRow"]
-custom_minimum_size = Vector2(60, 0)
+custom_minimum_size = Vector2(70, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
 text = "SFX"
+vertical_alignment = 1
 
 [node name="SfxVolumeSlider" type="HSlider" parent="AppBackground/GameFrame/ConfigPanel/ConfigContent/SoundSection/SfxVolumeRow"]
 custom_minimum_size = Vector2(260, 0)
@@ -619,9 +659,10 @@ custom_minimum_size = Vector2(90, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
 text = "100%"
+vertical_alignment = 1
 
 [node name="ConfigBackButton" type="Button" parent="AppBackground/GameFrame/ConfigPanel/ConfigContent"]
-custom_minimum_size = Vector2(429, 72)
+custom_minimum_size = Vector2(452, 72)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
 theme_override_styles/normal = SubResource("ButtonNormal")

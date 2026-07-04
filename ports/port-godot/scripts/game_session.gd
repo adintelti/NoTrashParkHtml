@@ -7,6 +7,8 @@ const DEFAULT_CARD_FREQUENCY: int = 3
 const DEFAULT_CONTROLLER_LAYOUT: String = "xbox"
 const DEFAULT_LANGUAGE: String = "pt-BR"
 const DEFAULT_THEME: String = "park"
+const DEFAULT_BGM_VOLUME: float = 1.0
+const DEFAULT_SFX_VOLUME: float = 1.0
 const SETTINGS_PATH: String = "user://settings.cfg"
 
 var difficulty: String = DEFAULT_DIFFICULTY
@@ -18,6 +20,8 @@ var language: String = DEFAULT_LANGUAGE
 var theme: String = DEFAULT_THEME
 var bgm_enabled: bool = true
 var sfx_enabled: bool = true
+var bgm_volume: float = DEFAULT_BGM_VOLUME
+var sfx_volume: float = DEFAULT_SFX_VOLUME
 
 var _translations_registered: bool = false
 
@@ -35,6 +39,28 @@ func reset() -> void:
 	theme = DEFAULT_THEME
 	bgm_enabled = true
 	sfx_enabled = true
+	bgm_volume = DEFAULT_BGM_VOLUME
+	sfx_volume = DEFAULT_SFX_VOLUME
+
+func set_bgm_enabled(enabled: bool, save_setting: bool = true) -> void:
+	bgm_enabled = enabled
+	if save_setting:
+		_save_settings()
+
+func set_sfx_enabled(enabled: bool, save_setting: bool = true) -> void:
+	sfx_enabled = enabled
+	if save_setting:
+		_save_settings()
+
+func set_bgm_volume(volume: float, save_setting: bool = true) -> void:
+	bgm_volume = clampf(volume, 0.0, 1.0)
+	if save_setting:
+		_save_settings()
+
+func set_sfx_volume(volume: float, save_setting: bool = true) -> void:
+	sfx_volume = clampf(volume, 0.0, 1.0)
+	if save_setting:
+		_save_settings()
 
 func set_theme(theme_code: String) -> void:
 	theme = _normalize_theme(theme_code)
@@ -145,10 +171,18 @@ func _load_settings() -> void:
 		return
 
 	language = _normalize_language(String(config.get_value("settings", "language", DEFAULT_LANGUAGE)))
+	bgm_enabled = bool(config.get_value("settings", "bgm_enabled", true))
+	sfx_enabled = bool(config.get_value("settings", "sfx_enabled", true))
+	bgm_volume = clampf(float(config.get_value("settings", "bgm_volume", DEFAULT_BGM_VOLUME)), 0.0, 1.0)
+	sfx_volume = clampf(float(config.get_value("settings", "sfx_volume", DEFAULT_SFX_VOLUME)), 0.0, 1.0)
 
 func _save_settings() -> void:
 	var config: ConfigFile = ConfigFile.new()
 	config.set_value("settings", "language", language)
+	config.set_value("settings", "bgm_enabled", bgm_enabled)
+	config.set_value("settings", "sfx_enabled", sfx_enabled)
+	config.set_value("settings", "bgm_volume", bgm_volume)
+	config.set_value("settings", "sfx_volume", sfx_volume)
 	config.save(SETTINGS_PATH)
 
 func _get_translation_messages(language_code: String) -> Dictionary:
