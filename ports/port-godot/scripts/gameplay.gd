@@ -61,6 +61,19 @@ const RANGE_RING_BASE_DIAMETER: float = 430.0
 const INITIAL_WAVE_COOLDOWN: float = 1.2
 const BETWEEN_WAVE_COOLDOWN: float = 2.4
 const UNDO_PLACEMENT_WINDOW: float = 5.0
+const CARD_EFFECT_DURATION_WAVES: int = 1
+const CARD_COIN_GAIN: int = 100
+const CARD_COIN_LOSS: int = 70
+const DAMAGE_BUFF_MULTIPLIER: float = 1.3
+const DAMAGE_SETBACK_MULTIPLIER: float = 1.0 / DAMAGE_BUFF_MULTIPLIER
+const POWER_SURGE_MULTIPLIER: float = 2.0
+const RANGE_BUFF_MULTIPLIER: float = 1.25
+const RANGE_SETBACK_MULTIPLIER: float = 1.0 / RANGE_BUFF_MULTIPLIER
+const MAX_TOWER_RANGE: float = 7.0
+const DAMAGE_MAX_EPSILON: float = 0.001
+const RANGE_MAX_EPSILON: float = 0.001
+const CARD_BACK_SIZE: Vector2 = Vector2(150, 210)
+const CARD_REVEALED_SIZE: Vector2 = Vector2(650, 188)
 
 const TILE_PARK_A: Texture2D = preload("res://assets/tiles/park_terrain_detail_a.png")
 const TILE_PARK_B: Texture2D = preload("res://assets/tiles/park_terrain_detail_b.png")
@@ -94,6 +107,7 @@ const PROJECTILE_FLAME_TEXTURE: Texture2D = preload("res://assets/projectiles/pr
 
 const IMPACT_TEXTURE: Texture2D = preload("res://assets/effects/impact_frame_1.png")
 const RANGE_RING_TEXTURE: Texture2D = preload("res://assets/effects/range_ring_4_cells.png")
+const CARD_BACK_TEXTURE: Texture2D = preload("res://assets/ui/ui_card_back.png")
 
 var current_theme: String = "park"
 var transition_active: bool = false
@@ -104,6 +118,7 @@ var lives: int = 10
 var coins: int = 300
 var session_defeated: int = 0
 var wave_defeated: int = 0
+var wave_hp_lost: int = 0
 var spawn_remaining: int = 0
 var spawn_timer: float = 0.0
 var wave_cooldown: float = INITIAL_WAVE_COOLDOWN
@@ -111,16 +126,25 @@ var wave_in_progress: bool = false
 var paused: bool = false
 var game_over: bool = false
 var victory_pending: bool = false
+var card_choice_active: bool = false
+var card_choice_revealed: bool = false
+var card_choice_previous_paused: bool = false
+var selected_card_id: String = ""
+var card_result_text: String = ""
 var session_time: float = 0.0
 var sim_time: float = 0.0
 var next_enemy_id: int = 1
 var next_tower_id: int = 1
 var next_projectile_id: int = 1
+var next_card_id: int = 1
 var speed_multiplier: float = 1.0
 var enemies: Array[EnemyState] = []
 var placed_towers: Array[TowerState] = []
 var projectiles: Array[ProjectileState] = []
 var impacts: Array[ImpactState] = []
+var card_choices: Array[Dictionary] = []
+var tower_buffs: Array[Dictionary] = []
+var enemy_modifiers: Array[Dictionary] = []
 var occupied_tiles: Array[Vector2i] = []
 var last_placed_tower: TowerState = null
 var pending_delete_tower: TowerState = null
@@ -190,6 +214,18 @@ var blocked_tiles: Array[Vector2i] = [
 @onready var _tower_delete_confirm_summary: Label = get_node("AppBackground/GameFrame/GameLayout/BoardStage/TowerDeleteConfirmOverlay/TowerDeleteCard/TowerDeleteInset/TowerDeleteContent/TowerDeleteSummary")
 @onready var _tower_delete_confirm_remove_button: Button = get_node("AppBackground/GameFrame/GameLayout/BoardStage/TowerDeleteConfirmOverlay/TowerDeleteCard/TowerDeleteInset/TowerDeleteContent/TowerDeleteActions/TowerDeleteRemoveButton")
 @onready var _tower_delete_confirm_cancel_button: Button = get_node("AppBackground/GameFrame/GameLayout/BoardStage/TowerDeleteConfirmOverlay/TowerDeleteCard/TowerDeleteInset/TowerDeleteContent/TowerDeleteActions/TowerDeleteCancelButton")
+@onready var _card_choice_overlay: Control = get_node("AppBackground/GameFrame/GameLayout/BoardStage/CardChoiceOverlay")
+@onready var _card_choice_kicker: Label = get_node("AppBackground/GameFrame/GameLayout/BoardStage/CardChoiceOverlay/CardChoicePanel/CardChoiceInset/CardChoiceContent/CardChoiceKicker")
+@onready var _card_choice_title: Label = get_node("AppBackground/GameFrame/GameLayout/BoardStage/CardChoiceOverlay/CardChoicePanel/CardChoiceInset/CardChoiceContent/CardChoiceTitle")
+@onready var _card_choice_result: PanelContainer = get_node("AppBackground/GameFrame/GameLayout/BoardStage/CardChoiceOverlay/CardChoicePanel/CardChoiceInset/CardChoiceContent/CardChoiceResult")
+@onready var _card_choice_result_label: Label = get_node("AppBackground/GameFrame/GameLayout/BoardStage/CardChoiceOverlay/CardChoicePanel/CardChoiceInset/CardChoiceContent/CardChoiceResult/CardChoiceResultLabel")
+@onready var _card_choice_continue_button: Button = get_node("AppBackground/GameFrame/GameLayout/BoardStage/CardChoiceOverlay/CardChoicePanel/CardChoiceInset/CardChoiceContent/CardChoiceContinueButton")
+@onready var _card_choice_buttons: Array[Button] = [
+	get_node("AppBackground/GameFrame/GameLayout/BoardStage/CardChoiceOverlay/CardChoicePanel/CardChoiceInset/CardChoiceContent/CardChoiceCards/CardChoiceButton1") as Button,
+	get_node("AppBackground/GameFrame/GameLayout/BoardStage/CardChoiceOverlay/CardChoicePanel/CardChoiceInset/CardChoiceContent/CardChoiceCards/CardChoiceButton2") as Button,
+	get_node("AppBackground/GameFrame/GameLayout/BoardStage/CardChoiceOverlay/CardChoicePanel/CardChoiceInset/CardChoiceContent/CardChoiceCards/CardChoiceButton3") as Button,
+	get_node("AppBackground/GameFrame/GameLayout/BoardStage/CardChoiceOverlay/CardChoicePanel/CardChoiceInset/CardChoiceContent/CardChoiceCards/CardChoiceButton4") as Button
+]
 @onready var _theme_transition_overlay: Control = get_node("AppBackground/GameFrame/GameLayout/ThemeTransitionOverlay")
 @onready var _theme_transition_dimmer: ColorRect = get_node("AppBackground/GameFrame/GameLayout/ThemeTransitionOverlay/ThemeTransitionDimmer")
 @onready var _theme_transition_label: Label = get_node("AppBackground/GameFrame/GameLayout/ThemeTransitionOverlay/ThemeTransitionLabel")
@@ -218,11 +254,13 @@ var blocked_tiles: Array[Vector2i] = [
 }
 
 func _ready() -> void:
+	randomize()
 	GameSession.apply_language(GameSession.language, false)
 	_floating_message.hide()
 	_wave_banner.hide()
 	_victory_overlay.hide()
 	_tower_delete_confirm_overlay.hide()
+	_card_choice_overlay.hide()
 	_theme_transition_overlay.hide()
 	_theme_transition_dimmer.color = Color(0.015686275, 0.05490196, 0.078431375, 0.92)
 	_theme_transition_overlay.modulate = Color(1.0, 1.0, 1.0, 0.0)
@@ -256,6 +294,7 @@ func _process(delta: float) -> void:
 func _start_run() -> void:
 	_hide_victory_overlay()
 	_hide_tower_delete_confirm_overlay()
+	_hide_card_choice_overlay()
 	_clear_undo_placement()
 	_hide_placement_preview()
 	_clear_enemies()
@@ -268,6 +307,7 @@ func _start_run() -> void:
 	coins = 300
 	session_defeated = 0
 	wave_defeated = 0
+	wave_hp_lost = 0
 	spawn_remaining = 0
 	spawn_timer = 0.0
 	wave_cooldown = INITIAL_WAVE_COOLDOWN
@@ -280,7 +320,16 @@ func _start_run() -> void:
 	next_enemy_id = 1
 	next_tower_id = 1
 	next_projectile_id = 1
+	next_card_id = 1
 	speed_multiplier = 1.0
+	card_choices.clear()
+	tower_buffs.clear()
+	enemy_modifiers.clear()
+	card_choice_active = false
+	card_choice_revealed = false
+	card_choice_previous_paused = false
+	selected_card_id = ""
+	card_result_text = ""
 	_load_theme(GameSession.theme)
 	_set_pause_state(false)
 	_speed_button.set_pressed_no_signal(false)
@@ -291,6 +340,8 @@ func _start_run() -> void:
 	_show_status(GameSession.t("messages.prepareWave", {"wave": 1}))
 
 func _update_wave_flow(dt: float) -> void:
+	if card_choice_active:
+		return
 	if wave_in_progress:
 		_update_spawn(dt)
 		_move_enemies(dt)
@@ -309,6 +360,7 @@ func _start_next_wave() -> void:
 
 	wave += 1
 	wave_defeated = 0
+	wave_hp_lost = 0
 	spawn_remaining = 6 + wave * 2
 	spawn_timer = 0.0
 	wave_in_progress = true
@@ -328,17 +380,26 @@ func _update_spawn(dt: float) -> void:
 	spawn_timer = maxf(0.36, 0.86 - float(wave) * 0.025)
 
 func _complete_current_wave() -> void:
+	var finished_wave: int = wave
 	wave_in_progress = false
 	session_defeated += wave_defeated
 	wave_defeated = 0
-	_show_wave_banner(GameSession.t("messages.waveCompleted", {"wave": wave}))
+	_show_wave_banner(GameSession.t("messages.waveCompleted", {"wave": finished_wave}))
+	_clear_expired_card_effects(finished_wave)
 
-	if wave >= wave_limit:
+	if finished_wave >= wave_limit:
 		_finish_victory()
 		return
 
+	if _should_offer_card_choice(finished_wave):
+		_start_card_choice()
+		return
+
+	_start_between_wave_cooldown(finished_wave)
+
+func _start_between_wave_cooldown(finished_wave: int) -> void:
 	wave_cooldown = BETWEEN_WAVE_COOLDOWN
-	_show_status(GameSession.t("messages.nextWaveSoon", {"wave": wave}))
+	_show_status(GameSession.t("messages.nextWaveSoon", {"wave": finished_wave}))
 
 func _finish_victory() -> void:
 	victory_pending = true
@@ -410,7 +471,7 @@ func _get_enemy_speed(tier: int) -> float:
 		base_speed = 0.78
 	elif tier == 2:
 		base_speed = 0.64
-	return base_speed * (1.0 + minf(float(wave), 8.0) * 0.025)
+	return base_speed * (1.0 + minf(float(wave), 8.0) * 0.025) * _get_enemy_modifier_multiplier("speed")
 
 func _get_enemy_reward(tier: int) -> int:
 	if tier == 1:
@@ -425,7 +486,7 @@ func _get_enemy_max_hp(tier: int) -> int:
 		base_hp = 78
 	elif tier == 2:
 		base_hp = 105
-	return int(round(float(base_hp) * (1.0 + float(wave) * 0.12)))
+	return int(round(float(base_hp) * (1.0 + float(wave) * 0.12) * _get_enemy_modifier_multiplier("hp")))
 
 func _move_enemies(dt: float) -> void:
 	var completed_enemies: Array[EnemyState] = []
@@ -461,6 +522,7 @@ func _move_enemies(dt: float) -> void:
 
 	for completed_enemy_data in completed_enemies:
 		_remove_enemy(completed_enemy_data, false)
+		wave_hp_lost += 1
 		lives -= 1
 		if lives <= 0:
 			_end_game()
@@ -487,6 +549,634 @@ func _position_enemy(enemy_data: EnemyState) -> void:
 		grid_position.x * TILE_SIZE.x - enemy_data.pivot.x,
 		grid_position.y * TILE_SIZE.y - enemy_data.pivot.y
 	)
+
+func _should_offer_card_choice(finished_wave: int) -> bool:
+	var offer_interval: int = GameSession.card_frequency
+	return finished_wave < wave_limit and offer_interval > 0 and wave_hp_lost <= 0 and finished_wave % offer_interval == 0
+
+func _start_card_choice() -> void:
+	card_choice_previous_paused = paused
+	_set_delete_mode(false, "", false)
+	_hide_tower_delete_confirm_overlay()
+	_clear_undo_placement()
+	_hide_placement_preview()
+	card_choice_active = true
+	card_choice_revealed = false
+	selected_card_id = ""
+	card_result_text = ""
+	card_choices = _create_card_choices()
+	_set_pause_state(true)
+	_sync_tower_shop_buttons()
+	_show_card_choice_overlay()
+	_sync_hud()
+	_show_status(GameSession.t("cards.kicker"))
+
+func _select_card_choice_index(card_index: int) -> void:
+	if not card_choice_active or card_choice_revealed:
+		return
+	if card_index < 0 or card_index >= card_choices.size():
+		return
+
+	var card: Dictionary = card_choices[card_index]
+	selected_card_id = String(card.get("id", ""))
+	card_choice_revealed = true
+	card_result_text = _apply_card_effect(card)
+	_render_card_choice_overlay()
+	_sync_tower_shop_buttons()
+	_sync_hud()
+	_card_choice_continue_button.call_deferred("grab_focus")
+
+func _continue_card_choice() -> void:
+	if not card_choice_active or not card_choice_revealed:
+		return
+
+	var restore_paused: bool = card_choice_previous_paused
+	_reset_card_choice_state()
+	_hide_card_choice_overlay()
+	_set_pause_state(restore_paused)
+	_sync_tower_shop_buttons()
+	_start_between_wave_cooldown(wave)
+	_sync_hud()
+
+func _reset_card_choice_state() -> void:
+	card_choice_active = false
+	card_choice_revealed = false
+	card_choice_previous_paused = false
+	selected_card_id = ""
+	card_result_text = ""
+	card_choices.clear()
+
+func _show_card_choice_overlay() -> void:
+	_render_card_choice_overlay()
+	_card_choice_overlay.show()
+	_card_choice_overlay.move_to_front()
+	if not _card_choice_buttons.is_empty():
+		_card_choice_buttons[0].call_deferred("grab_focus")
+
+func _hide_card_choice_overlay() -> void:
+	_card_choice_overlay.hide()
+	_card_choice_result.hide()
+	_card_choice_continue_button.hide()
+	for button in _card_choice_buttons:
+		button.hide()
+
+func _render_card_choice_overlay() -> void:
+	_card_choice_kicker.text = GameSession.t("cards.kicker")
+	_card_choice_title.text = GameSession.t("cards.choose")
+	_card_choice_result.visible = card_choice_revealed and not card_result_text.is_empty()
+	_card_choice_result_label.text = card_result_text
+	_card_choice_continue_button.visible = card_choice_revealed
+	_card_choice_continue_button.text = GameSession.t("common.continue")
+
+	for index in range(_card_choice_buttons.size()):
+		var button: Button = _card_choice_buttons[index]
+		if index >= card_choices.size():
+			button.hide()
+			continue
+
+		var card: Dictionary = card_choices[index]
+		var card_id: String = String(card.get("id", ""))
+		var is_selected: bool = card_choice_revealed and card_id == selected_card_id
+		button.show()
+		button.icon = null
+		button.expand_icon = false
+		button.alignment = HORIZONTAL_ALIGNMENT_CENTER
+		button.add_theme_color_override("font_color", Color(0.08235294, 0.16470589, 0.20784314, 1.0))
+
+		if card_choice_revealed and not is_selected:
+			button.hide()
+			continue
+
+		if is_selected:
+			var card_kind: String = String(card.get("kind", "neutral"))
+			var front_text_color: Color = Color(0.08627451, 0.043137256, 0.0, 1.0)
+			if card_kind == "bane":
+				front_text_color = Color(1.0, 0.9411765, 0.84705883, 1.0)
+			button.custom_minimum_size = CARD_REVEALED_SIZE
+			button.disabled = true
+			button.add_theme_font_size_override("font_size", 22)
+			button.add_theme_color_override("font_color", front_text_color)
+			button.add_theme_color_override("font_disabled_color", front_text_color)
+			button.add_theme_stylebox_override("normal", _make_card_front_style(card_kind))
+			button.add_theme_stylebox_override("pressed", _make_card_front_style(card_kind))
+			button.add_theme_stylebox_override("hover", _make_card_front_style(card_kind))
+			button.add_theme_stylebox_override("disabled", _make_card_front_style(card_kind))
+			button.text = "%s\n%s\n%s" % [
+				GameSession.t("cards.kind.%s" % card_kind),
+				_wrap_card_text(String(card.get("title", "")), 30),
+				_wrap_card_text(String(card.get("description", "")), 42)
+			]
+		else:
+			button.custom_minimum_size = CARD_BACK_SIZE
+			button.disabled = false
+			button.add_theme_font_size_override("font_size", 26)
+			button.add_theme_stylebox_override("normal", _make_card_back_style())
+			button.add_theme_stylebox_override("pressed", _make_card_back_style())
+			button.add_theme_stylebox_override("hover", _make_card_back_style())
+			button.add_theme_stylebox_override("disabled", _make_card_back_style())
+			button.text = "?\n%s" % GameSession.t("cards.cardIndex", {"index": index + 1})
+
+func _wrap_card_text(text: String, max_line_length: int) -> String:
+	var words: PackedStringArray = text.split(" ", false)
+	var lines: Array[String] = []
+	var current_line: String = ""
+	for word_index in range(words.size()):
+		var word: String = words[word_index]
+		if current_line.is_empty():
+			current_line = word
+		elif current_line.length() + 1 + word.length() <= max_line_length:
+			current_line += " " + word
+		else:
+			lines.append(current_line)
+			current_line = word
+
+	if not current_line.is_empty():
+		lines.append(current_line)
+
+	var wrapped_text: String = ""
+	for line_index in range(lines.size()):
+		if line_index > 0:
+			wrapped_text += "\n"
+		wrapped_text += lines[line_index]
+	return wrapped_text
+
+func _make_card_back_style() -> StyleBoxTexture:
+	var style: StyleBoxTexture = StyleBoxTexture.new()
+	style.texture = CARD_BACK_TEXTURE
+	style.texture_margin_left = 8.0
+	style.texture_margin_top = 8.0
+	style.texture_margin_right = 8.0
+	style.texture_margin_bottom = 8.0
+	return style
+
+func _make_card_front_style(card_kind: String) -> StyleBoxFlat:
+	var style: StyleBoxFlat = StyleBoxFlat.new()
+	match card_kind:
+		"boon":
+			style.bg_color = Color(0.62352943, 0.8901961, 0.43529412, 1.0)
+		"bane":
+			style.bg_color = Color(0.6509804, 0.23529412, 0.19607843, 1.0)
+		_:
+			style.bg_color = Color(0.9529412, 0.9411765, 0.8235294, 1.0)
+	style.border_width_left = 5
+	style.border_width_top = 5
+	style.border_width_right = 5
+	style.border_width_bottom = 5
+	style.border_color = Color(0.07058824, 0.043137256, 0.02745098, 1.0)
+	style.corner_radius_top_left = 4
+	style.corner_radius_top_right = 4
+	style.corner_radius_bottom_right = 4
+	style.corner_radius_bottom_left = 4
+	style.shadow_color = Color(0, 0, 0, 0.2)
+	style.shadow_size = 4
+	return style
+
+func _create_card_choices() -> Array[Dictionary]:
+	var tower_type_clear_card: Dictionary = _create_tower_type_clear_card_config()
+	if not tower_type_clear_card.is_empty():
+		var power_surge_card: Dictionary = _create_power_surge_card_config()
+		var boon_count: int = 1 if not power_surge_card.is_empty() else 2
+		var filled_cards: Array[Dictionary] = []
+		filled_cards.append(_create_neutral_card())
+		filled_cards.append_array(_create_boon_cards(boon_count))
+		filled_cards.append(_build_card("bane", tower_type_clear_card))
+		if not power_surge_card.is_empty():
+			filled_cards.append(_build_card("boon", power_surge_card))
+		return _shuffle_cards(filled_cards)
+
+	var cards: Array[Dictionary] = []
+	cards.append(_create_neutral_card())
+	cards.append_array(_create_boon_cards(2))
+	cards.append(_create_bane_card())
+	return _shuffle_cards(cards)
+
+func _create_neutral_card() -> Dictionary:
+	var effect: Dictionary = {"type": "none"}
+	var config: Dictionary = {
+		"title": GameSession.t("cards.neutral.title"),
+		"description": GameSession.t("cards.neutral.description"),
+		"result": GameSession.t("cards.neutral.result"),
+		"effect": effect
+	}
+	return _build_card("neutral", config)
+
+func _create_boon_cards(count: int) -> Array[Dictionary]:
+	var configs: Array[Dictionary] = _shuffle_cards(_create_boon_card_configs())
+	var cards: Array[Dictionary] = []
+	var limit: int = mini(count, configs.size())
+	for index in range(limit):
+		cards.append(_build_card("boon", configs[index]))
+	return cards
+
+func _create_boon_card_configs() -> Array[Dictionary]:
+	var configs: Array[Dictionary] = []
+	var damage_tower_key: String = _get_random_damage_buff_tower_key()
+	var range_tower_key: String = _get_random_range_buff_tower_key()
+
+	if not damage_tower_key.is_empty():
+		configs.append(_create_damage_buff_card_config(damage_tower_key))
+	if not range_tower_key.is_empty():
+		configs.append(_create_range_buff_card_config(range_tower_key))
+
+	configs.append({
+		"title": GameSession.t("cards.coinsGain.title"),
+		"description": GameSession.t("cards.coinsGain.description", {"amount": CARD_COIN_GAIN}),
+		"result": GameSession.t("cards.coinsGain.result", {"amount": CARD_COIN_GAIN}),
+		"effect": {"type": "coins", "amount": CARD_COIN_GAIN}
+	})
+
+	if lives < 10:
+		configs.append({
+			"title": GameSession.t("cards.heal.title"),
+			"description": GameSession.t("cards.heal.description"),
+			"result": GameSession.t("cards.heal.result"),
+			"effect": {"type": "heal", "amount": 1}
+		})
+
+	return configs
+
+func _create_damage_buff_card_config(tower_key: String) -> Dictionary:
+	var tower_label: String = _format_tower_name(tower_key)
+	var max_damage: int = _get_tower_max_damage(tower_key)
+	return {
+		"title": GameSession.t("cards.damage.title", {"tower": tower_label}),
+		"description": GameSession.t("cards.damage.description", {"tower": tower_label, "max": max_damage}),
+		"result": GameSession.t("cards.damage.result", {"tower": tower_label, "max": max_damage}),
+		"effect": {
+			"type": "towerBuff",
+			"tower_type": tower_key,
+			"stat": "damage",
+			"multiplier": DAMAGE_BUFF_MULTIPLIER,
+			"permanent": true
+		}
+	}
+
+func _create_range_buff_card_config(tower_key: String) -> Dictionary:
+	var tower_label: String = _format_tower_name(tower_key)
+	return {
+		"title": GameSession.t("cards.range.title", {"tower": tower_label}),
+		"description": GameSession.t("cards.range.description", {"tower": tower_label}),
+		"result": GameSession.t("cards.range.result", {"tower": tower_label}),
+		"effect": {
+			"type": "towerBuff",
+			"tower_type": tower_key,
+			"stat": "range",
+			"multiplier": RANGE_BUFF_MULTIPLIER,
+			"permanent": true
+		}
+	}
+
+func _create_power_surge_card_config() -> Dictionary:
+	var tower_data: TowerState = _get_random_placed_tower()
+	if tower_data == null:
+		return {}
+
+	var tower_label: String = _format_tower_name(tower_data.tower_type)
+	return {
+		"title": GameSession.t("cards.powerSurge.title", {"tower": tower_label}),
+		"description": GameSession.t("cards.powerSurge.description", {"tower": tower_label}),
+		"result": GameSession.t("cards.powerSurge.result", {"tower": tower_label}),
+		"effect": {
+			"type": "towerBuff",
+			"tower_id": tower_data.id,
+			"tower_type": tower_data.tower_type,
+			"stat": "damage",
+			"multiplier": POWER_SURGE_MULTIPLIER,
+			"duration_waves": CARD_EFFECT_DURATION_WAVES,
+			"ignore_max_damage": true
+		}
+	}
+
+func _create_bane_card() -> Dictionary:
+	var tower_type_clear_card: Dictionary = _create_tower_type_clear_card_config()
+	if not tower_type_clear_card.is_empty():
+		return _build_card("bane", tower_type_clear_card)
+
+	var damage_setback_card: Dictionary = _create_damage_setback_card_config()
+	if not damage_setback_card.is_empty():
+		return _build_card("bane", damage_setback_card)
+
+	var cards: Array[Dictionary] = [
+		{
+			"title": GameSession.t("cards.enemyHp.title"),
+			"description": GameSession.t("cards.enemyHp.description"),
+			"result": GameSession.t("cards.enemyHp.result"),
+			"effect": {
+				"type": "enemyModifier",
+				"stat": "hp",
+				"multiplier": 1.18,
+				"duration_waves": CARD_EFFECT_DURATION_WAVES
+			}
+		},
+		{
+			"title": GameSession.t("cards.enemySpeed.title"),
+			"description": GameSession.t("cards.enemySpeed.description"),
+			"result": GameSession.t("cards.enemySpeed.result"),
+			"effect": {
+				"type": "enemyModifier",
+				"stat": "speed",
+				"multiplier": 1.15,
+				"duration_waves": CARD_EFFECT_DURATION_WAVES
+			}
+		},
+		{
+			"title": GameSession.t("cards.coinsLoss.title"),
+			"description": GameSession.t("cards.coinsLoss.description", {"amount": CARD_COIN_LOSS}),
+			"result": GameSession.t("cards.coinsLoss.result", {"amount": CARD_COIN_LOSS}),
+			"effect": {"type": "coins", "amount": -CARD_COIN_LOSS}
+		},
+		{
+			"title": GameSession.t("cards.coinsAll.title"),
+			"description": GameSession.t("cards.coinsAll.description"),
+			"result": GameSession.t("cards.coinsAll.result"),
+			"effect": {"type": "coinsAll"}
+		}
+	]
+
+	var range_setback_card: Dictionary = _create_range_setback_card_config()
+	if not range_setback_card.is_empty():
+		cards.append(range_setback_card)
+
+	return _build_card("bane", _random_card_config(cards))
+
+func _create_tower_type_clear_card_config() -> Dictionary:
+	if not _is_board_filled_with_towers():
+		return {}
+
+	var tower_key: String = _get_random_placed_tower_key()
+	if tower_key.is_empty():
+		return {}
+
+	var tower_label: String = _format_tower_name(tower_key)
+	var tower_count: int = _get_placed_tower_count_by_type(tower_key)
+	return {
+		"title": GameSession.t("cards.towerTypeClear.title", {"tower": tower_label}),
+		"description": GameSession.t("cards.towerTypeClear.description", {"tower": tower_label, "count": tower_count}),
+		"result": GameSession.t("cards.towerTypeClear.result", {"tower": tower_label, "count": tower_count}),
+		"effect": {"type": "removeTowerType", "tower_type": tower_key}
+	}
+
+func _create_damage_setback_card_config() -> Dictionary:
+	var tower_key: String = _get_random_max_damage_tower_key()
+	if tower_key.is_empty():
+		return {}
+
+	var tower_label: String = _format_tower_name(tower_key)
+	return {
+		"title": GameSession.t("cards.damageSetback.title", {"tower": tower_label}),
+		"description": GameSession.t("cards.damageSetback.description", {"tower": tower_label}),
+		"result": GameSession.t("cards.damageSetback.result", {"tower": tower_label}),
+		"effect": {
+			"type": "towerBuff",
+			"tower_type": tower_key,
+			"stat": "damage",
+			"multiplier": DAMAGE_SETBACK_MULTIPLIER,
+			"permanent": true
+		}
+	}
+
+func _create_range_setback_card_config() -> Dictionary:
+	var tower_key: String = _get_random_max_range_tower_key()
+	if tower_key.is_empty():
+		return {}
+
+	var tower_label: String = _format_tower_name(tower_key)
+	return {
+		"title": GameSession.t("cards.rangeSetback.title", {"tower": tower_label}),
+		"description": GameSession.t("cards.rangeSetback.description", {"tower": tower_label}),
+		"result": GameSession.t("cards.rangeSetback.result", {"tower": tower_label}),
+		"effect": {
+			"type": "towerBuff",
+			"tower_type": tower_key,
+			"stat": "range",
+			"multiplier": RANGE_SETBACK_MULTIPLIER,
+			"permanent": true
+		}
+	}
+
+func _build_card(card_kind: String, config: Dictionary) -> Dictionary:
+	var card: Dictionary = {}
+	for key in config:
+		card[key] = config[key]
+	card["id"] = "%s-%d-%d" % [card_kind, wave, next_card_id]
+	card["kind"] = card_kind
+	next_card_id += 1
+	return card
+
+func _apply_card_effect(card: Dictionary) -> String:
+	var effect_value: Variant = card.get("effect", {})
+	var effect: Dictionary = {}
+	if effect_value is Dictionary:
+		effect = effect_value as Dictionary
+
+	var effect_type: String = String(effect.get("type", "none"))
+	match effect_type:
+		"heal":
+			var previous_lives: int = lives
+			var heal_amount: int = int(effect.get("amount", 0))
+			lives = mini(10, lives + heal_amount)
+			if lives > previous_lives:
+				return String(card.get("result", ""))
+			return GameSession.t("cards.heal.full")
+		"coins":
+			var previous_coins: int = coins
+			var coin_amount: int = int(effect.get("amount", 0))
+			coins = maxi(0, coins + coin_amount)
+			var coin_difference: int = coins - previous_coins
+			if coin_difference > 0:
+				return GameSession.t("cards.coinsGain.result", {"amount": coin_difference})
+			if coin_difference < 0:
+				return GameSession.t("cards.coinsLoss.result", {"amount": abs(coin_difference)})
+			return GameSession.t("cards.noCoinsChanged")
+		"coinsAll":
+			var removed_coins: int = coins
+			coins = 0
+			if removed_coins > 0:
+				return GameSession.t("cards.coinsLoss.result", {"amount": removed_coins})
+			return GameSession.t("cards.noCoinsLost")
+		"removeTowerType":
+			return _remove_towers_by_type(String(effect.get("tower_type", "")))
+		"towerBuff":
+			_add_tower_buff(effect)
+			return String(card.get("result", ""))
+		"enemyModifier":
+			_add_enemy_modifier(effect)
+			return String(card.get("result", ""))
+		_:
+			return String(card.get("result", ""))
+
+func _remove_towers_by_type(tower_type: String) -> String:
+	var tower_label: String = _format_tower_name(tower_type)
+	var towers_to_remove: Array[TowerState] = []
+	for tower_data in placed_towers:
+		if tower_data.tower_type == tower_type:
+			towers_to_remove.append(tower_data)
+
+	for tower_to_remove in towers_to_remove:
+		_remove_tower(tower_to_remove, 0)
+
+	if towers_to_remove.size() > 0:
+		return GameSession.t("cards.towerTypeClear.result", {"tower": tower_label, "count": towers_to_remove.size()})
+	return GameSession.t("cards.towerTypeClear.none", {"tower": tower_label})
+
+func _add_tower_buff(effect: Dictionary) -> void:
+	var buff: Dictionary = {
+		"tower_id": int(effect.get("tower_id", 0)),
+		"tower_type": String(effect.get("tower_type", "")),
+		"stat": String(effect.get("stat", "")),
+		"multiplier": float(effect.get("multiplier", 1.0)),
+		"permanent": bool(effect.get("permanent", false)),
+		"ignore_max_damage": bool(effect.get("ignore_max_damage", false)),
+		"expires_after_wave": _get_card_effect_expiration_wave(effect)
+	}
+	tower_buffs.append(buff)
+	_refresh_placement_preview()
+
+func _add_enemy_modifier(effect: Dictionary) -> void:
+	var stat: String = String(effect.get("stat", ""))
+	var remaining_modifiers: Array[Dictionary] = []
+	for modifier in enemy_modifiers:
+		if String(modifier.get("stat", "")) != stat:
+			remaining_modifiers.append(modifier)
+	enemy_modifiers = remaining_modifiers
+	enemy_modifiers.append({
+		"stat": stat,
+		"multiplier": float(effect.get("multiplier", 1.0)),
+		"expires_after_wave": _get_card_effect_expiration_wave(effect)
+	})
+
+func _get_card_effect_expiration_wave(effect: Dictionary) -> int:
+	if bool(effect.get("permanent", false)):
+		return -1
+	return wave + int(effect.get("duration_waves", CARD_EFFECT_DURATION_WAVES))
+
+func _clear_expired_card_effects(finished_wave: int) -> void:
+	var active_tower_buffs: Array[Dictionary] = []
+	for buff in tower_buffs:
+		if bool(buff.get("permanent", false)) or int(buff.get("expires_after_wave", -1)) > finished_wave:
+			active_tower_buffs.append(buff)
+	tower_buffs = active_tower_buffs
+
+	var active_enemy_modifiers: Array[Dictionary] = []
+	for modifier in enemy_modifiers:
+		if int(modifier.get("expires_after_wave", -1)) > finished_wave:
+			active_enemy_modifiers.append(modifier)
+	enemy_modifiers = active_enemy_modifiers
+	_sync_tower_shop_buttons()
+	_refresh_placement_preview()
+
+func _is_card_effect_active(effect: Dictionary) -> bool:
+	if bool(effect.get("permanent", false)):
+		return true
+	return int(effect.get("expires_after_wave", -1)) >= wave
+
+func _get_enemy_modifier_multiplier(stat: String) -> float:
+	var multiplier: float = 1.0
+	for modifier in enemy_modifiers:
+		if String(modifier.get("stat", "")) == stat and _is_card_effect_active(modifier):
+			multiplier *= float(modifier.get("multiplier", 1.0))
+	return multiplier
+
+func _get_random_damage_buff_tower_key() -> String:
+	var tower_keys: Array[String] = []
+	for tower_key in GameSession.get_unlocked_tower_keys(current_theme):
+		if _can_offer_damage_buff(tower_key):
+			tower_keys.append(tower_key)
+	return _random_tower_key(tower_keys)
+
+func _get_random_range_buff_tower_key() -> String:
+	var tower_keys: Array[String] = []
+	for tower_key in GameSession.get_unlocked_tower_keys(current_theme):
+		if _can_offer_range_buff(tower_key):
+			tower_keys.append(tower_key)
+	return _random_tower_key(tower_keys)
+
+func _get_random_placed_tower_key() -> String:
+	var tower_keys: Array[String] = []
+	for tower_data in placed_towers:
+		if not tower_keys.has(tower_data.tower_type):
+			tower_keys.append(tower_data.tower_type)
+	return _random_tower_key(tower_keys)
+
+func _get_random_placed_tower() -> TowerState:
+	if placed_towers.is_empty():
+		return null
+	var index: int = int(randi() % placed_towers.size())
+	return placed_towers[index]
+
+func _get_placed_tower_count_by_type(tower_type: String) -> int:
+	var count: int = 0
+	for tower_data in placed_towers:
+		if tower_data.tower_type == tower_type:
+			count += 1
+	return count
+
+func _is_board_filled_with_towers() -> bool:
+	var fillable_tile_count: int = 0
+	for y in range(ROWS):
+		for x in range(COLS):
+			var tile_position: Vector2i = Vector2i(x, y)
+			if path_tiles.has(tile_position) or blocked_tiles.has(tile_position):
+				continue
+			if not _can_any_unlocked_tower_reach_path(tile_position):
+				continue
+
+			fillable_tile_count += 1
+			if not occupied_tiles.has(tile_position):
+				return false
+	return fillable_tile_count > 0
+
+func _can_any_unlocked_tower_reach_path(tile_position: Vector2i) -> bool:
+	for tower_key in GameSession.get_unlocked_tower_keys(current_theme):
+		if _does_tower_reach_path(tile_position, _get_tower_range(tower_key)):
+			return true
+	return false
+
+func _get_random_max_damage_tower_key() -> String:
+	var tower_keys: Array[String] = []
+	for tower_key in GameSession.get_unlocked_tower_keys(current_theme):
+		if not _can_offer_damage_buff(tower_key):
+			tower_keys.append(tower_key)
+	return _random_tower_key(tower_keys)
+
+func _get_random_max_range_tower_key() -> String:
+	var tower_keys: Array[String] = []
+	for tower_key in GameSession.get_unlocked_tower_keys(current_theme):
+		if not _can_offer_range_buff(tower_key):
+			tower_keys.append(tower_key)
+	return _random_tower_key(tower_keys)
+
+func _can_offer_damage_buff(tower_key: String) -> bool:
+	var current_damage: int = _get_tower_damage(tower_key)
+	var max_damage: int = _get_tower_max_damage(tower_key)
+	return float(current_damage) < float(max_damage) - DAMAGE_MAX_EPSILON
+
+func _can_offer_range_buff(tower_key: String) -> bool:
+	return _get_tower_range(tower_key) < MAX_TOWER_RANGE - RANGE_MAX_EPSILON
+
+func _random_tower_key(tower_keys: Array[String]) -> String:
+	if tower_keys.is_empty():
+		return ""
+	var index: int = int(randi() % tower_keys.size())
+	return tower_keys[index]
+
+func _random_card_config(cards: Array[Dictionary]) -> Dictionary:
+	if cards.is_empty():
+		return {}
+	var index: int = int(randi() % cards.size())
+	return cards[index]
+
+func _shuffle_cards(cards: Array[Dictionary]) -> Array[Dictionary]:
+	var shuffled: Array[Dictionary] = []
+	for card in cards:
+		shuffled.append(card)
+	for index in range(shuffled.size()):
+		var remaining: int = shuffled.size() - index
+		var swap_index: int = index + int(randi() % remaining)
+		var current_card: Dictionary = shuffled[index]
+		shuffled[index] = shuffled[swap_index]
+		shuffled[swap_index] = current_card
+	return shuffled
 
 func _get_path_point(path_index: int) -> Vector2:
 	var tile_position: Vector2i = path_tiles[path_index]
@@ -792,6 +1482,8 @@ func _clear_undo_placement() -> void:
 func _is_undo_placement_available() -> bool:
 	if last_placed_tower == null:
 		return false
+	if card_choice_active:
+		return false
 	if game_over or victory_pending:
 		return false
 	if not placed_towers.has(last_placed_tower):
@@ -933,7 +1625,7 @@ func _hide_placement_preview() -> void:
 	_clear_preview_path_overlays()
 
 func _should_hide_placement_preview() -> bool:
-	return transition_active or paused or game_over or victory_pending or _delete_button.button_pressed
+	return transition_active or paused or game_over or victory_pending or card_choice_active or _delete_button.button_pressed
 
 func _render_placement_preview(tile_position: Vector2i) -> void:
 	_ensure_placement_preview_nodes()
@@ -1056,6 +1748,10 @@ func _get_tower_cost(tower_key: String) -> int:
 			return 0
 
 func _get_tower_range(tower_key: String) -> float:
+	var stats: Dictionary = _get_tower_combat_stats(tower_key, 0)
+	return float(stats.get("range", 0.0))
+
+func _get_base_tower_range(tower_key: String) -> float:
 	match tower_key:
 		"sentinel":
 			return 2.75
@@ -1080,6 +1776,10 @@ func _get_tower_texture(tower_key: String) -> Texture2D:
 			return TOWER_SENTINEL_TEXTURE
 
 func _get_tower_damage(tower_key: String) -> int:
+	var stats: Dictionary = _get_tower_combat_stats(tower_key, 0)
+	return int(stats.get("damage", 0))
+
+func _get_base_tower_damage(tower_key: String) -> int:
 	match tower_key:
 		"slow":
 			return 7
@@ -1089,6 +1789,57 @@ func _get_tower_damage(tower_key: String) -> int:
 			return 9
 		_:
 			return 18
+
+func _get_tower_max_damage(tower_key: String) -> int:
+	match tower_key:
+		"slow":
+			return 25
+		"splash":
+			return 55
+		"flame":
+			return 28
+		_:
+			return 62
+
+func _get_tower_combat_stats(tower_key: String, tower_id: int) -> Dictionary:
+	var damage: int = _get_base_tower_damage(tower_key)
+	var tower_range: float = _get_base_tower_range(tower_key)
+	var max_damage: int = _get_tower_max_damage(tower_key)
+	var ignore_max_damage: bool = false
+
+	for buff in tower_buffs:
+		if String(buff.get("tower_type", "")) != tower_key:
+			continue
+		var buff_tower_id: int = int(buff.get("tower_id", 0))
+		if buff_tower_id > 0 and buff_tower_id != tower_id:
+			continue
+		if not _is_card_effect_active(buff):
+			continue
+
+		var stat: String = String(buff.get("stat", ""))
+		var multiplier: float = float(buff.get("multiplier", 1.0))
+		if stat == "damage":
+			var next_damage: int = maxi(1, int(round(float(damage) * multiplier)))
+			if bool(buff.get("ignore_max_damage", false)):
+				ignore_max_damage = true
+				damage = next_damage
+			else:
+				damage = mini(max_damage, next_damage)
+		elif stat == "range":
+			tower_range = minf(MAX_TOWER_RANGE, tower_range * multiplier)
+
+	if not ignore_max_damage:
+		damage = mini(max_damage, damage)
+
+	return {
+		"damage": damage,
+		"range": tower_range
+	}
+
+func _get_tower_combat_stats_for_tower(tower_data: TowerState) -> Dictionary:
+	if tower_data == null:
+		return {}
+	return _get_tower_combat_stats(tower_data.tower_type, tower_data.id)
 
 func _get_tower_fire_rate(tower_key: String) -> float:
 	match tower_key:
@@ -1146,10 +1897,12 @@ func _find_tower_target(tower_data: TowerState) -> EnemyState:
 	var best_target: EnemyState = null
 	var best_progress: float = -1.0
 	var tower_center: Vector2 = _get_tower_center(tower_data)
+	var tower_stats: Dictionary = _get_tower_combat_stats_for_tower(tower_data)
+	var tower_range: float = float(tower_stats.get("range", tower_data.range))
 
 	for enemy_data in enemies:
 		var distance: float = tower_center.distance_to(enemy_data.grid_position)
-		if distance > tower_data.range:
+		if distance > tower_range:
 			continue
 
 		var progress: float = float(enemy_data.path_index) + distance / 10.0
@@ -1160,6 +1913,7 @@ func _find_tower_target(tower_data: TowerState) -> EnemyState:
 	return best_target
 
 func _fire_projectile(tower_data: TowerState, target: EnemyState) -> void:
+	var tower_stats: Dictionary = _get_tower_combat_stats_for_tower(tower_data)
 	var projectile_texture: Texture2D = _get_projectile_texture(tower_data.tower_type)
 	var projectile_node: TextureRect = TextureRect.new()
 	projectile_node.name = "Projectile_%03d" % next_projectile_id
@@ -1175,7 +1929,7 @@ func _fire_projectile(tower_data: TowerState, target: EnemyState) -> void:
 	projectile_data.source_tower_id = tower_data.id
 	projectile_data.target_id = target.id
 	projectile_data.grid_position = _get_tower_center(tower_data) + Vector2(0.0, -0.15)
-	projectile_data.damage = tower_data.damage
+	projectile_data.damage = int(tower_stats.get("damage", tower_data.damage))
 	projectile_data.speed = tower_data.projectile_speed
 	projectile_data.slow_factor = tower_data.slow_factor
 	projectile_data.slow_duration = tower_data.slow_duration
@@ -1338,7 +2092,7 @@ func _sync_tower_shop_buttons() -> void:
 		var tower_key_string: String = str(tower_key)
 		var button: Button = _tower_buttons[tower_key_string] as Button
 		var unlocked: bool = GameSession.is_tower_unlocked(tower_key_string, current_theme)
-		button.disabled = not unlocked
+		button.disabled = card_choice_active or not unlocked
 		button.button_pressed = unlocked and tower_key_string == selected_tower
 
 func _ensure_selected_tower_unlocked() -> void:
@@ -1383,6 +2137,11 @@ func _connect_buttons() -> void:
 	_speed_button.pressed.connect(_toggle_speed)
 	_floating_message_timer.timeout.connect(_hide_floating_message)
 	_wave_banner_timer.timeout.connect(_hide_wave_banner)
+	_card_choice_continue_button.pressed.connect(_continue_card_choice)
+
+	for index in range(_card_choice_buttons.size()):
+		var card_button: Button = _card_choice_buttons[index]
+		card_button.pressed.connect(_select_card_choice_index.bind(index))
 
 	for tower_key in _tower_buttons:
 		var tower_key_string: String = str(tower_key)
@@ -1444,6 +2203,9 @@ func _apply_static_translations() -> void:
 	_tower_delete_confirm_summary.text = GameSession.t("confirm.towerDeleteSummary")
 	_tower_delete_confirm_remove_button.text = GameSession.t("common.remove")
 	_tower_delete_confirm_cancel_button.text = GameSession.t("common.cancel")
+	_card_choice_kicker.text = GameSession.t("cards.kicker")
+	_card_choice_title.text = GameSession.t("cards.choose")
+	_card_choice_continue_button.text = GameSession.t("common.continue")
 	_set_pause_state(paused)
 	_sync_session_labels()
 	_sync_hud()
@@ -1470,14 +2232,18 @@ func _sync_tower_action_ui() -> void:
 	else:
 		_undo_button.text = GameSession.t("shop.undo")
 
-	var delete_active: bool = _delete_button.button_pressed and not game_over and not victory_pending
+	var delete_active: bool = _delete_button.button_pressed and not game_over and not victory_pending and not card_choice_active
 	if _delete_button.button_pressed != delete_active:
 		_delete_button.set_pressed_no_signal(delete_active)
-	_delete_button.disabled = transition_active or game_over or victory_pending or _tower_delete_confirm_overlay.visible
+	_delete_button.disabled = transition_active or game_over or victory_pending or card_choice_active or _tower_delete_confirm_overlay.visible
 	_delete_button.text = "%s\n%s" % [
 		GameSession.t("shop.delete"),
 		GameSession.t("common.cancel") if delete_active else GameSession.t("shop.select")
 	]
+	_pause_button.disabled = transition_active or game_over or victory_pending or card_choice_active
+	_speed_button.disabled = transition_active or game_over or victory_pending or card_choice_active
+	_restart_button.disabled = transition_active or card_choice_active
+	_menu_button.disabled = transition_active or card_choice_active
 
 func _show_victory_overlay() -> void:
 	var has_next_theme: bool = GameSession.has_next_theme(current_theme)
@@ -1500,6 +2266,9 @@ func _hide_victory_overlay() -> void:
 	_victory_overlay.hide()
 
 func _select_tower(tower_key: String) -> void:
+	if card_choice_active:
+		_sync_tower_shop_buttons()
+		return
 	if not GameSession.is_tower_unlocked(tower_key, current_theme):
 		_sync_tower_shop_buttons()
 		_show_status(GameSession.t("messages.towerLocked", {"tower": _format_tower_name(tower_key)}))
@@ -1523,6 +2292,9 @@ func _toggle_delete_mode() -> void:
 		_set_delete_mode(false, GameSession.t("messages.buildModeRestored"), true)
 
 func _toggle_pause() -> void:
+	if card_choice_active:
+		_pause_button.set_pressed_no_signal(paused)
+		return
 	_set_pause_state(_pause_button.button_pressed)
 	_show_status(GameSession.t("messages.pause") if paused else GameSession.t("messages.resume"))
 
@@ -1536,7 +2308,7 @@ func _set_pause_state(is_paused: bool) -> void:
 	_pause_button.text = GameSession.t("actions.resume") if paused else GameSession.t("actions.pause")
 
 func _set_delete_mode(active: bool, status_text: String, show_message: bool) -> void:
-	var allowed: bool = active and not game_over and not victory_pending
+	var allowed: bool = active and not game_over and not victory_pending and not card_choice_active
 	_delete_button.set_pressed_no_signal(allowed)
 	if allowed:
 		_hide_placement_preview()
@@ -1549,6 +2321,8 @@ func _set_delete_mode(active: bool, status_text: String, show_message: bool) -> 
 		_show_status(status_text)
 
 func _request_tower_delete_at(tile_position: Vector2i) -> void:
+	if card_choice_active:
+		return
 	if game_over or victory_pending:
 		_set_delete_mode(false, GameSession.t("messages.gameEnded"), true)
 		return
