@@ -505,6 +505,9 @@
     if (effect.type === "heal") {
       return `effect heal | +${formatRaw(effect.amount)} life`;
     }
+    if (effect.type === "enemyHealthBars") {
+      return "effect enemyHealthBars | reveal enemy health bars";
+    }
     return `effect ${effect.type}`;
   }
 

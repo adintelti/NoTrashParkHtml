@@ -21,6 +21,7 @@
     "waveHpLost",
     "waveComboVisible",
     "waveInProgress",
+    "enemyHealthBarsUnlocked",
     "wave",
     "spawnRemaining",
     "spawnTimer",
@@ -337,6 +338,7 @@
       waveHpLost: asNumber(savedState.waveHpLost, 0),
       waveComboVisible: Boolean(savedState.waveComboVisible),
       waveInProgress: Boolean(savedState.waveInProgress),
+      enemyHealthBarsUnlocked: Boolean(savedState.enemyHealthBarsUnlocked),
       wave: asNumber(savedState.wave, 0),
       enemies: [],
       enemiesById: new Map(),
@@ -418,6 +420,7 @@
       const hp = Math.max(0, Math.min(maxHp, asNumber(savedEnemy.hp, maxHp)));
 
       el.className = `enemy ${savedEnemy.className || "enemy-runner"}`;
+      el.classList.toggle("show-health", ntp.state.enemyHealthBarsUnlocked);
       healthEl.className = "health";
       healthEl.appendChild(healthBar);
       el.appendChild(healthEl);

@@ -192,8 +192,13 @@
   top: -28%;
   width: 136%;
   height: 6px;
+  display: none;
   border: 1px solid #130c09;
   background: #35160f;
+}
+
+.enemy.show-health .health {
+  display: block;
 }
 
 .health span {

@@ -209,6 +209,11 @@
           result: "Voce recuperou 1 HP.",
           full: "Vida ja estava cheia. Nada mudou."
         },
+        enemyHealthBars: {
+          title: "Instinto de combate",
+          description: "Revele a vida dos inimigos.",
+          result: "Agora voce ve a vida dos inimigos."
+        },
         enemyHp: {
           title: "Lixo reforcado",
           description: "Inimigos: +18% HP na proxima onda.",
@@ -458,6 +463,11 @@
           result: "You recovered 1 HP.",
           full: "Life was already full. Nothing changed."
         },
+        enemyHealthBars: {
+          title: "Combat instinct",
+          description: "Reveal enemy health.",
+          result: "You can now see enemy health."
+        },
         enemyHp: {
           title: "Reinforced trash",
           description: "Enemies: +18% HP next wave.",
@@ -706,6 +716,11 @@
           description: "Recupera 1 HP ahora.",
           result: "Recuperaste 1 HP.",
           full: "La vida ya estaba llena. Nada cambio."
+        },
+        enemyHealthBars: {
+          title: "Instinto de combate",
+          description: "Revela la vida de los enemigos.",
+          result: "Ahora ves la vida de los enemigos."
         },
         enemyHp: {
           title: "Basura reforzada",

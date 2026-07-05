@@ -83,6 +83,7 @@
       waveHpLost: 0,
       waveComboVisible: false,
       waveInProgress: false,
+      enemyHealthBarsUnlocked: false,
       wave: 0,
       enemies: [],
       enemiesById: new Map(),
