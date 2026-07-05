@@ -64,6 +64,24 @@ border_color = Color(0.14117648, 0.09019608, 0.047058824, 1)
 shadow_color = Color(0, 0, 0, 0.25)
 shadow_size = 6
 
+[sub_resource type="StyleBoxFlat" id="ComboCounterStyle"]
+content_margin_left = 10.0
+content_margin_top = 6.0
+content_margin_right = 10.0
+content_margin_bottom = 6.0
+bg_color = Color(0.08627451, 0.043137256, 0, 0.82)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(1, 0.90588236, 0.41960785, 1)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+shadow_color = Color(0, 0, 0, 0.34)
+shadow_size = 4
+
 [sub_resource type="StyleBoxFlat" id="ButtonNormal"]
 bg_color = Color(0.96862745, 0.7137255, 0.09019608, 1)
 border_width_left = 5
@@ -483,6 +501,25 @@ theme_override_colors/font_color = Color(0.09411765, 0.047058824, 0.011764706, 1
 theme_override_font_sizes/font_size = 20
 text = "Tempo 00:00"
 
+[node name="ComboCounter" type="PanelContainer" parent="AppBackground/GameFrame/GameLayout/BoardStage"]
+visible = false
+custom_minimum_size = Vector2(58, 42)
+layout_mode = 0
+offset_left = 1190.0
+offset_top = 8.0
+offset_right = 1250.0
+offset_bottom = 52.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("ComboCounterStyle")
+
+[node name="ComboCounterLabel" type="Label" parent="AppBackground/GameFrame/GameLayout/BoardStage/ComboCounter"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.96862745, 0.8, 1)
+theme_override_font_sizes/font_size = 24
+text = "0X"
+horizontal_alignment = 1
+vertical_alignment = 1
+
 [node name="WaveBanner" type="PanelContainer" parent="AppBackground/GameFrame/GameLayout/BoardStage"]
 visible = false
 layout_mode = 0
@@ -784,9 +821,9 @@ color = Color(0.023529412, 0.050980393, 0.07058824, 0.72)
 [node name="CardChoicePanel" type="PanelContainer" parent="AppBackground/GameFrame/GameLayout/BoardStage/CardChoiceOverlay"]
 layout_mode = 0
 offset_left = 250.0
-offset_top = 178.0
+offset_top = 278.0
 offset_right = 1010.0
-offset_bottom = 858.0
+offset_bottom = 758.0
 theme_override_styles/panel = SubResource("CardChoicePanelStyle")
 
 [node name="CardChoiceInset" type="MarginContainer" parent="AppBackground/GameFrame/GameLayout/BoardStage/CardChoiceOverlay/CardChoicePanel"]
@@ -798,10 +835,11 @@ theme_override_constants/margin_bottom = 30
 
 [node name="CardChoiceContent" type="VBoxContainer" parent="AppBackground/GameFrame/GameLayout/BoardStage/CardChoiceOverlay/CardChoicePanel/CardChoiceInset"]
 layout_mode = 2
-theme_override_constants/separation = 14
+theme_override_constants/separation = 18
 alignment = 1
 
 [node name="CardChoiceKicker" type="PanelContainer" parent="AppBackground/GameFrame/GameLayout/BoardStage/CardChoiceOverlay/CardChoicePanel/CardChoiceInset/CardChoiceContent"]
+visible = false
 custom_minimum_size = Vector2(0, 30)
 layout_mode = 2
 theme_override_styles/panel = SubResource("CardChoiceKickerStyle")
@@ -872,7 +910,7 @@ theme_override_styles/disabled = SubResource("CardChoiceBackStyle")
 
 [node name="CardChoiceResult" type="PanelContainer" parent="AppBackground/GameFrame/GameLayout/BoardStage/CardChoiceOverlay/CardChoicePanel/CardChoiceInset/CardChoiceContent"]
 visible = false
-custom_minimum_size = Vector2(0, 62)
+custom_minimum_size = Vector2(0, 54)
 layout_mode = 2
 theme_override_styles/panel = SubResource("CardChoiceResultStyle")
 
@@ -887,10 +925,10 @@ autowrap_mode = 3
 
 [node name="CardChoiceContinueButton" type="Button" parent="AppBackground/GameFrame/GameLayout/BoardStage/CardChoiceOverlay/CardChoicePanel/CardChoiceInset/CardChoiceContent"]
 visible = false
-custom_minimum_size = Vector2(300, 66)
+custom_minimum_size = Vector2(300, 54)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.023529412, 0.023529412, 0.023529412, 1)
-theme_override_font_sizes/font_size = 26
+theme_override_font_sizes/font_size = 24
 theme_override_styles/normal = SubResource("PixelButtonNormal")
 theme_override_styles/pressed = SubResource("PixelButtonPressed")
 theme_override_styles/hover = SubResource("PixelButtonHover")

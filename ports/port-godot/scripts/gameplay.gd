@@ -75,7 +75,11 @@ const MAX_TOWER_RANGE: float = 7.0
 const DAMAGE_MAX_EPSILON: float = 0.001
 const RANGE_MAX_EPSILON: float = 0.001
 const CARD_BACK_SIZE: Vector2 = Vector2(150, 210)
-const CARD_REVEALED_SIZE: Vector2 = Vector2(650, 188)
+const CARD_REVEALED_SIZE: Vector2 = Vector2(650, 164)
+const CARD_GRID_SIZE: Vector2 = Vector2(0, 236)
+const CARD_REVEALED_GRID_SIZE: Vector2 = Vector2(0, 164)
+const COMBO_INACTIVE_COLOR: Color = Color(1.0, 0.96862745, 0.8, 1.0)
+const COMBO_ACTIVE_COLOR: Color = Color(1.0, 0.90588236, 0.41960785, 1.0)
 
 const TILE_PARK_A: Texture2D = preload("res://assets/tiles/park_terrain_detail_a.png")
 const TILE_PARK_B: Texture2D = preload("res://assets/tiles/park_terrain_detail_b.png")
@@ -121,6 +125,7 @@ var coins: int = 300
 var session_defeated: int = 0
 var wave_defeated: int = 0
 var wave_hp_lost: int = 0
+var wave_combo_visible: bool = false
 var spawn_remaining: int = 0
 var spawn_timer: float = 0.0
 var wave_cooldown: float = INITIAL_WAVE_COOLDOWN
@@ -199,6 +204,8 @@ var blocked_tiles: Array[Vector2i] = [
 @onready var _wave_banner_label: Label = get_node("AppBackground/GameFrame/GameLayout/BoardStage/WaveBanner/WaveBannerLabel")
 @onready var _floating_message: PanelContainer = get_node("AppBackground/GameFrame/GameLayout/BoardStage/FloatingMessage")
 @onready var _floating_message_label: Label = get_node("AppBackground/GameFrame/GameLayout/BoardStage/FloatingMessage/FloatingMessageLabel")
+@onready var _combo_counter: PanelContainer = get_node("AppBackground/GameFrame/GameLayout/BoardStage/ComboCounter")
+@onready var _combo_counter_label: Label = get_node("AppBackground/GameFrame/GameLayout/BoardStage/ComboCounter/ComboCounterLabel")
 @onready var _victory_overlay: Control = get_node("AppBackground/GameFrame/GameLayout/BoardStage/VictoryOverlay")
 @onready var _victory_title: Label = get_node("AppBackground/GameFrame/GameLayout/BoardStage/VictoryOverlay/VictoryCard/VictoryInset/VictoryContent/VictoryTitle")
 @onready var _victory_summary: Label = get_node("AppBackground/GameFrame/GameLayout/BoardStage/VictoryOverlay/VictoryCard/VictoryInset/VictoryContent/VictorySummary")
@@ -219,6 +226,7 @@ var blocked_tiles: Array[Vector2i] = [
 @onready var _card_choice_overlay: Control = get_node("AppBackground/GameFrame/GameLayout/BoardStage/CardChoiceOverlay")
 @onready var _card_choice_kicker: Label = get_node("AppBackground/GameFrame/GameLayout/BoardStage/CardChoiceOverlay/CardChoicePanel/CardChoiceInset/CardChoiceContent/CardChoiceKicker/CardChoiceKickerLabel")
 @onready var _card_choice_title: Label = get_node("AppBackground/GameFrame/GameLayout/BoardStage/CardChoiceOverlay/CardChoicePanel/CardChoiceInset/CardChoiceContent/CardChoiceTitle")
+@onready var _card_choice_cards: GridContainer = get_node("AppBackground/GameFrame/GameLayout/BoardStage/CardChoiceOverlay/CardChoicePanel/CardChoiceInset/CardChoiceContent/CardChoiceCards")
 @onready var _card_choice_result: PanelContainer = get_node("AppBackground/GameFrame/GameLayout/BoardStage/CardChoiceOverlay/CardChoicePanel/CardChoiceInset/CardChoiceContent/CardChoiceResult")
 @onready var _card_choice_result_label: Label = get_node("AppBackground/GameFrame/GameLayout/BoardStage/CardChoiceOverlay/CardChoicePanel/CardChoiceInset/CardChoiceContent/CardChoiceResult/CardChoiceResultLabel")
 @onready var _card_choice_continue_button: Button = get_node("AppBackground/GameFrame/GameLayout/BoardStage/CardChoiceOverlay/CardChoicePanel/CardChoiceInset/CardChoiceContent/CardChoiceContinueButton")
@@ -275,6 +283,7 @@ func _ready() -> void:
 	GameSession.apply_language(GameSession.language, false)
 	_floating_message.hide()
 	_wave_banner.hide()
+	_combo_counter.hide()
 	_victory_overlay.hide()
 	_tower_delete_confirm_overlay.hide()
 	_card_choice_overlay.hide()
@@ -353,6 +362,7 @@ func _start_run() -> void:
 	session_defeated = 0
 	wave_defeated = 0
 	wave_hp_lost = 0
+	wave_combo_visible = false
 	spawn_remaining = 0
 	spawn_timer = 0.0
 	wave_cooldown = INITIAL_WAVE_COOLDOWN
@@ -414,6 +424,7 @@ func _restore_saved_game() -> bool:
 	session_defeated = int(saved_state.get("session_defeated", 0))
 	wave_defeated = int(saved_state.get("wave_defeated", 0))
 	wave_hp_lost = int(saved_state.get("wave_hp_lost", 0))
+	wave_combo_visible = bool(saved_state.get("wave_combo_visible", false))
 	spawn_remaining = int(saved_state.get("spawn_remaining", 0))
 	spawn_timer = float(saved_state.get("spawn_timer", 0.0))
 	wave_cooldown = float(saved_state.get("wave_cooldown", INITIAL_WAVE_COOLDOWN))
@@ -466,6 +477,7 @@ func _create_save_game_state_snapshot() -> Dictionary:
 		"session_defeated": session_defeated,
 		"wave_defeated": wave_defeated,
 		"wave_hp_lost": wave_hp_lost,
+		"wave_combo_visible": wave_combo_visible,
 		"wave_in_progress": wave_in_progress,
 		"wave": wave,
 		"spawn_remaining": spawn_remaining,
@@ -776,6 +788,7 @@ func _start_next_wave() -> void:
 	wave += 1
 	wave_defeated = 0
 	wave_hp_lost = 0
+	wave_combo_visible = false
 	spawn_remaining = 6 + wave * 2
 	spawn_timer = 0.0
 	wave_in_progress = true
@@ -799,6 +812,7 @@ func _complete_current_wave() -> void:
 	wave_in_progress = false
 	session_defeated += wave_defeated
 	wave_defeated = 0
+	wave_combo_visible = false
 	_show_wave_banner(GameSession.t("messages.waveCompleted", {"wave": finished_wave}))
 	_clear_expired_card_effects(finished_wave)
 
@@ -820,6 +834,7 @@ func _finish_victory() -> void:
 	GameSession.clear_saved_game()
 	victory_pending = true
 	wave_in_progress = false
+	wave_combo_visible = false
 	spawn_remaining = 0
 	_set_delete_mode(false, "", false)
 	_hide_tower_delete_confirm_overlay()
@@ -836,6 +851,7 @@ func _end_game() -> void:
 	GameSession.clear_saved_game()
 	game_over = true
 	wave_in_progress = false
+	wave_combo_visible = false
 	spawn_remaining = 0
 	_set_delete_mode(false, "", false)
 	_hide_tower_delete_confirm_overlay()
@@ -1042,6 +1058,8 @@ func _render_card_choice_overlay() -> void:
 	_ensure_card_button_visuals()
 	_card_choice_kicker.text = GameSession.t("cards.kicker").to_upper()
 	_card_choice_title.text = GameSession.t("cards.choose")
+	_card_choice_cards.columns = 1 if card_choice_revealed else 4
+	_card_choice_cards.custom_minimum_size = CARD_REVEALED_GRID_SIZE if card_choice_revealed else CARD_GRID_SIZE
 	_card_choice_result.visible = card_choice_revealed and not card_result_text.is_empty()
 	_card_choice_result_label.text = card_result_text
 	_card_choice_continue_button.visible = card_choice_revealed
@@ -1074,6 +1092,7 @@ func _render_card_choice_overlay() -> void:
 			if card_kind == "bane":
 				front_text_color = Color(1.0, 0.9411765, 0.84705883, 1.0)
 			button.custom_minimum_size = CARD_REVEALED_SIZE
+			button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 			button.disabled = true
 			button.mouse_default_cursor_shape = Control.CURSOR_ARROW
 			var front_style: StyleBoxFlat = _make_card_front_style(card_kind)
@@ -1081,6 +1100,7 @@ func _render_card_choice_overlay() -> void:
 			_set_card_button_front(button, card, card_kind, front_text_color)
 		else:
 			button.custom_minimum_size = CARD_BACK_SIZE
+			button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 			button.disabled = false
 			button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 			var back_style: StyleBoxFlat = _make_card_back_style(false)
@@ -1095,6 +1115,7 @@ func _ensure_card_button_visuals() -> void:
 		button.icon = null
 		button.expand_icon = false
 		button.clip_text = true
+		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 
 		if button.has_node("CardVisual"):
 			continue
@@ -1178,22 +1199,21 @@ func _set_card_button_front(button: Button, card: Dictionary, card_kind: String,
 	var index_label: Label = content.get_node("CardIndexLabel") as Label
 
 	content.alignment = BoxContainer.ALIGNMENT_CENTER
-	content.add_theme_constant_override("separation", 7)
+	content.add_theme_constant_override("separation", 8)
 	back_icon.hide()
 	index_label.hide()
 	kind_label.show()
 	name_label.show()
-	description_label.show()
-	var kind_key: String = "cards.kind.%s" % card_kind
+	description_label.hide()
+	var category_key: String = String(card.get("category", card_kind))
+	var kind_key: String = "cards.kind.%s" % category_key
 	var kind_text: String = GameSession.t(kind_key)
 	if kind_text == kind_key:
-		kind_text = GameSession.t("cards.kind.neutral")
+		kind_text = GameSession.t("cards.defaultKind")
 	kind_label.text = kind_text.to_upper()
 	name_label.text = String(card.get("title", ""))
-	description_label.text = String(card.get("description", ""))
 	kind_label.add_theme_color_override("font_color", text_color)
 	name_label.add_theme_color_override("font_color", text_color)
-	description_label.add_theme_color_override("font_color", text_color)
 
 func _apply_card_button_style(button: Button, normal_style: StyleBox, pressed_style: StyleBox, hover_style: StyleBox, disabled_style: StyleBox) -> void:
 	button.add_theme_stylebox_override("normal", normal_style)
@@ -1472,8 +1492,27 @@ func _build_card(card_kind: String, config: Dictionary) -> Dictionary:
 		card[key] = config[key]
 	card["id"] = "%s-%d-%d" % [card_kind, wave, next_card_id]
 	card["kind"] = card_kind
+	var effect_value: Variant = config.get("effect", {})
+	var effect: Dictionary = {}
+	if effect_value is Dictionary:
+		effect = effect_value as Dictionary
+	card["category"] = _get_card_category(card_kind, effect)
 	next_card_id += 1
 	return card
+
+func _get_card_category(card_kind: String, effect: Dictionary) -> String:
+	if card_kind == "bane":
+		return "setback"
+	var effect_type: String = String(effect.get("type", "none"))
+	if effect_type == "enemyHealthBars":
+		return "improvement"
+	if effect_type == "towerBuff" and float(effect.get("multiplier", 1.0)) > 1.0:
+		return "improvement"
+	if effect_type == "coins" and int(effect.get("amount", 0)) > 0:
+		return "bonus"
+	if card_kind == "boon":
+		return "bonus"
+	return card_kind
 
 func _apply_card_effect(card: Dictionary) -> String:
 	var effect_value: Variant = card.get("effect", {})
@@ -2501,6 +2540,9 @@ func _damage_enemy(enemy_data: EnemyState, amount: int) -> void:
 	if not enemies.has(enemy_data):
 		return
 
+	if wave_in_progress:
+		wave_combo_visible = true
+
 	enemy_data.hp -= maxi(1, amount)
 	if enemy_data.hp <= 0:
 		_remove_enemy(enemy_data, true)
@@ -2745,7 +2787,14 @@ func _sync_hud() -> void:
 	_defeated_label.text = GameSession.t("hud.defeated", {"count": session_defeated})
 	_time_label.text = GameSession.t("hud.time", {"time": _format_session_time(session_time)})
 	_money_label.text = str(coins)
+	_sync_combo_counter()
 	_sync_tower_action_ui()
+
+func _sync_combo_counter() -> void:
+	_combo_counter_label.text = "%dX" % wave_defeated
+	_combo_counter.visible = wave_combo_visible
+	var combo_color: Color = COMBO_ACTIVE_COLOR if wave_defeated > 0 else COMBO_INACTIVE_COLOR
+	_combo_counter_label.add_theme_color_override("font_color", combo_color)
 
 func _sync_tower_action_ui() -> void:
 	var can_undo: bool = _is_undo_placement_available()
