@@ -310,6 +310,38 @@ corner_radius_top_right = 4
 corner_radius_bottom_right = 4
 corner_radius_bottom_left = 4
 
+[sub_resource type="StyleBoxFlat" id="PauseMenuCardStyle"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(1, 0.827451, 0.3529412, 1)
+border_width_left = 5
+border_width_top = 5
+border_width_right = 5
+border_width_bottom = 5
+border_color = Color(0.08627451, 0.043137256, 0, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+shadow_color = Color(0, 0, 0, 0.42)
+shadow_size = 8
+
+[sub_resource type="StyleBoxFlat" id="PauseSoundPanelStyle"]
+bg_color = Color(0.9019608, 0.65882355, 0.2509804, 1)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.08627451, 0.043137256, 0, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+shadow_color = Color(1, 1, 1, 0.18)
+shadow_size = 3
+
 [node name="Gameplay" type="Control"]
 layout_mode = 3
 anchors_preset = 15
@@ -1100,6 +1132,211 @@ theme_override_colors/font_color = Color(1, 0.9411765, 0.6901961, 1)
 theme_override_font_sizes/font_size = 16
 text = "Preparando onda 1."
 autowrap_mode = 3
+
+[node name="PauseMenuOverlay" type="Control" parent="AppBackground/GameFrame/GameLayout"]
+process_mode = 3
+visible = false
+layout_mode = 0
+offset_right = 1680.0
+offset_bottom = 1035.0
+mouse_filter = 0
+
+[node name="PauseMenuDimmer" type="ColorRect" parent="AppBackground/GameFrame/GameLayout/PauseMenuOverlay"]
+layout_mode = 0
+offset_right = 1680.0
+offset_bottom = 1035.0
+mouse_filter = 0
+color = Color(0.03137255, 0.043137256, 0.050980393, 0.7)
+
+[node name="PauseMenuCard" type="PanelContainer" parent="AppBackground/GameFrame/GameLayout/PauseMenuOverlay"]
+layout_mode = 0
+offset_left = 525.0
+offset_top = 246.0
+offset_right = 1155.0
+offset_bottom = 789.0
+theme_override_styles/panel = SubResource("PauseMenuCardStyle")
+
+[node name="PauseMenuInset" type="MarginContainer" parent="AppBackground/GameFrame/GameLayout/PauseMenuOverlay/PauseMenuCard"]
+layout_mode = 2
+theme_override_constants/margin_left = 48
+theme_override_constants/margin_top = 44
+theme_override_constants/margin_right = 48
+theme_override_constants/margin_bottom = 44
+
+[node name="PauseMenuContent" type="VBoxContainer" parent="AppBackground/GameFrame/GameLayout/PauseMenuOverlay/PauseMenuCard/PauseMenuInset"]
+layout_mode = 2
+theme_override_constants/separation = 18
+alignment = 1
+
+[node name="PauseMenuTitle" type="Label" parent="AppBackground/GameFrame/GameLayout/PauseMenuOverlay/PauseMenuCard/PauseMenuInset/PauseMenuContent"]
+custom_minimum_size = Vector2(0, 66)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.08627451, 0.043137256, 0, 1)
+theme_override_font_sizes/font_size = 48
+text = "Pausado"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="PauseMenuActions" type="VBoxContainer" parent="AppBackground/GameFrame/GameLayout/PauseMenuOverlay/PauseMenuCard/PauseMenuInset/PauseMenuContent"]
+layout_mode = 2
+theme_override_constants/separation = 18
+alignment = 1
+
+[node name="PauseResumeButton" type="Button" parent="AppBackground/GameFrame/GameLayout/PauseMenuOverlay/PauseMenuCard/PauseMenuInset/PauseMenuContent/PauseMenuActions"]
+custom_minimum_size = Vector2(450, 78)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.023529412, 0.023529412, 0.023529412, 1)
+theme_override_font_sizes/font_size = 28
+theme_override_styles/normal = SubResource("PixelButtonNormal")
+theme_override_styles/pressed = SubResource("PixelButtonPressed")
+theme_override_styles/hover = SubResource("PixelButtonHover")
+theme_override_styles/disabled = SubResource("ButtonDisabled")
+text = "Retomar"
+
+[node name="PauseSoundButton" type="Button" parent="AppBackground/GameFrame/GameLayout/PauseMenuOverlay/PauseMenuCard/PauseMenuInset/PauseMenuContent/PauseMenuActions"]
+custom_minimum_size = Vector2(450, 78)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.023529412, 0.023529412, 0.023529412, 1)
+theme_override_font_sizes/font_size = 28
+theme_override_styles/normal = SubResource("PixelButtonNormal")
+theme_override_styles/pressed = SubResource("PixelButtonPressed")
+theme_override_styles/hover = SubResource("PixelButtonHover")
+theme_override_styles/disabled = SubResource("ButtonDisabled")
+text = "Som"
+
+[node name="PauseSaveExitButton" type="Button" parent="AppBackground/GameFrame/GameLayout/PauseMenuOverlay/PauseMenuCard/PauseMenuInset/PauseMenuContent/PauseMenuActions"]
+custom_minimum_size = Vector2(450, 78)
+layout_mode = 2
+disabled = true
+tooltip_text = "Salvar ainda nao esta disponivel neste port."
+theme_override_colors/font_color = Color(0.023529412, 0.023529412, 0.023529412, 1)
+theme_override_font_sizes/font_size = 28
+theme_override_styles/normal = SubResource("PixelButtonNormal")
+theme_override_styles/pressed = SubResource("PixelButtonPressed")
+theme_override_styles/hover = SubResource("PixelButtonHover")
+theme_override_styles/disabled = SubResource("ButtonDisabled")
+text = "Salvar e sair"
+
+[node name="PauseSoundPanel" type="PanelContainer" parent="AppBackground/GameFrame/GameLayout/PauseMenuOverlay/PauseMenuCard/PauseMenuInset/PauseMenuContent"]
+visible = false
+layout_mode = 2
+theme_override_styles/panel = SubResource("PauseSoundPanelStyle")
+
+[node name="PauseSoundInset" type="MarginContainer" parent="AppBackground/GameFrame/GameLayout/PauseMenuOverlay/PauseMenuCard/PauseMenuInset/PauseMenuContent/PauseSoundPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 18
+theme_override_constants/margin_top = 18
+theme_override_constants/margin_right = 18
+theme_override_constants/margin_bottom = 18
+
+[node name="PauseSoundContent" type="VBoxContainer" parent="AppBackground/GameFrame/GameLayout/PauseMenuOverlay/PauseMenuCard/PauseMenuInset/PauseMenuContent/PauseSoundPanel/PauseSoundInset"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="PauseSoundTitle" type="Label" parent="AppBackground/GameFrame/GameLayout/PauseMenuOverlay/PauseMenuCard/PauseMenuInset/PauseMenuContent/PauseSoundPanel/PauseSoundInset/PauseSoundContent"]
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.08627451, 0.043137256, 0, 1)
+theme_override_font_sizes/font_size = 26
+text = "Som"
+vertical_alignment = 1
+
+[node name="PauseSoundToggleButtons" type="HBoxContainer" parent="AppBackground/GameFrame/GameLayout/PauseMenuOverlay/PauseMenuCard/PauseMenuInset/PauseMenuContent/PauseSoundPanel/PauseSoundInset/PauseSoundContent"]
+custom_minimum_size = Vector2(0, 62)
+layout_mode = 2
+theme_override_constants/separation = 14
+alignment = 1
+
+[node name="PauseBgmToggleButton" type="Button" parent="AppBackground/GameFrame/GameLayout/PauseMenuOverlay/PauseMenuCard/PauseMenuInset/PauseMenuContent/PauseSoundPanel/PauseSoundInset/PauseSoundContent/PauseSoundToggleButtons"]
+custom_minimum_size = Vector2(210, 58)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.023529412, 0.023529412, 0.023529412, 1)
+theme_override_font_sizes/font_size = 20
+theme_override_styles/normal = SubResource("ButtonNormal")
+theme_override_styles/pressed = SubResource("ButtonActive")
+theme_override_styles/hover = SubResource("ButtonHover")
+theme_override_styles/disabled = SubResource("ButtonDisabled")
+text = "BGM Lig"
+
+[node name="PauseSfxToggleButton" type="Button" parent="AppBackground/GameFrame/GameLayout/PauseMenuOverlay/PauseMenuCard/PauseMenuInset/PauseMenuContent/PauseSoundPanel/PauseSoundInset/PauseSoundContent/PauseSoundToggleButtons"]
+custom_minimum_size = Vector2(210, 58)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.023529412, 0.023529412, 0.023529412, 1)
+theme_override_font_sizes/font_size = 20
+theme_override_styles/normal = SubResource("ButtonNormal")
+theme_override_styles/pressed = SubResource("ButtonActive")
+theme_override_styles/hover = SubResource("ButtonHover")
+theme_override_styles/disabled = SubResource("ButtonDisabled")
+text = "SFX Lig"
+
+[node name="PauseBgmVolumeRow" type="HBoxContainer" parent="AppBackground/GameFrame/GameLayout/PauseMenuOverlay/PauseMenuCard/PauseMenuInset/PauseMenuContent/PauseSoundPanel/PauseSoundInset/PauseSoundContent"]
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="PauseBgmVolumeLabel" type="Label" parent="AppBackground/GameFrame/GameLayout/PauseMenuOverlay/PauseMenuCard/PauseMenuInset/PauseMenuContent/PauseSoundPanel/PauseSoundInset/PauseSoundContent/PauseBgmVolumeRow"]
+custom_minimum_size = Vector2(58, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.08627451, 0.043137256, 0, 1)
+theme_override_font_sizes/font_size = 20
+text = "BGM"
+vertical_alignment = 1
+
+[node name="PauseBgmVolumeSlider" type="HSlider" parent="AppBackground/GameFrame/GameLayout/PauseMenuOverlay/PauseMenuCard/PauseMenuInset/PauseMenuContent/PauseSoundPanel/PauseSoundInset/PauseSoundContent/PauseBgmVolumeRow"]
+custom_minimum_size = Vector2(300, 36)
+layout_mode = 2
+max_value = 100.0
+step = 5.0
+value = 100.0
+
+[node name="PauseBgmVolumeText" type="Label" parent="AppBackground/GameFrame/GameLayout/PauseMenuOverlay/PauseMenuCard/PauseMenuInset/PauseMenuContent/PauseSoundPanel/PauseSoundInset/PauseSoundContent/PauseBgmVolumeRow"]
+custom_minimum_size = Vector2(64, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.08627451, 0.043137256, 0, 1)
+theme_override_font_sizes/font_size = 20
+text = "100%"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="PauseSfxVolumeRow" type="HBoxContainer" parent="AppBackground/GameFrame/GameLayout/PauseMenuOverlay/PauseMenuCard/PauseMenuInset/PauseMenuContent/PauseSoundPanel/PauseSoundInset/PauseSoundContent"]
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="PauseSfxVolumeLabel" type="Label" parent="AppBackground/GameFrame/GameLayout/PauseMenuOverlay/PauseMenuCard/PauseMenuInset/PauseMenuContent/PauseSoundPanel/PauseSoundInset/PauseSoundContent/PauseSfxVolumeRow"]
+custom_minimum_size = Vector2(58, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.08627451, 0.043137256, 0, 1)
+theme_override_font_sizes/font_size = 20
+text = "SFX"
+vertical_alignment = 1
+
+[node name="PauseSfxVolumeSlider" type="HSlider" parent="AppBackground/GameFrame/GameLayout/PauseMenuOverlay/PauseMenuCard/PauseMenuInset/PauseMenuContent/PauseSoundPanel/PauseSoundInset/PauseSoundContent/PauseSfxVolumeRow"]
+custom_minimum_size = Vector2(300, 36)
+layout_mode = 2
+max_value = 100.0
+step = 5.0
+value = 100.0
+
+[node name="PauseSfxVolumeText" type="Label" parent="AppBackground/GameFrame/GameLayout/PauseMenuOverlay/PauseMenuCard/PauseMenuInset/PauseMenuContent/PauseSoundPanel/PauseSoundInset/PauseSoundContent/PauseSfxVolumeRow"]
+custom_minimum_size = Vector2(64, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.08627451, 0.043137256, 0, 1)
+theme_override_font_sizes/font_size = 20
+text = "100%"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="PauseSoundBackButton" type="Button" parent="AppBackground/GameFrame/GameLayout/PauseMenuOverlay/PauseMenuCard/PauseMenuInset/PauseMenuContent/PauseSoundPanel/PauseSoundInset/PauseSoundContent"]
+custom_minimum_size = Vector2(450, 70)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.023529412, 0.023529412, 0.023529412, 1)
+theme_override_font_sizes/font_size = 24
+theme_override_styles/normal = SubResource("PixelButtonNormal")
+theme_override_styles/pressed = SubResource("PixelButtonPressed")
+theme_override_styles/hover = SubResource("PixelButtonHover")
+theme_override_styles/disabled = SubResource("ButtonDisabled")
+text = "Voltar"
 
 [node name="ThemeTransitionOverlay" type="Control" parent="AppBackground/GameFrame/GameLayout"]
 visible = false

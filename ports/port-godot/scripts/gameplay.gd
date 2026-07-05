@@ -226,6 +226,21 @@ var blocked_tiles: Array[Vector2i] = [
 	get_node("AppBackground/GameFrame/GameLayout/BoardStage/CardChoiceOverlay/CardChoicePanel/CardChoiceInset/CardChoiceContent/CardChoiceCards/CardChoiceButton3") as Button,
 	get_node("AppBackground/GameFrame/GameLayout/BoardStage/CardChoiceOverlay/CardChoicePanel/CardChoiceInset/CardChoiceContent/CardChoiceCards/CardChoiceButton4") as Button
 ]
+@onready var _pause_menu_overlay: Control = get_node("AppBackground/GameFrame/GameLayout/PauseMenuOverlay")
+@onready var _pause_menu_title: Label = get_node("AppBackground/GameFrame/GameLayout/PauseMenuOverlay/PauseMenuCard/PauseMenuInset/PauseMenuContent/PauseMenuTitle")
+@onready var _pause_menu_actions: VBoxContainer = get_node("AppBackground/GameFrame/GameLayout/PauseMenuOverlay/PauseMenuCard/PauseMenuInset/PauseMenuContent/PauseMenuActions")
+@onready var _pause_resume_button: Button = get_node("AppBackground/GameFrame/GameLayout/PauseMenuOverlay/PauseMenuCard/PauseMenuInset/PauseMenuContent/PauseMenuActions/PauseResumeButton")
+@onready var _pause_sound_button: Button = get_node("AppBackground/GameFrame/GameLayout/PauseMenuOverlay/PauseMenuCard/PauseMenuInset/PauseMenuContent/PauseMenuActions/PauseSoundButton")
+@onready var _pause_save_exit_button: Button = get_node("AppBackground/GameFrame/GameLayout/PauseMenuOverlay/PauseMenuCard/PauseMenuInset/PauseMenuContent/PauseMenuActions/PauseSaveExitButton")
+@onready var _pause_sound_panel: PanelContainer = get_node("AppBackground/GameFrame/GameLayout/PauseMenuOverlay/PauseMenuCard/PauseMenuInset/PauseMenuContent/PauseSoundPanel")
+@onready var _pause_sound_title: Label = get_node("AppBackground/GameFrame/GameLayout/PauseMenuOverlay/PauseMenuCard/PauseMenuInset/PauseMenuContent/PauseSoundPanel/PauseSoundInset/PauseSoundContent/PauseSoundTitle")
+@onready var _pause_bgm_toggle_button: Button = get_node("AppBackground/GameFrame/GameLayout/PauseMenuOverlay/PauseMenuCard/PauseMenuInset/PauseMenuContent/PauseSoundPanel/PauseSoundInset/PauseSoundContent/PauseSoundToggleButtons/PauseBgmToggleButton")
+@onready var _pause_sfx_toggle_button: Button = get_node("AppBackground/GameFrame/GameLayout/PauseMenuOverlay/PauseMenuCard/PauseMenuInset/PauseMenuContent/PauseSoundPanel/PauseSoundInset/PauseSoundContent/PauseSoundToggleButtons/PauseSfxToggleButton")
+@onready var _pause_bgm_volume_slider: HSlider = get_node("AppBackground/GameFrame/GameLayout/PauseMenuOverlay/PauseMenuCard/PauseMenuInset/PauseMenuContent/PauseSoundPanel/PauseSoundInset/PauseSoundContent/PauseBgmVolumeRow/PauseBgmVolumeSlider")
+@onready var _pause_sfx_volume_slider: HSlider = get_node("AppBackground/GameFrame/GameLayout/PauseMenuOverlay/PauseMenuCard/PauseMenuInset/PauseMenuContent/PauseSoundPanel/PauseSoundInset/PauseSoundContent/PauseSfxVolumeRow/PauseSfxVolumeSlider")
+@onready var _pause_bgm_volume_text: Label = get_node("AppBackground/GameFrame/GameLayout/PauseMenuOverlay/PauseMenuCard/PauseMenuInset/PauseMenuContent/PauseSoundPanel/PauseSoundInset/PauseSoundContent/PauseBgmVolumeRow/PauseBgmVolumeText")
+@onready var _pause_sfx_volume_text: Label = get_node("AppBackground/GameFrame/GameLayout/PauseMenuOverlay/PauseMenuCard/PauseMenuInset/PauseMenuContent/PauseSoundPanel/PauseSoundInset/PauseSoundContent/PauseSfxVolumeRow/PauseSfxVolumeText")
+@onready var _pause_sound_back_button: Button = get_node("AppBackground/GameFrame/GameLayout/PauseMenuOverlay/PauseMenuCard/PauseMenuInset/PauseMenuContent/PauseSoundPanel/PauseSoundInset/PauseSoundContent/PauseSoundBackButton")
 @onready var _theme_transition_overlay: Control = get_node("AppBackground/GameFrame/GameLayout/ThemeTransitionOverlay")
 @onready var _theme_transition_dimmer: ColorRect = get_node("AppBackground/GameFrame/GameLayout/ThemeTransitionOverlay/ThemeTransitionDimmer")
 @onready var _theme_transition_label: Label = get_node("AppBackground/GameFrame/GameLayout/ThemeTransitionOverlay/ThemeTransitionLabel")
@@ -261,6 +276,8 @@ func _ready() -> void:
 	_victory_overlay.hide()
 	_tower_delete_confirm_overlay.hide()
 	_card_choice_overlay.hide()
+	_pause_menu_overlay.hide()
+	_pause_sound_panel.hide()
 	_theme_transition_overlay.hide()
 	_theme_transition_dimmer.color = Color(0.015686275, 0.05490196, 0.078431375, 0.92)
 	_theme_transition_overlay.modulate = Color(1.0, 1.0, 1.0, 0.0)
@@ -292,10 +309,29 @@ func _process(delta: float) -> void:
 	_update_impacts(dt)
 	_sync_hud()
 
+func _unhandled_input(event: InputEvent) -> void:
+	if not event.is_action_pressed("ui_cancel"):
+		return
+
+	if _pause_sound_panel.visible:
+		_hide_pause_sound_panel()
+		get_viewport().set_input_as_handled()
+		return
+
+	if _pause_menu_overlay.visible:
+		_close_pause_menu(true)
+		get_viewport().set_input_as_handled()
+		return
+
+	if _can_open_pause_menu():
+		_open_pause_menu(true)
+		get_viewport().set_input_as_handled()
+
 func _start_run() -> void:
 	_hide_victory_overlay()
 	_hide_tower_delete_confirm_overlay()
 	_hide_card_choice_overlay()
+	_hide_pause_menu_overlay()
 	_clear_undo_placement()
 	_hide_placement_preview()
 	_clear_enemies()
@@ -2217,6 +2253,8 @@ func _connect_buttons() -> void:
 	_delete_button.toggle_mode = true
 	_pause_button.toggle_mode = true
 	_speed_button.toggle_mode = true
+	_pause_bgm_toggle_button.toggle_mode = true
+	_pause_sfx_toggle_button.toggle_mode = true
 
 	_restart_button.pressed.connect(_start_run)
 	_menu_button.pressed.connect(_return_to_menu)
@@ -2230,6 +2268,14 @@ func _connect_buttons() -> void:
 	_undo_placement_timer.timeout.connect(_expire_undo_placement)
 	_pause_button.pressed.connect(_toggle_pause)
 	_speed_button.pressed.connect(_toggle_speed)
+	_pause_resume_button.pressed.connect(_close_pause_menu.bind(true))
+	_pause_sound_button.pressed.connect(_show_pause_sound_panel)
+	_pause_save_exit_button.pressed.connect(_save_and_exit_from_pause)
+	_pause_sound_back_button.pressed.connect(_hide_pause_sound_panel)
+	_pause_bgm_toggle_button.pressed.connect(_toggle_pause_sound.bind("bgm"))
+	_pause_sfx_toggle_button.pressed.connect(_toggle_pause_sound.bind("sfx"))
+	_pause_bgm_volume_slider.value_changed.connect(_set_pause_sound_volume.bind("bgm"))
+	_pause_sfx_volume_slider.value_changed.connect(_set_pause_sound_volume.bind("sfx"))
 	_floating_message_timer.timeout.connect(_hide_floating_message)
 	_wave_banner_timer.timeout.connect(_hide_wave_banner)
 	_card_choice_continue_button.pressed.connect(_continue_card_choice)
@@ -2301,6 +2347,7 @@ func _apply_static_translations() -> void:
 	_card_choice_kicker.text = GameSession.t("cards.kicker")
 	_card_choice_title.text = GameSession.t("cards.choose")
 	_card_choice_continue_button.text = GameSession.t("common.continue")
+	_sync_pause_menu_controls()
 	_set_pause_state(paused)
 	_sync_session_labels()
 	_sync_hud()
@@ -2387,11 +2434,122 @@ func _toggle_delete_mode() -> void:
 		_set_delete_mode(false, GameSession.t("messages.buildModeRestored"), true)
 
 func _toggle_pause() -> void:
-	if card_choice_active:
+	if _pause_menu_overlay.visible:
+		_close_pause_menu(true)
+		return
+	if not _can_open_pause_menu():
 		_pause_button.set_pressed_no_signal(paused)
 		return
-	_set_pause_state(_pause_button.button_pressed)
-	_show_status(GameSession.t("messages.pause") if paused else GameSession.t("messages.resume"))
+	_open_pause_menu(true)
+
+func _can_open_pause_menu() -> bool:
+	return not transition_active and not game_over and not victory_pending and not card_choice_active and not _victory_overlay.visible and not _tower_delete_confirm_overlay.visible
+
+func _open_pause_menu(show_message: bool) -> void:
+	if _pause_menu_overlay.visible:
+		return
+	if not _can_open_pause_menu():
+		_pause_button.set_pressed_no_signal(paused)
+		return
+
+	_set_delete_mode(false, "", false)
+	_hide_placement_preview()
+	_hide_floating_message()
+	_hide_wave_banner()
+	_set_pause_state(true)
+	_sync_pause_menu_controls()
+	_show_pause_menu_actions()
+	_pause_menu_overlay.show()
+	_pause_menu_overlay.move_to_front()
+	_pause_resume_button.call_deferred("grab_focus")
+	if show_message:
+		_show_status(GameSession.t("messages.pause"))
+
+func _close_pause_menu(show_message: bool) -> void:
+	if not _pause_menu_overlay.visible:
+		return
+
+	_hide_pause_menu_overlay()
+	if not game_over and not victory_pending:
+		_set_pause_state(false)
+	_sync_hud()
+	_pause_button.call_deferred("grab_focus")
+	if show_message:
+		_show_status(GameSession.t("messages.resume"))
+
+func _hide_pause_menu_overlay() -> void:
+	_pause_menu_overlay.hide()
+	_show_pause_menu_actions()
+
+func _show_pause_menu_actions() -> void:
+	_pause_sound_panel.hide()
+	_pause_menu_actions.show()
+
+func _show_pause_sound_panel() -> void:
+	if not _pause_menu_overlay.visible:
+		return
+	_sync_pause_sound_controls()
+	_pause_menu_actions.hide()
+	_pause_sound_panel.show()
+	_pause_bgm_toggle_button.call_deferred("grab_focus")
+
+func _hide_pause_sound_panel() -> void:
+	_pause_sound_panel.hide()
+	_pause_menu_actions.show()
+	if _pause_menu_overlay.visible:
+		_pause_sound_button.call_deferred("grab_focus")
+
+func _save_and_exit_from_pause() -> void:
+	if not _can_save_game():
+		_sync_pause_menu_controls()
+		_show_status(GameSession.t("pause.saveUnavailable"))
+		return
+
+	_close_pause_menu(false)
+	_return_to_menu()
+
+func _can_save_game() -> bool:
+	return false
+
+func _sync_pause_menu_controls() -> void:
+	_pause_menu_title.text = GameSession.t("pause.title")
+	_pause_resume_button.text = GameSession.t("actions.resume")
+	_pause_sound_button.text = GameSession.t("settings.sound")
+	_pause_save_exit_button.text = GameSession.t("pause.saveExit")
+	_pause_save_exit_button.disabled = not _can_save_game()
+	_pause_save_exit_button.tooltip_text = "" if _can_save_game() else GameSession.t("pause.saveUnavailable")
+	_pause_sound_title.text = GameSession.t("settings.sound")
+	_pause_sound_back_button.text = GameSession.t("common.back")
+	_sync_pause_sound_controls()
+
+func _sync_pause_sound_controls() -> void:
+	_sync_pause_sound_button(_pause_bgm_toggle_button, "bgm", GameSession.bgm_enabled)
+	_sync_pause_sound_button(_pause_sfx_toggle_button, "sfx", GameSession.sfx_enabled)
+	_pause_bgm_volume_slider.set_value_no_signal(roundf(GameSession.bgm_volume * 100.0))
+	_pause_sfx_volume_slider.set_value_no_signal(roundf(GameSession.sfx_volume * 100.0))
+	_pause_bgm_volume_text.text = "%d%%" % int(roundf(GameSession.bgm_volume * 100.0))
+	_pause_sfx_volume_text.text = "%d%%" % int(roundf(GameSession.sfx_volume * 100.0))
+
+func _sync_pause_sound_button(button: Button, sound_type: String, enabled: bool) -> void:
+	var sound_label: String = sound_type.to_upper()
+	var state_text: String = GameSession.t("sound.on") if enabled else GameSession.t("sound.off")
+	button.set_pressed_no_signal(enabled)
+	button.text = "%s %s" % [sound_label, state_text]
+
+func _toggle_pause_sound(sound_type: String) -> void:
+	if sound_type == "bgm":
+		AudioManager.set_bgm_enabled(_pause_bgm_toggle_button.button_pressed)
+	else:
+		AudioManager.set_sfx_enabled(_pause_sfx_toggle_button.button_pressed)
+	_sync_pause_sound_controls()
+
+func _set_pause_sound_volume(value: float, sound_type: String) -> void:
+	var normalized_volume: float = clampf(value / 100.0, 0.0, 1.0)
+	if sound_type == "bgm":
+		AudioManager.set_bgm_volume(normalized_volume)
+	else:
+		AudioManager.set_sfx_volume(normalized_volume)
+	_sync_pause_sound_controls()
 
 func _set_pause_state(is_paused: bool) -> void:
 	paused = is_paused
