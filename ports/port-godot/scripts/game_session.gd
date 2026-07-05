@@ -10,6 +10,8 @@ const DEFAULT_THEME: String = "park"
 const DEFAULT_BGM_VOLUME: float = 1.0
 const DEFAULT_SFX_VOLUME: float = 1.0
 const SETTINGS_PATH: String = "user://settings.cfg"
+const SAVE_PATH: String = "user://save_game.json"
+const SAVE_VERSION: int = 1
 
 var difficulty: String = DEFAULT_DIFFICULTY
 var wave_limit: int = DEFAULT_WAVE_LIMIT
@@ -24,6 +26,7 @@ var bgm_volume: float = DEFAULT_BGM_VOLUME
 var sfx_volume: float = DEFAULT_SFX_VOLUME
 
 var _translations_registered: bool = false
+var _saved_game_load_requested: bool = false
 
 func _ready() -> void:
 	_register_translations()
@@ -120,6 +123,57 @@ func get_unlocked_tower_keys(theme_code: String = "") -> Array[String]:
 func is_tower_unlocked(tower_key: String, theme_code: String = "") -> bool:
 	return get_unlocked_tower_keys(theme_code).has(tower_key)
 
+func save_game_snapshot(state_snapshot: Dictionary) -> bool:
+	var snapshot: Dictionary = {
+		"version": SAVE_VERSION,
+		"saved_at": Time.get_unix_time_from_system(),
+		"state": state_snapshot
+	}
+	var file: FileAccess = FileAccess.open(SAVE_PATH, FileAccess.WRITE)
+	if file == null:
+		return false
+
+	file.store_string(JSON.stringify(snapshot))
+	return true
+
+func load_game_state_snapshot() -> Dictionary:
+	var snapshot: Dictionary = _read_saved_game_snapshot()
+	if snapshot.is_empty():
+		return {}
+
+	var state_value: Variant = snapshot.get("state", {})
+	if not (state_value is Dictionary):
+		return {}
+	return state_value as Dictionary
+
+func has_saved_game() -> bool:
+	return not _read_saved_game_snapshot().is_empty()
+
+func clear_saved_game() -> void:
+	_saved_game_load_requested = false
+	if not FileAccess.file_exists(SAVE_PATH):
+		return
+
+	var directory: DirAccess = DirAccess.open("user://")
+	if directory != null:
+		directory.remove("save_game.json")
+
+func request_saved_game_load() -> bool:
+	if not has_saved_game():
+		_saved_game_load_requested = false
+		return false
+
+	_saved_game_load_requested = true
+	return true
+
+func consume_saved_game_load_request() -> bool:
+	var requested: bool = _saved_game_load_requested
+	_saved_game_load_requested = false
+	return requested
+
+func cancel_saved_game_load_request() -> void:
+	_saved_game_load_requested = false
+
 func apply_language(language_code: String, save_setting: bool = true) -> void:
 	language = _normalize_language(language_code)
 	TranslationServer.set_locale(_to_godot_locale(language))
@@ -184,6 +238,55 @@ func _save_settings() -> void:
 	config.set_value("settings", "bgm_volume", bgm_volume)
 	config.set_value("settings", "sfx_volume", sfx_volume)
 	config.save(SETTINGS_PATH)
+
+func _read_saved_game_snapshot() -> Dictionary:
+	if not FileAccess.file_exists(SAVE_PATH):
+		return {}
+
+	var file: FileAccess = FileAccess.open(SAVE_PATH, FileAccess.READ)
+	if file == null:
+		return {}
+
+	var json_text: String = file.get_as_text()
+	var parsed_value: Variant = JSON.parse_string(json_text)
+	if not (parsed_value is Dictionary):
+		clear_saved_game()
+		return {}
+
+	var snapshot: Dictionary = parsed_value as Dictionary
+	if not _is_valid_save_snapshot(snapshot):
+		clear_saved_game()
+		return {}
+
+	return snapshot
+
+func _is_valid_save_snapshot(snapshot: Dictionary) -> bool:
+	if int(snapshot.get("version", 0)) != SAVE_VERSION:
+		return false
+
+	var state_value: Variant = snapshot.get("state", {})
+	if not (state_value is Dictionary):
+		return false
+
+	var state_snapshot: Dictionary = state_value as Dictionary
+	var theme_code: String = String(state_snapshot.get("theme", ""))
+	if _normalize_theme(theme_code) != theme_code:
+		return false
+
+	var array_keys: Array[String] = [
+		"towers",
+		"enemies",
+		"projectiles",
+		"impacts",
+		"tower_buffs",
+		"enemy_modifiers"
+	]
+	for array_key in array_keys:
+		var array_value: Variant = state_snapshot.get(array_key, [])
+		if not (array_value is Array):
+			return false
+
+	return true
 
 func _get_translation_messages(language_code: String) -> Dictionary:
 	match language_code:
@@ -272,6 +375,7 @@ func _get_translation_messages(language_code: String) -> Dictionary:
 				"messages.cancelDeleteToBuild": "Cancel Delete to build.",
 				"messages.gameEnded": "Match ended.",
 				"messages.nextWaveSoon": "Wave {wave} completed. Next wave soon.",
+				"messages.noSavedGame": "No saved game found.",
 				"messages.notEnoughCoins": "Not enough coins.",
 				"messages.nothingToUndo": "Nothing to undo.",
 				"messages.parkLostLives": "The park lost all lives.",
@@ -296,6 +400,8 @@ func _get_translation_messages(language_code: String) -> Dictionary:
 				"messages.resume": "Game resumed.",
 				"messages.returnMenuError": "Error returning to menu.",
 				"messages.removeThisTower": "Remove this tower?",
+				"messages.saveFailed": "Could not save the game.",
+				"messages.saveLoaded": "Saved game loaded.",
 				"messages.waveCompleted": "Wave {wave} completed",
 				"messages.waveStarted": "Wave {wave} started.",
 				"pause.saveExit": "Save and exit",
@@ -418,6 +524,7 @@ func _get_translation_messages(language_code: String) -> Dictionary:
 				"messages.cancelDeleteToBuild": "Cancela Borrar para construir.",
 				"messages.gameEnded": "Partida terminada.",
 				"messages.nextWaveSoon": "Oleada {wave} completada. Proxima oleada pronto.",
+				"messages.noSavedGame": "No hay partida guardada.",
 				"messages.notEnoughCoins": "Monedas insuficientes.",
 				"messages.nothingToUndo": "Nada para deshacer.",
 				"messages.parkLostLives": "El parque perdio todas las vidas.",
@@ -442,6 +549,8 @@ func _get_translation_messages(language_code: String) -> Dictionary:
 				"messages.resume": "Juego retomado.",
 				"messages.returnMenuError": "Error al volver al menu.",
 				"messages.removeThisTower": "Quitar esta torre?",
+				"messages.saveFailed": "No se pudo guardar la partida.",
+				"messages.saveLoaded": "Partida guardada cargada.",
 				"messages.waveCompleted": "Oleada {wave} completada",
 				"messages.waveStarted": "Oleada {wave} iniciada.",
 				"pause.saveExit": "Guardar y salir",
@@ -564,6 +673,7 @@ func _get_translation_messages(language_code: String) -> Dictionary:
 				"messages.cancelDeleteToBuild": "Cancele Excluir para construir.",
 				"messages.gameEnded": "Partida encerrada.",
 				"messages.nextWaveSoon": "Onda {wave} concluida. Proxima onda em breve.",
+				"messages.noSavedGame": "Nenhum save encontrado.",
 				"messages.notEnoughCoins": "Moedas insuficientes.",
 				"messages.nothingToUndo": "Nada para desfazer.",
 				"messages.parkLostLives": "O parque perdeu todas as vidas.",
@@ -588,6 +698,8 @@ func _get_translation_messages(language_code: String) -> Dictionary:
 				"messages.resume": "Jogo retomado.",
 				"messages.returnMenuError": "Erro ao voltar ao menu.",
 				"messages.removeThisTower": "Remover esta torre?",
+				"messages.saveFailed": "Nao foi possivel salvar o jogo.",
+				"messages.saveLoaded": "Save carregado.",
 				"messages.waveCompleted": "Onda {wave} concluida",
 				"messages.waveStarted": "Onda {wave} iniciada.",
 				"pause.saveExit": "Salvar e sair",

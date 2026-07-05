@@ -3,6 +3,7 @@ extends Control
 class EnemyState:
 	var id: int = 0
 	var node: TextureRect
+	var tier: int = 0
 	var path_index: int = 0
 	var grid_position: Vector2 = Vector2.ZERO
 	var speed: float = 0.0
@@ -31,6 +32,7 @@ class TowerState:
 class ProjectileState:
 	var id: int = 0
 	var node: TextureRect
+	var projectile_type: String = ""
 	var source_tower_id: int = 0
 	var target_id: int = 0
 	var grid_position: Vector2 = Vector2.ZERO
@@ -284,7 +286,12 @@ func _ready() -> void:
 	_ensure_card_button_visuals()
 	_connect_buttons()
 	_apply_static_translations()
-	_start_run()
+	var should_restore_saved_game: bool = GameSession.consume_saved_game_load_request()
+	if should_restore_saved_game:
+		if not _restore_saved_game():
+			_start_run()
+	else:
+		_start_run()
 	_ensure_placement_preview_nodes()
 
 func _process(delta: float) -> void:
@@ -328,6 +335,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 
 func _start_run() -> void:
+	GameSession.clear_saved_game()
 	_hide_victory_overlay()
 	_hide_tower_delete_confirm_overlay()
 	_hide_card_choice_overlay()
@@ -375,6 +383,376 @@ func _start_run() -> void:
 	_sync_session_labels()
 	_sync_hud()
 	_show_status(GameSession.t("messages.prepareWave", {"wave": 1}))
+
+func _restore_saved_game() -> bool:
+	var saved_state: Dictionary = GameSession.load_game_state_snapshot()
+	if saved_state.is_empty():
+		return false
+
+	_hide_victory_overlay()
+	_hide_tower_delete_confirm_overlay()
+	_hide_card_choice_overlay()
+	_hide_pause_menu_overlay()
+	_clear_undo_placement()
+	_hide_placement_preview()
+	_clear_enemies()
+	_clear_projectiles()
+	_clear_impacts()
+	_clear_towers()
+
+	var saved_theme: String = String(saved_state.get("theme", GameSession.get_first_theme()))
+	wave_limit = maxi(1, int(saved_state.get("wave_limit", GameSession.DEFAULT_WAVE_LIMIT)))
+	GameSession.difficulty = String(saved_state.get("difficulty", GameSession.DEFAULT_DIFFICULTY))
+	GameSession.wave_limit = wave_limit
+	GameSession.custom_waves = int(saved_state.get("custom_waves", GameSession.DEFAULT_CUSTOM_WAVES))
+	GameSession.card_frequency = int(saved_state.get("card_frequency", GameSession.DEFAULT_CARD_FREQUENCY))
+
+	selected_tower = String(saved_state.get("selected_tower", "sentinel"))
+	wave = int(saved_state.get("wave", 0))
+	lives = int(saved_state.get("lives", 10))
+	coins = int(saved_state.get("coins", 300))
+	session_defeated = int(saved_state.get("session_defeated", 0))
+	wave_defeated = int(saved_state.get("wave_defeated", 0))
+	wave_hp_lost = int(saved_state.get("wave_hp_lost", 0))
+	spawn_remaining = int(saved_state.get("spawn_remaining", 0))
+	spawn_timer = float(saved_state.get("spawn_timer", 0.0))
+	wave_cooldown = float(saved_state.get("wave_cooldown", INITIAL_WAVE_COOLDOWN))
+	wave_in_progress = bool(saved_state.get("wave_in_progress", false))
+	paused = false
+	game_over = false
+	victory_pending = false
+	card_choice_active = false
+	card_choice_revealed = false
+	card_choice_previous_paused = false
+	selected_card_id = ""
+	card_result_text = ""
+	session_time = float(saved_state.get("session_time", 0.0))
+	sim_time = float(saved_state.get("sim_time", 0.0))
+	next_enemy_id = maxi(1, int(saved_state.get("next_enemy_id", 1)))
+	next_tower_id = maxi(1, int(saved_state.get("next_tower_id", 1)))
+	next_projectile_id = maxi(1, int(saved_state.get("next_projectile_id", 1)))
+	next_card_id = maxi(1, int(saved_state.get("next_card_id", 1)))
+	speed_multiplier = clampf(float(saved_state.get("speed_multiplier", 1.0)), 1.0, 2.0)
+	card_choices.clear()
+	tower_buffs = _restore_saved_effects(saved_state.get("tower_buffs", []))
+	enemy_modifiers = _restore_saved_effects(saved_state.get("enemy_modifiers", []))
+
+	_load_theme(saved_theme)
+	_restore_saved_towers(saved_state.get("towers", []))
+	_restore_saved_enemies(saved_state.get("enemies", []))
+	_restore_saved_projectiles(saved_state.get("projectiles", []))
+	_restore_saved_impacts(saved_state.get("impacts", []))
+	_ensure_selected_tower_unlocked()
+	_set_pause_state(false)
+	_speed_button.set_pressed_no_signal(speed_multiplier > 1.0)
+	_speed_button.text = "2x" if speed_multiplier > 1.0 else "1x"
+	_set_delete_mode(false, "", false)
+	_sync_session_labels()
+	_sync_tower_shop_buttons()
+	_sync_hud()
+	_show_status(GameSession.t("messages.saveLoaded"))
+	return true
+
+func _create_save_game_state_snapshot() -> Dictionary:
+	return {
+		"theme": current_theme,
+		"difficulty": GameSession.difficulty,
+		"wave_limit": wave_limit,
+		"custom_waves": GameSession.custom_waves,
+		"card_frequency": GameSession.card_frequency,
+		"selected_tower": selected_tower,
+		"coins": coins,
+		"lives": lives,
+		"session_defeated": session_defeated,
+		"wave_defeated": wave_defeated,
+		"wave_hp_lost": wave_hp_lost,
+		"wave_in_progress": wave_in_progress,
+		"wave": wave,
+		"spawn_remaining": spawn_remaining,
+		"spawn_timer": spawn_timer,
+		"wave_cooldown": wave_cooldown,
+		"speed_multiplier": speed_multiplier,
+		"session_time": session_time,
+		"sim_time": sim_time,
+		"next_enemy_id": next_enemy_id,
+		"next_tower_id": next_tower_id,
+		"next_projectile_id": next_projectile_id,
+		"next_card_id": next_card_id,
+		"tower_buffs": _serialize_effects(tower_buffs),
+		"enemy_modifiers": _serialize_effects(enemy_modifiers),
+		"towers": _serialize_towers(),
+		"enemies": _serialize_enemies(),
+		"projectiles": _serialize_projectiles(),
+		"impacts": _serialize_impacts()
+	}
+
+func _serialize_towers() -> Array[Dictionary]:
+	var saved_towers: Array[Dictionary] = []
+	for tower_data in placed_towers:
+		saved_towers.append({
+			"id": tower_data.id,
+			"type": tower_data.tower_type,
+			"tile_x": tower_data.tile_position.x,
+			"tile_y": tower_data.tile_position.y,
+			"cost": tower_data.cost,
+			"cooldown": tower_data.cooldown
+		})
+	return saved_towers
+
+func _serialize_enemies() -> Array[Dictionary]:
+	var saved_enemies: Array[Dictionary] = []
+	for enemy_data in enemies:
+		saved_enemies.append({
+			"id": enemy_data.id,
+			"tier": enemy_data.tier,
+			"x": enemy_data.grid_position.x,
+			"y": enemy_data.grid_position.y,
+			"path_index": enemy_data.path_index,
+			"max_hp": enemy_data.max_hp,
+			"hp": enemy_data.hp,
+			"speed": enemy_data.speed,
+			"reward": enemy_data.reward,
+			"slow_until": enemy_data.slow_until,
+			"slow_factor": enemy_data.slow_factor
+		})
+	return saved_enemies
+
+func _serialize_projectiles() -> Array[Dictionary]:
+	var saved_projectiles: Array[Dictionary] = []
+	for projectile_data in projectiles:
+		saved_projectiles.append({
+			"id": projectile_data.id,
+			"projectile_type": projectile_data.projectile_type,
+			"source_tower_id": projectile_data.source_tower_id,
+			"target_id": projectile_data.target_id,
+			"x": projectile_data.grid_position.x,
+			"y": projectile_data.grid_position.y,
+			"damage": projectile_data.damage,
+			"speed": projectile_data.speed,
+			"slow_factor": projectile_data.slow_factor,
+			"slow_duration": projectile_data.slow_duration,
+			"splash": projectile_data.splash
+		})
+	return saved_projectiles
+
+func _serialize_impacts() -> Array[Dictionary]:
+	var saved_impacts: Array[Dictionary] = []
+	for impact_data in impacts:
+		saved_impacts.append({
+			"x": impact_data.grid_position.x,
+			"y": impact_data.grid_position.y,
+			"life": impact_data.life
+		})
+	return saved_impacts
+
+func _serialize_effects(effects: Array[Dictionary]) -> Array[Dictionary]:
+	var saved_effects: Array[Dictionary] = []
+	for effect in effects:
+		var saved_effect: Dictionary = {}
+		for key in effect:
+			var key_string: String = str(key)
+			saved_effect[key_string] = effect[key]
+		saved_effects.append(saved_effect)
+	return saved_effects
+
+func _restore_saved_towers(saved_value: Variant) -> void:
+	if not (saved_value is Array):
+		return
+	var saved_towers: Array = saved_value as Array
+	for saved_tower_index in range(saved_towers.size()):
+		var saved_tower_value: Variant = saved_towers[saved_tower_index]
+		if saved_tower_value is Dictionary:
+			var saved_tower: Dictionary = saved_tower_value as Dictionary
+			_restore_saved_tower(saved_tower)
+
+func _restore_saved_tower(saved_tower: Dictionary) -> void:
+	var tower_key: String = String(saved_tower.get("type", ""))
+	if not GameSession.is_tower_unlocked(tower_key, current_theme):
+		return
+
+	var tile_position: Vector2i = Vector2i(
+		int(saved_tower.get("tile_x", -1)),
+		int(saved_tower.get("tile_y", -1))
+	)
+	if tile_position.x < 0 or tile_position.x >= COLS or tile_position.y < 0 or tile_position.y >= ROWS:
+		return
+	if path_tiles.has(tile_position) or blocked_tiles.has(tile_position) or occupied_tiles.has(tile_position):
+		return
+
+	var tower_id: int = maxi(1, int(saved_tower.get("id", next_tower_id)))
+	var tower_texture: Texture2D = _get_tower_texture(tower_key)
+	var tower_node: TextureRect = TextureRect.new()
+	tower_node.name = "Tower_%03d_%s" % [tower_id, tower_key]
+	tower_node.texture = tower_texture
+	tower_node.size = tower_texture.get_size()
+	tower_node.stretch_mode = TextureRect.STRETCH_KEEP
+	tower_node.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_tower_layer.add_child(tower_node)
+
+	var tower_data: TowerState = TowerState.new()
+	tower_data.id = tower_id
+	tower_data.node = tower_node
+	tower_data.tile_position = tile_position
+	tower_data.tower_type = tower_key
+	tower_data.cost = int(saved_tower.get("cost", _get_tower_cost(tower_key)))
+	tower_data.cooldown = maxf(0.0, float(saved_tower.get("cooldown", 0.0)))
+	var tower_stats: Dictionary = _get_tower_combat_stats(tower_key, tower_id)
+	tower_data.damage = int(tower_stats.get("damage", _get_tower_damage(tower_key)))
+	tower_data.range = float(tower_stats.get("range", _get_tower_range(tower_key)))
+	tower_data.fire_rate = _get_tower_fire_rate(tower_key)
+	tower_data.projectile_speed = _get_tower_projectile_speed(tower_key)
+	tower_data.slow_factor = _get_tower_slow_factor(tower_key)
+	tower_data.slow_duration = _get_tower_slow_duration(tower_key)
+	tower_data.splash = _get_tower_splash(tower_key)
+	placed_towers.append(tower_data)
+	occupied_tiles.append(tile_position)
+	next_tower_id = maxi(next_tower_id, tower_id + 1)
+	_position_tower(tower_data)
+
+func _restore_saved_enemies(saved_value: Variant) -> void:
+	if not (saved_value is Array):
+		return
+	var saved_enemies: Array = saved_value as Array
+	for saved_enemy_index in range(saved_enemies.size()):
+		var saved_enemy_value: Variant = saved_enemies[saved_enemy_index]
+		if saved_enemy_value is Dictionary:
+			var saved_enemy: Dictionary = saved_enemy_value as Dictionary
+			_restore_saved_enemy(saved_enemy)
+
+func _restore_saved_enemy(saved_enemy: Dictionary) -> void:
+	var tier: int = clampi(int(saved_enemy.get("tier", 0)), 0, 2)
+	var path_index: int = clampi(int(saved_enemy.get("path_index", 0)), 0, maxi(0, path_tiles.size() - 1))
+	var max_hp: int = maxi(1, int(saved_enemy.get("max_hp", _get_enemy_max_hp(tier))))
+	var hp: int = clampi(int(saved_enemy.get("hp", max_hp)), 1, max_hp)
+	var enemy_texture: Texture2D = _get_enemy_texture(tier)
+	var enemy_id: int = maxi(1, int(saved_enemy.get("id", next_enemy_id)))
+	var enemy_node: TextureRect = TextureRect.new()
+	enemy_node.name = "Enemy_%03d" % enemy_id
+	enemy_node.texture = enemy_texture
+	enemy_node.size = enemy_texture.get_size()
+	enemy_node.stretch_mode = TextureRect.STRETCH_KEEP
+	enemy_node.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_enemy_layer.add_child(enemy_node)
+
+	var enemy_data: EnemyState = EnemyState.new()
+	enemy_data.id = enemy_id
+	enemy_data.node = enemy_node
+	enemy_data.tier = tier
+	enemy_data.path_index = path_index
+	enemy_data.grid_position = Vector2(
+		float(saved_enemy.get("x", _get_path_point(path_index).x)),
+		float(saved_enemy.get("y", _get_path_point(path_index).y))
+	)
+	enemy_data.speed = float(saved_enemy.get("speed", _get_enemy_speed(tier)))
+	enemy_data.reward = int(saved_enemy.get("reward", _get_enemy_reward(tier)))
+	enemy_data.pivot = _get_enemy_pivot(tier)
+	enemy_data.max_hp = max_hp
+	enemy_data.hp = hp
+	enemy_data.slow_factor = float(saved_enemy.get("slow_factor", 1.0))
+	enemy_data.slow_until = float(saved_enemy.get("slow_until", 0.0))
+	enemies.append(enemy_data)
+	next_enemy_id = maxi(next_enemy_id, enemy_id + 1)
+	_position_enemy(enemy_data)
+
+func _restore_saved_projectiles(saved_value: Variant) -> void:
+	if not (saved_value is Array):
+		return
+	var saved_projectiles: Array = saved_value as Array
+	for saved_projectile_index in range(saved_projectiles.size()):
+		var saved_projectile_value: Variant = saved_projectiles[saved_projectile_index]
+		if saved_projectile_value is Dictionary:
+			var saved_projectile: Dictionary = saved_projectile_value as Dictionary
+			_restore_saved_projectile(saved_projectile)
+
+func _restore_saved_projectile(saved_projectile: Dictionary) -> void:
+	var target_id: int = int(saved_projectile.get("target_id", 0))
+	if _get_enemy_by_id(target_id) == null:
+		return
+
+	var projectile_type: String = String(saved_projectile.get("projectile_type", "sentinel"))
+	var projectile_id: int = maxi(1, int(saved_projectile.get("id", next_projectile_id)))
+	var projectile_texture: Texture2D = _get_projectile_texture(projectile_type)
+	var projectile_node: TextureRect = TextureRect.new()
+	projectile_node.name = "Projectile_%03d" % projectile_id
+	projectile_node.texture = projectile_texture
+	projectile_node.size = projectile_texture.get_size()
+	projectile_node.stretch_mode = TextureRect.STRETCH_KEEP
+	projectile_node.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_projectile_layer.add_child(projectile_node)
+
+	var projectile_data: ProjectileState = ProjectileState.new()
+	projectile_data.id = projectile_id
+	projectile_data.node = projectile_node
+	projectile_data.projectile_type = projectile_type
+	projectile_data.source_tower_id = int(saved_projectile.get("source_tower_id", 0))
+	projectile_data.target_id = target_id
+	projectile_data.grid_position = Vector2(
+		float(saved_projectile.get("x", 0.0)),
+		float(saved_projectile.get("y", 0.0))
+	)
+	projectile_data.damage = maxi(1, int(saved_projectile.get("damage", 1)))
+	projectile_data.speed = float(saved_projectile.get("speed", _get_tower_projectile_speed(projectile_type)))
+	projectile_data.slow_factor = float(saved_projectile.get("slow_factor", 1.0))
+	projectile_data.slow_duration = float(saved_projectile.get("slow_duration", 0.0))
+	projectile_data.splash = float(saved_projectile.get("splash", 0.0))
+	projectile_data.pivot = _get_projectile_pivot(projectile_type)
+	projectiles.append(projectile_data)
+	next_projectile_id = maxi(next_projectile_id, projectile_id + 1)
+	_position_projectile(projectile_data)
+
+func _restore_saved_impacts(saved_value: Variant) -> void:
+	if not (saved_value is Array):
+		return
+	var saved_impacts: Array = saved_value as Array
+	for saved_impact_index in range(saved_impacts.size()):
+		var saved_impact_value: Variant = saved_impacts[saved_impact_index]
+		if saved_impact_value is Dictionary:
+			var saved_impact: Dictionary = saved_impact_value as Dictionary
+			_restore_saved_impact(saved_impact)
+
+func _restore_saved_impact(saved_impact: Dictionary) -> void:
+	var impact_life: float = float(saved_impact.get("life", 0.0))
+	if impact_life <= 0.0:
+		return
+
+	var impact_node: TextureRect = TextureRect.new()
+	impact_node.name = "Impact"
+	impact_node.texture = IMPACT_TEXTURE
+	impact_node.size = IMPACT_TEXTURE.get_size()
+	impact_node.stretch_mode = TextureRect.STRETCH_KEEP
+	impact_node.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_effect_layer.add_child(impact_node)
+
+	var impact_data: ImpactState = ImpactState.new()
+	impact_data.node = impact_node
+	impact_data.grid_position = Vector2(
+		float(saved_impact.get("x", 0.0)),
+		float(saved_impact.get("y", 0.0))
+	)
+	impact_data.life = impact_life
+	impact_data.pivot = IMPACT_PIVOT
+	impacts.append(impact_data)
+	_position_impact(impact_data)
+
+func _restore_saved_effects(saved_value: Variant) -> Array[Dictionary]:
+	var restored_effects: Array[Dictionary] = []
+	if not (saved_value is Array):
+		return restored_effects
+
+	var saved_effects: Array = saved_value as Array
+	for saved_effect_index in range(saved_effects.size()):
+		var saved_effect_value: Variant = saved_effects[saved_effect_index]
+		if not (saved_effect_value is Dictionary):
+			continue
+
+		var saved_effect: Dictionary = saved_effect_value as Dictionary
+		var effect: Dictionary = {}
+		for key in saved_effect:
+			var key_string: String = str(key)
+			effect[key_string] = saved_effect[key]
+		restored_effects.append(effect)
+
+	return restored_effects
 
 func _update_wave_flow(dt: float) -> void:
 	if card_choice_active:
@@ -439,6 +817,7 @@ func _start_between_wave_cooldown(finished_wave: int) -> void:
 	_show_status(GameSession.t("messages.nextWaveSoon", {"wave": finished_wave}))
 
 func _finish_victory() -> void:
+	GameSession.clear_saved_game()
 	victory_pending = true
 	wave_in_progress = false
 	spawn_remaining = 0
@@ -454,6 +833,7 @@ func _finish_victory() -> void:
 	_show_victory_overlay()
 
 func _end_game() -> void:
+	GameSession.clear_saved_game()
 	game_over = true
 	wave_in_progress = false
 	spawn_remaining = 0
@@ -482,6 +862,7 @@ func _spawn_enemy() -> void:
 	var enemy_data: EnemyState = EnemyState.new()
 	enemy_data.id = next_enemy_id
 	enemy_data.node = enemy_node
+	enemy_data.tier = tier
 	enemy_data.path_index = 0
 	enemy_data.grid_position = _get_path_point(0)
 	enemy_data.speed = _get_enemy_speed(tier)
@@ -2057,6 +2438,7 @@ func _fire_projectile(tower_data: TowerState, target: EnemyState) -> void:
 	var projectile_data: ProjectileState = ProjectileState.new()
 	projectile_data.id = next_projectile_id
 	projectile_data.node = projectile_node
+	projectile_data.projectile_type = tower_data.tower_type
 	projectile_data.source_tower_id = tower_data.id
 	projectile_data.target_id = target.id
 	projectile_data.grid_position = _get_tower_center(tower_data) + Vector2(0.0, -0.15)
@@ -2505,11 +2887,16 @@ func _save_and_exit_from_pause() -> void:
 		_show_status(GameSession.t("pause.saveUnavailable"))
 		return
 
+	var saved: bool = GameSession.save_game_snapshot(_create_save_game_state_snapshot())
+	if not saved:
+		_show_status(GameSession.t("messages.saveFailed"))
+		return
+
 	_close_pause_menu(false)
 	_return_to_menu()
 
 func _can_save_game() -> bool:
-	return false
+	return not transition_active and not game_over and not victory_pending and not card_choice_active and not _victory_overlay.visible and not _tower_delete_confirm_overlay.visible
 
 func _sync_pause_menu_controls() -> void:
 	_pause_menu_title.text = GameSession.t("pause.title")

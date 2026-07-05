@@ -76,6 +76,7 @@ func _ready() -> void:
 	_menu_note.hide()
 	_start_button.disabled = true
 
+	_continue_button.pressed.connect(_continue_saved_game)
 	_play_button.pressed.connect(_open_difficulty_panel)
 	_config_button.pressed.connect(_toggle_config_panel)
 	_exit_button.pressed.connect(_quit_game)
@@ -118,6 +119,7 @@ func _ready() -> void:
 	_sync_sound_buttons()
 	_sync_volume_labels()
 	_apply_translations()
+	_sync_continue_button()
 	AudioManager.play_menu_music()
 
 func _open_difficulty_panel() -> void:
@@ -260,6 +262,7 @@ func _get_wave_limit() -> int:
 
 func _start_selected_game() -> void:
 	_normalize_custom_waves()
+	GameSession.clear_saved_game()
 	GameSession.difficulty = selected_difficulty
 	GameSession.wave_limit = _get_wave_limit()
 	GameSession.custom_waves = int(_waves_input.text)
@@ -274,6 +277,19 @@ func _start_selected_game() -> void:
 
 	var error: int = get_tree().change_scene_to_file(GAMEPLAY_SCENE)
 	if error != OK:
+		_show_menu_note(GameSession.t("messages.openGameplayError"))
+
+func _continue_saved_game() -> void:
+	_config_panel.hide()
+	_difficulty_panel.hide()
+	if not GameSession.request_saved_game_load():
+		_sync_continue_button()
+		_show_menu_note(GameSession.t("messages.noSavedGame"))
+		return
+
+	var error: int = get_tree().change_scene_to_file(GAMEPLAY_SCENE)
+	if error != OK:
+		GameSession.cancel_saved_game_load_request()
 		_show_menu_note(GameSession.t("messages.openGameplayError"))
 
 func _quit_game() -> void:
@@ -306,6 +322,10 @@ func _apply_translations() -> void:
 	_card_frequency_text.text = _format_card_frequency(card_frequency)
 	_sync_difficulty_button_labels()
 	_sync_sound_buttons()
+	_sync_continue_button()
+
+func _sync_continue_button() -> void:
+	_continue_button.visible = GameSession.has_saved_game()
 
 func _sync_difficulty_button_labels() -> void:
 	var easy_button: Button = _difficulty_buttons["easy"] as Button
