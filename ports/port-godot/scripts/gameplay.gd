@@ -215,7 +215,7 @@ var blocked_tiles: Array[Vector2i] = [
 @onready var _tower_delete_confirm_remove_button: Button = get_node("AppBackground/GameFrame/GameLayout/BoardStage/TowerDeleteConfirmOverlay/TowerDeleteCard/TowerDeleteInset/TowerDeleteContent/TowerDeleteActions/TowerDeleteRemoveButton")
 @onready var _tower_delete_confirm_cancel_button: Button = get_node("AppBackground/GameFrame/GameLayout/BoardStage/TowerDeleteConfirmOverlay/TowerDeleteCard/TowerDeleteInset/TowerDeleteContent/TowerDeleteActions/TowerDeleteCancelButton")
 @onready var _card_choice_overlay: Control = get_node("AppBackground/GameFrame/GameLayout/BoardStage/CardChoiceOverlay")
-@onready var _card_choice_kicker: Label = get_node("AppBackground/GameFrame/GameLayout/BoardStage/CardChoiceOverlay/CardChoicePanel/CardChoiceInset/CardChoiceContent/CardChoiceKicker")
+@onready var _card_choice_kicker: Label = get_node("AppBackground/GameFrame/GameLayout/BoardStage/CardChoiceOverlay/CardChoicePanel/CardChoiceInset/CardChoiceContent/CardChoiceKicker/CardChoiceKickerLabel")
 @onready var _card_choice_title: Label = get_node("AppBackground/GameFrame/GameLayout/BoardStage/CardChoiceOverlay/CardChoicePanel/CardChoiceInset/CardChoiceContent/CardChoiceTitle")
 @onready var _card_choice_result: PanelContainer = get_node("AppBackground/GameFrame/GameLayout/BoardStage/CardChoiceOverlay/CardChoicePanel/CardChoiceInset/CardChoiceContent/CardChoiceResult")
 @onready var _card_choice_result_label: Label = get_node("AppBackground/GameFrame/GameLayout/BoardStage/CardChoiceOverlay/CardChoicePanel/CardChoiceInset/CardChoiceContent/CardChoiceResult/CardChoiceResultLabel")
@@ -264,6 +264,7 @@ func _ready() -> void:
 	_theme_transition_overlay.hide()
 	_theme_transition_dimmer.color = Color(0.015686275, 0.05490196, 0.078431375, 0.92)
 	_theme_transition_overlay.modulate = Color(1.0, 1.0, 1.0, 0.0)
+	_ensure_card_button_visuals()
 	_connect_buttons()
 	_apply_static_translations()
 	_start_run()
@@ -621,7 +622,8 @@ func _hide_card_choice_overlay() -> void:
 		button.hide()
 
 func _render_card_choice_overlay() -> void:
-	_card_choice_kicker.text = GameSession.t("cards.kicker")
+	_ensure_card_button_visuals()
+	_card_choice_kicker.text = GameSession.t("cards.kicker").to_upper()
 	_card_choice_title.text = GameSession.t("cards.choose")
 	_card_choice_result.visible = card_choice_revealed and not card_result_text.is_empty()
 	_card_choice_result_label.text = card_result_text
@@ -630,6 +632,13 @@ func _render_card_choice_overlay() -> void:
 
 	for index in range(_card_choice_buttons.size()):
 		var button: Button = _card_choice_buttons[index]
+		button.text = ""
+		button.icon = null
+		button.expand_icon = false
+		button.alignment = HORIZONTAL_ALIGNMENT_CENTER
+		button.add_theme_color_override("font_color", Color.TRANSPARENT)
+		button.add_theme_color_override("font_disabled_color", Color.TRANSPARENT)
+
 		if index >= card_choices.size():
 			button.hide()
 			continue
@@ -637,16 +646,11 @@ func _render_card_choice_overlay() -> void:
 		var card: Dictionary = card_choices[index]
 		var card_id: String = String(card.get("id", ""))
 		var is_selected: bool = card_choice_revealed and card_id == selected_card_id
-		button.show()
-		button.icon = null
-		button.expand_icon = false
-		button.alignment = HORIZONTAL_ALIGNMENT_CENTER
-		button.add_theme_color_override("font_color", Color(0.08235294, 0.16470589, 0.20784314, 1.0))
-
 		if card_choice_revealed and not is_selected:
 			button.hide()
 			continue
 
+		button.show()
 		if is_selected:
 			var card_kind: String = String(card.get("kind", "neutral"))
 			var front_text_color: Color = Color(0.08627451, 0.043137256, 0.0, 1.0)
@@ -654,59 +658,150 @@ func _render_card_choice_overlay() -> void:
 				front_text_color = Color(1.0, 0.9411765, 0.84705883, 1.0)
 			button.custom_minimum_size = CARD_REVEALED_SIZE
 			button.disabled = true
-			button.add_theme_font_size_override("font_size", 22)
-			button.add_theme_color_override("font_color", front_text_color)
-			button.add_theme_color_override("font_disabled_color", front_text_color)
-			button.add_theme_stylebox_override("normal", _make_card_front_style(card_kind))
-			button.add_theme_stylebox_override("pressed", _make_card_front_style(card_kind))
-			button.add_theme_stylebox_override("hover", _make_card_front_style(card_kind))
-			button.add_theme_stylebox_override("disabled", _make_card_front_style(card_kind))
-			button.text = "%s\n%s\n%s" % [
-				GameSession.t("cards.kind.%s" % card_kind),
-				_wrap_card_text(String(card.get("title", "")), 30),
-				_wrap_card_text(String(card.get("description", "")), 42)
-			]
+			button.mouse_default_cursor_shape = Control.CURSOR_ARROW
+			var front_style: StyleBoxFlat = _make_card_front_style(card_kind)
+			_apply_card_button_style(button, front_style, front_style, front_style, front_style)
+			_set_card_button_front(button, card, card_kind, front_text_color)
 		else:
 			button.custom_minimum_size = CARD_BACK_SIZE
 			button.disabled = false
-			button.add_theme_font_size_override("font_size", 26)
-			button.add_theme_stylebox_override("normal", _make_card_back_style())
-			button.add_theme_stylebox_override("pressed", _make_card_back_style())
-			button.add_theme_stylebox_override("hover", _make_card_back_style())
-			button.add_theme_stylebox_override("disabled", _make_card_back_style())
-			button.text = "?\n%s" % GameSession.t("cards.cardIndex", {"index": index + 1})
+			button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+			var back_style: StyleBoxFlat = _make_card_back_style(false)
+			var back_hover_style: StyleBoxFlat = _make_card_back_style(true)
+			_apply_card_button_style(button, back_style, back_hover_style, back_hover_style, back_style)
+			_set_card_button_back(button, index)
 
-func _wrap_card_text(text: String, max_line_length: int) -> String:
-	var words: PackedStringArray = text.split(" ", false)
-	var lines: Array[String] = []
-	var current_line: String = ""
-	for word_index in range(words.size()):
-		var word: String = words[word_index]
-		if current_line.is_empty():
-			current_line = word
-		elif current_line.length() + 1 + word.length() <= max_line_length:
-			current_line += " " + word
-		else:
-			lines.append(current_line)
-			current_line = word
+func _ensure_card_button_visuals() -> void:
+	for button_index in range(_card_choice_buttons.size()):
+		var button: Button = _card_choice_buttons[button_index]
+		button.text = ""
+		button.icon = null
+		button.expand_icon = false
+		button.clip_text = true
 
-	if not current_line.is_empty():
-		lines.append(current_line)
+		if button.has_node("CardVisual"):
+			continue
 
-	var wrapped_text: String = ""
-	for line_index in range(lines.size()):
-		if line_index > 0:
-			wrapped_text += "\n"
-		wrapped_text += lines[line_index]
-	return wrapped_text
+		var content: VBoxContainer = VBoxContainer.new()
+		content.name = "CardVisual"
+		content.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		content.alignment = BoxContainer.ALIGNMENT_CENTER
+		content.add_theme_constant_override("separation", 8)
+		button.add_child(content)
+		content.set_anchors_preset(Control.PRESET_FULL_RECT)
+		content.offset_left = 12.0
+		content.offset_top = 12.0
+		content.offset_right = -12.0
+		content.offset_bottom = -12.0
 
-func _make_card_back_style() -> StyleBoxTexture:
-	var style: StyleBoxTexture = StyleBoxTexture.new()
-	style.texture = CARD_BACK_TEXTURE
-	style.texture_margin_left = 8.0
-	style.texture_margin_top = 8.0
-	style.texture_margin_right = 8.0
-	style.texture_margin_bottom = 8.0
+		var back_icon: TextureRect = TextureRect.new()
+		back_icon.name = "CardBackIcon"
+		back_icon.custom_minimum_size = Vector2(105, 105)
+		back_icon.texture = CARD_BACK_TEXTURE
+		back_icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		back_icon.stretch_mode = TextureRect.STRETCH_KEEP_CENTERED
+		back_icon.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+		content.add_child(back_icon)
+
+		var kind_label: Label = Label.new()
+		kind_label.name = "CardKindLabel"
+		_configure_card_label(kind_label, 15, false)
+		content.add_child(kind_label)
+
+		var name_label: Label = Label.new()
+		name_label.name = "CardNameLabel"
+		_configure_card_label(name_label, 27, true)
+		content.add_child(name_label)
+
+		var description_label: Label = Label.new()
+		description_label.name = "CardDescriptionLabel"
+		_configure_card_label(description_label, 18, true)
+		content.add_child(description_label)
+
+		var index_label: Label = Label.new()
+		index_label.name = "CardIndexLabel"
+		_configure_card_label(index_label, 16, false)
+		content.add_child(index_label)
+
+func _configure_card_label(label: Label, font_size: int, wrap_text: bool) -> void:
+	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	label.add_theme_font_size_override("font_size", font_size)
+	if wrap_text:
+		label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	else:
+		label.autowrap_mode = TextServer.AUTOWRAP_OFF
+
+func _set_card_button_back(button: Button, index: int) -> void:
+	var content: VBoxContainer = button.get_node("CardVisual") as VBoxContainer
+	var back_icon: TextureRect = content.get_node("CardBackIcon") as TextureRect
+	var kind_label: Label = content.get_node("CardKindLabel") as Label
+	var name_label: Label = content.get_node("CardNameLabel") as Label
+	var description_label: Label = content.get_node("CardDescriptionLabel") as Label
+	var index_label: Label = content.get_node("CardIndexLabel") as Label
+
+	content.alignment = BoxContainer.ALIGNMENT_CENTER
+	content.add_theme_constant_override("separation", 8)
+	back_icon.show()
+	kind_label.hide()
+	name_label.hide()
+	description_label.hide()
+	index_label.show()
+	index_label.text = GameSession.t("cards.cardIndex", {"index": index + 1}).to_upper()
+	index_label.add_theme_color_override("font_color", Color(1.0, 0.96862745, 0.81960785, 1.0))
+
+func _set_card_button_front(button: Button, card: Dictionary, card_kind: String, text_color: Color) -> void:
+	var content: VBoxContainer = button.get_node("CardVisual") as VBoxContainer
+	var back_icon: TextureRect = content.get_node("CardBackIcon") as TextureRect
+	var kind_label: Label = content.get_node("CardKindLabel") as Label
+	var name_label: Label = content.get_node("CardNameLabel") as Label
+	var description_label: Label = content.get_node("CardDescriptionLabel") as Label
+	var index_label: Label = content.get_node("CardIndexLabel") as Label
+
+	content.alignment = BoxContainer.ALIGNMENT_CENTER
+	content.add_theme_constant_override("separation", 7)
+	back_icon.hide()
+	index_label.hide()
+	kind_label.show()
+	name_label.show()
+	description_label.show()
+	var kind_key: String = "cards.kind.%s" % card_kind
+	var kind_text: String = GameSession.t(kind_key)
+	if kind_text == kind_key:
+		kind_text = GameSession.t("cards.kind.neutral")
+	kind_label.text = kind_text.to_upper()
+	name_label.text = String(card.get("title", ""))
+	description_label.text = String(card.get("description", ""))
+	kind_label.add_theme_color_override("font_color", text_color)
+	name_label.add_theme_color_override("font_color", text_color)
+	description_label.add_theme_color_override("font_color", text_color)
+
+func _apply_card_button_style(button: Button, normal_style: StyleBox, pressed_style: StyleBox, hover_style: StyleBox, disabled_style: StyleBox) -> void:
+	button.add_theme_stylebox_override("normal", normal_style)
+	button.add_theme_stylebox_override("pressed", pressed_style)
+	button.add_theme_stylebox_override("hover", hover_style)
+	button.add_theme_stylebox_override("disabled", disabled_style)
+
+func _make_card_back_style(is_hovered: bool) -> StyleBoxFlat:
+	var style: StyleBoxFlat = StyleBoxFlat.new()
+	if is_hovered:
+		style.bg_color = Color(0.11764706, 0.25490198, 0.3372549, 1.0)
+		style.border_color = Color(1.0, 0.90588236, 0.41960785, 1.0)
+	else:
+		style.bg_color = Color(0.09411765, 0.20784314, 0.2784314, 1.0)
+		style.border_color = Color(0.07058824, 0.043137256, 0.02745098, 1.0)
+	style.border_width_left = 5
+	style.border_width_top = 5
+	style.border_width_right = 5
+	style.border_width_bottom = 5
+	style.corner_radius_top_left = 4
+	style.corner_radius_top_right = 4
+	style.corner_radius_bottom_right = 4
+	style.corner_radius_bottom_left = 4
+	style.shadow_color = Color(0, 0, 0, 0.36)
+	style.shadow_size = 6
 	return style
 
 func _make_card_front_style(card_kind: String) -> StyleBoxFlat:

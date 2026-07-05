@@ -237,25 +237,73 @@ corner_radius_bottom_right = 4
 corner_radius_bottom_left = 4
 
 [sub_resource type="StyleBoxFlat" id="CardChoicePanelStyle"]
-bg_color = Color(0.9411765, 0.7529412, 0.28627452, 1)
-border_width_left = 18
-border_width_top = 18
-border_width_right = 18
-border_width_bottom = 18
-border_color = Color(0.07450981, 0.07450981, 0.07450981, 1)
+bg_color = Color(1, 0.8784314, 0.47843137, 1)
+border_width_left = 5
+border_width_top = 5
+border_width_right = 5
+border_width_bottom = 5
+border_color = Color(0.08627451, 0.043137256, 0, 1)
 corner_radius_top_left = 4
 corner_radius_top_right = 4
 corner_radius_bottom_right = 4
 corner_radius_bottom_left = 4
-shadow_color = Color(0, 0, 0, 0.34)
-shadow_size = 12
+shadow_color = Color(0, 0, 0, 0.42)
+shadow_size = 10
+
+[sub_resource type="StyleBoxFlat" id="CardChoiceKickerStyle"]
+content_margin_left = 8.0
+content_margin_top = 4.0
+content_margin_right = 8.0
+content_margin_bottom = 4.0
+bg_color = Color(0.09019608, 0.16470589, 0.20784314, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.08627451, 0.043137256, 0, 1)
+
+[sub_resource type="StyleBoxFlat" id="CardChoiceBackStyle"]
+content_margin_left = 12.0
+content_margin_top = 12.0
+content_margin_right = 12.0
+content_margin_bottom = 12.0
+bg_color = Color(0.09411765, 0.20784314, 0.2784314, 1)
+border_width_left = 5
+border_width_top = 5
+border_width_right = 5
+border_width_bottom = 5
+border_color = Color(0.07058824, 0.043137256, 0.02745098, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+shadow_color = Color(0, 0, 0, 0.36)
+shadow_size = 6
+
+[sub_resource type="StyleBoxFlat" id="CardChoiceBackHoverStyle"]
+content_margin_left = 12.0
+content_margin_top = 12.0
+content_margin_right = 12.0
+content_margin_bottom = 12.0
+bg_color = Color(0.11764706, 0.25490198, 0.3372549, 1)
+border_width_left = 5
+border_width_top = 5
+border_width_right = 5
+border_width_bottom = 5
+border_color = Color(1, 0.90588236, 0.41960785, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+shadow_color = Color(0, 0, 0, 0.36)
+shadow_size = 6
 
 [sub_resource type="StyleBoxFlat" id="CardChoiceResultStyle"]
-bg_color = Color(0.08627451, 0.16470589, 0.20784314, 1)
-border_width_left = 4
-border_width_top = 4
-border_width_right = 4
-border_width_bottom = 4
+bg_color = Color(0.09019608, 0.16470589, 0.20784314, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
 border_color = Color(0.08627451, 0.043137256, 0, 1)
 corner_radius_top_left = 4
 corner_radius_top_right = 4
@@ -699,97 +747,96 @@ layout_mode = 0
 offset_right = 1260.0
 offset_bottom = 1035.0
 mouse_filter = 0
-color = Color(0.09411765, 0.047058824, 0.011764706, 0.52)
+color = Color(0.023529412, 0.050980393, 0.07058824, 0.72)
 
 [node name="CardChoicePanel" type="PanelContainer" parent="AppBackground/GameFrame/GameLayout/BoardStage/CardChoiceOverlay"]
 layout_mode = 0
-offset_left = 230.0
+offset_left = 250.0
 offset_top = 178.0
-offset_right = 1030.0
+offset_right = 1010.0
 offset_bottom = 858.0
 theme_override_styles/panel = SubResource("CardChoicePanelStyle")
 
 [node name="CardChoiceInset" type="MarginContainer" parent="AppBackground/GameFrame/GameLayout/BoardStage/CardChoiceOverlay/CardChoicePanel"]
 layout_mode = 2
-theme_override_constants/margin_left = 42
-theme_override_constants/margin_top = 36
-theme_override_constants/margin_right = 42
-theme_override_constants/margin_bottom = 36
+theme_override_constants/margin_left = 30
+theme_override_constants/margin_top = 30
+theme_override_constants/margin_right = 30
+theme_override_constants/margin_bottom = 30
 
 [node name="CardChoiceContent" type="VBoxContainer" parent="AppBackground/GameFrame/GameLayout/BoardStage/CardChoiceOverlay/CardChoicePanel/CardChoiceInset"]
 layout_mode = 2
-theme_override_constants/separation = 16
+theme_override_constants/separation = 14
 alignment = 1
 
-[node name="CardChoiceKicker" type="Label" parent="AppBackground/GameFrame/GameLayout/BoardStage/CardChoiceOverlay/CardChoicePanel/CardChoiceInset/CardChoiceContent"]
+[node name="CardChoiceKicker" type="PanelContainer" parent="AppBackground/GameFrame/GameLayout/BoardStage/CardChoiceOverlay/CardChoicePanel/CardChoiceInset/CardChoiceContent"]
+custom_minimum_size = Vector2(0, 30)
 layout_mode = 2
-theme_override_colors/font_color = Color(0.09411765, 0.047058824, 0.011764706, 1)
-theme_override_font_sizes/font_size = 18
+theme_override_styles/panel = SubResource("CardChoiceKickerStyle")
+
+[node name="CardChoiceKickerLabel" type="Label" parent="AppBackground/GameFrame/GameLayout/BoardStage/CardChoiceOverlay/CardChoicePanel/CardChoiceInset/CardChoiceContent/CardChoiceKicker"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.9607843, 0.78039217, 1)
+theme_override_font_sizes/font_size = 16
 text = "Evento da onda"
 horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="CardChoiceTitle" type="Label" parent="AppBackground/GameFrame/GameLayout/BoardStage/CardChoiceOverlay/CardChoicePanel/CardChoiceInset/CardChoiceContent"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.02745098, 0.10980392, 0.043137256, 1)
-theme_override_font_sizes/font_size = 42
+theme_override_font_sizes/font_size = 40
 text = "Escolha uma carta"
 horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 3
 
-[node name="CardChoiceCards" type="HBoxContainer" parent="AppBackground/GameFrame/GameLayout/BoardStage/CardChoiceOverlay/CardChoicePanel/CardChoiceInset/CardChoiceContent"]
+[node name="CardChoiceCards" type="GridContainer" parent="AppBackground/GameFrame/GameLayout/BoardStage/CardChoiceOverlay/CardChoicePanel/CardChoiceInset/CardChoiceContent"]
 custom_minimum_size = Vector2(0, 236)
 layout_mode = 2
-theme_override_constants/separation = 16
-alignment = 1
+theme_override_constants/h_separation = 14
+theme_override_constants/v_separation = 14
+columns = 4
 
 [node name="CardChoiceButton1" type="Button" parent="AppBackground/GameFrame/GameLayout/BoardStage/CardChoiceOverlay/CardChoicePanel/CardChoiceInset/CardChoiceContent/CardChoiceCards"]
 custom_minimum_size = Vector2(150, 210)
 layout_mode = 2
-theme_override_colors/font_color = Color(0.08235294, 0.16470589, 0.20784314, 1)
-theme_override_font_sizes/font_size = 28
-theme_override_styles/normal = SubResource("ButtonNormal")
-theme_override_styles/pressed = SubResource("ButtonPressed")
-theme_override_styles/hover = SubResource("ButtonHover")
-theme_override_styles/disabled = SubResource("ButtonDisabled")
-text = "?
-Carta 1"
+theme_override_colors/font_color = Color(1, 0.96862745, 0.81960785, 1)
+theme_override_font_sizes/font_size = 18
+theme_override_styles/normal = SubResource("CardChoiceBackStyle")
+theme_override_styles/pressed = SubResource("CardChoiceBackHoverStyle")
+theme_override_styles/hover = SubResource("CardChoiceBackHoverStyle")
+theme_override_styles/disabled = SubResource("CardChoiceBackStyle")
 
 [node name="CardChoiceButton2" type="Button" parent="AppBackground/GameFrame/GameLayout/BoardStage/CardChoiceOverlay/CardChoicePanel/CardChoiceInset/CardChoiceContent/CardChoiceCards"]
 custom_minimum_size = Vector2(150, 210)
 layout_mode = 2
-theme_override_colors/font_color = Color(0.08235294, 0.16470589, 0.20784314, 1)
-theme_override_font_sizes/font_size = 28
-theme_override_styles/normal = SubResource("ButtonNormal")
-theme_override_styles/pressed = SubResource("ButtonPressed")
-theme_override_styles/hover = SubResource("ButtonHover")
-theme_override_styles/disabled = SubResource("ButtonDisabled")
-text = "?
-Carta 2"
+theme_override_colors/font_color = Color(1, 0.96862745, 0.81960785, 1)
+theme_override_font_sizes/font_size = 18
+theme_override_styles/normal = SubResource("CardChoiceBackStyle")
+theme_override_styles/pressed = SubResource("CardChoiceBackHoverStyle")
+theme_override_styles/hover = SubResource("CardChoiceBackHoverStyle")
+theme_override_styles/disabled = SubResource("CardChoiceBackStyle")
 
 [node name="CardChoiceButton3" type="Button" parent="AppBackground/GameFrame/GameLayout/BoardStage/CardChoiceOverlay/CardChoicePanel/CardChoiceInset/CardChoiceContent/CardChoiceCards"]
 custom_minimum_size = Vector2(150, 210)
 layout_mode = 2
-theme_override_colors/font_color = Color(0.08235294, 0.16470589, 0.20784314, 1)
-theme_override_font_sizes/font_size = 28
-theme_override_styles/normal = SubResource("ButtonNormal")
-theme_override_styles/pressed = SubResource("ButtonPressed")
-theme_override_styles/hover = SubResource("ButtonHover")
-theme_override_styles/disabled = SubResource("ButtonDisabled")
-text = "?
-Carta 3"
+theme_override_colors/font_color = Color(1, 0.96862745, 0.81960785, 1)
+theme_override_font_sizes/font_size = 18
+theme_override_styles/normal = SubResource("CardChoiceBackStyle")
+theme_override_styles/pressed = SubResource("CardChoiceBackHoverStyle")
+theme_override_styles/hover = SubResource("CardChoiceBackHoverStyle")
+theme_override_styles/disabled = SubResource("CardChoiceBackStyle")
 
 [node name="CardChoiceButton4" type="Button" parent="AppBackground/GameFrame/GameLayout/BoardStage/CardChoiceOverlay/CardChoicePanel/CardChoiceInset/CardChoiceContent/CardChoiceCards"]
 custom_minimum_size = Vector2(150, 210)
 layout_mode = 2
-theme_override_colors/font_color = Color(0.08235294, 0.16470589, 0.20784314, 1)
-theme_override_font_sizes/font_size = 28
-theme_override_styles/normal = SubResource("ButtonNormal")
-theme_override_styles/pressed = SubResource("ButtonPressed")
-theme_override_styles/hover = SubResource("ButtonHover")
-theme_override_styles/disabled = SubResource("ButtonDisabled")
-text = "?
-Carta 4"
+theme_override_colors/font_color = Color(1, 0.96862745, 0.81960785, 1)
+theme_override_font_sizes/font_size = 18
+theme_override_styles/normal = SubResource("CardChoiceBackStyle")
+theme_override_styles/pressed = SubResource("CardChoiceBackHoverStyle")
+theme_override_styles/hover = SubResource("CardChoiceBackHoverStyle")
+theme_override_styles/disabled = SubResource("CardChoiceBackStyle")
 
 [node name="CardChoiceResult" type="PanelContainer" parent="AppBackground/GameFrame/GameLayout/BoardStage/CardChoiceOverlay/CardChoicePanel/CardChoiceInset/CardChoiceContent"]
 visible = false
@@ -812,9 +859,9 @@ custom_minimum_size = Vector2(300, 66)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.023529412, 0.023529412, 0.023529412, 1)
 theme_override_font_sizes/font_size = 26
-theme_override_styles/normal = SubResource("ButtonNormal")
-theme_override_styles/pressed = SubResource("ButtonPressed")
-theme_override_styles/hover = SubResource("ButtonHover")
+theme_override_styles/normal = SubResource("PixelButtonNormal")
+theme_override_styles/pressed = SubResource("PixelButtonPressed")
+theme_override_styles/hover = SubResource("PixelButtonHover")
 theme_override_styles/disabled = SubResource("ButtonDisabled")
 text = "Continuar"
 
