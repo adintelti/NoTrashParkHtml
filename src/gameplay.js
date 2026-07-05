@@ -935,8 +935,17 @@
     return {
       id: `${kind}-${state.wave}-${Math.random().toString(36).slice(2, 8)}`,
       kind,
+      category: getCardCategory(kind, config.effect),
       ...config
     };
+  }
+
+  function getCardCategory(kind, effect = {}) {
+    if (kind === "bane") return "setback";
+    if (effect.type === "towerBuff" && effect.multiplier > 1) return "improvement";
+    if (effect.type === "coins" && effect.amount > 0) return "bonus";
+    if (kind === "boon") return "bonus";
+    return kind;
   }
 
   function getRandomDamageBuffTowerKey() {
