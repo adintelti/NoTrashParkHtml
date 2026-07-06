@@ -1,4 +1,4 @@
-const CACHE_NAME = "ntp-static-v2.1.5";
+const CACHE_NAME = "ntp-static-v2.1.6";
 
 const PRECACHE_URLS = [
   "./",

@@ -119,6 +119,7 @@
     return {
       id: card.id,
       kind: card.kind,
+      category: card.category,
       title: card.title,
       description: card.description,
       effect: card.effect || {}
@@ -714,9 +715,16 @@
   }
 
   function createBoonCards(count = 2) {
-    return shuffleCards(createBoonCardConfigs())
-      .slice(0, count)
+    const requiredConfigs = createRequiredBoonCardConfigs();
+    const randomConfigs = shuffleCards(createBoonCardConfigs())
+      .slice(0, Math.max(0, count - requiredConfigs.length));
+
+    return [...requiredConfigs, ...randomConfigs]
       .map((config) => buildCard("boon", config));
+  }
+
+  function createRequiredBoonCardConfigs() {
+    return state.enemyHealthBarsUnlocked ? [] : [createEnemyHealthBarsCardConfig()];
   }
 
   function createBoonCardConfigs() {
@@ -757,6 +765,17 @@
     }
 
     return configs;
+  }
+
+  function createEnemyHealthBarsCardConfig() {
+    return {
+      title: t("cards.enemyHealthBars.title"),
+      description: t("cards.enemyHealthBars.description"),
+      result: t("cards.enemyHealthBars.result"),
+      effect: {
+        type: "enemyHealthBars"
+      }
+    };
   }
 
   function createDamageBuffCardConfig(towerKey) {
@@ -935,8 +954,18 @@
     return {
       id: `${kind}-${state.wave}-${Math.random().toString(36).slice(2, 8)}`,
       kind,
+      category: getCardCategory(kind, config.effect),
       ...config
     };
+  }
+
+  function getCardCategory(kind, effect = {}) {
+    if (kind === "bane") return "setback";
+    if (effect.type === "enemyHealthBars") return "improvement";
+    if (effect.type === "towerBuff" && effect.multiplier > 1) return "improvement";
+    if (effect.type === "coins" && effect.amount > 0) return "bonus";
+    if (kind === "boon") return "bonus";
+    return kind;
   }
 
   function getRandomDamageBuffTowerKey() {
@@ -1115,7 +1144,19 @@
       return card.result;
     }
 
+    if (effect.type === "enemyHealthBars") {
+      state.enemyHealthBarsUnlocked = true;
+      syncEnemyHealthBarsVisibility();
+      return card.result;
+    }
+
     return card.result;
+  }
+
+  function syncEnemyHealthBarsVisibility() {
+    state.enemies.forEach((enemy) => {
+      enemy.el?.classList.toggle("show-health", state.enemyHealthBarsUnlocked);
+    });
   }
 
   function removeTowersByType(towerType) {
@@ -1297,6 +1338,7 @@
     const maxHp = Math.round(type.hp * (1 + state.wave * 0.12) * getEnemyModifierMultiplier("hp"));
     const el = document.createElement("div");
     el.className = `enemy ${type.className}`;
+    el.classList.toggle("show-health", state.enemyHealthBarsUnlocked);
     const healthEl = document.createElement("div");
     const healthBar = document.createElement("span");
     healthEl.className = "health";

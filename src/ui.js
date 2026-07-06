@@ -386,9 +386,9 @@
     button.setAttribute("aria-label", isRevealed && isSelected ? card.title : t("cards.cardAria", { index: index + 1 }));
 
     if (isRevealed && isSelected) {
-      appendCardText(button, "span", "card-choice-kind", t(`cards.kind.${card.kind}`, {}, t("cards.defaultKind")));
+      const categoryKey = card.category || card.kind;
+      appendCardText(button, "span", "card-choice-kind", t(`cards.kind.${categoryKey}`, {}, t("cards.defaultKind")));
       appendCardText(button, "strong", "card-choice-name", card.title);
-      appendCardText(button, "span", "card-choice-description", card.description);
       return button;
     }
 

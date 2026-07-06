@@ -256,13 +256,6 @@
   line-height: 1.05;
 }
 
-.card-choice-description {
-  max-width: 42ch;
-  font-size: clamp(0.8rem, 1.9vw, 1rem);
-  font-weight: 800;
-  line-height: 1.28;
-}
-
 .card-choice-result {
   min-height: 34px;
   margin: 0;

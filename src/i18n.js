@@ -148,16 +148,19 @@
         restart: "Jogar novamente!"
       },
       cards: {
-        kicker: "Evento da onda",
+        kicker: "Escolha uma carta",
         choose: "Escolha uma carta",
         mysteryAria: "Cartas misteriosas",
         defaultKind: "Carta",
         cardAria: "Carta {index}",
         cardIndex: "Carta {index}",
         kind: {
-          neutral: "Neutro",
-          boon: "Ajuda",
-          bane: "Risco"
+          neutral: "NEUTRO",
+          boon: "BONUS",
+          bane: "REVES",
+          bonus: "BONUS",
+          improvement: "MELHORIA",
+          setback: "REVES"
         },
         neutral: {
           title: "Nada mudou",
@@ -205,6 +208,11 @@
           description: "Recupere 1 HP agora.",
           result: "Voce recuperou 1 HP.",
           full: "Vida ja estava cheia. Nada mudou."
+        },
+        enemyHealthBars: {
+          title: "Instinto de combate",
+          description: "Revele a vida dos inimigos.",
+          result: "Agora voce ve a vida dos inimigos."
         },
         enemyHp: {
           title: "Lixo reforcado",
@@ -394,16 +402,19 @@
         restart: "Play again!"
       },
       cards: {
-        kicker: "Wave event",
+        kicker: "Choose a card",
         choose: "Choose a card",
         mysteryAria: "Mystery cards",
         defaultKind: "Card",
         cardAria: "Card {index}",
         cardIndex: "Card {index}",
         kind: {
-          neutral: "Neutral",
-          boon: "Boost",
-          bane: "Risk"
+          neutral: "NEUTRAL",
+          boon: "BONUS",
+          bane: "SETBACK",
+          bonus: "BONUS",
+          improvement: "UPGRADE",
+          setback: "SETBACK"
         },
         neutral: {
           title: "Nothing changed",
@@ -451,6 +462,11 @@
           description: "Recover 1 HP now.",
           result: "You recovered 1 HP.",
           full: "Life was already full. Nothing changed."
+        },
+        enemyHealthBars: {
+          title: "Combat instinct",
+          description: "Reveal enemy health.",
+          result: "You can now see enemy health."
         },
         enemyHp: {
           title: "Reinforced trash",
@@ -640,16 +656,19 @@
         restart: "Jugar otra vez!"
       },
       cards: {
-        kicker: "Evento de oleada",
+        kicker: "Elige una carta",
         choose: "Elige una carta",
         mysteryAria: "Cartas misteriosas",
         defaultKind: "Carta",
         cardAria: "Carta {index}",
         cardIndex: "Carta {index}",
         kind: {
-          neutral: "Neutro",
-          boon: "Ayuda",
-          bane: "Riesgo"
+          neutral: "NEUTRO",
+          boon: "BONO",
+          bane: "REVES",
+          bonus: "BONO",
+          improvement: "MEJORA",
+          setback: "REVES"
         },
         neutral: {
           title: "Nada cambio",
@@ -697,6 +716,11 @@
           description: "Recupera 1 HP ahora.",
           result: "Recuperaste 1 HP.",
           full: "La vida ya estaba llena. Nada cambio."
+        },
+        enemyHealthBars: {
+          title: "Instinto de combate",
+          description: "Revela la vida de los enemigos.",
+          result: "Ahora ves la vida de los enemigos."
         },
         enemyHp: {
           title: "Basura reforzada",

@@ -1,0 +1,1471 @@
+[gd_scene format=3 uid="uid://c7n1g2r46p0xa"]
+
+[ext_resource type="Script" path="res://scripts/gameplay.gd" id="1_gameplay_script"]
+[ext_resource type="Texture2D" path="res://assets/ui/ui_shop_button_blank.png" id="2_shop_button"]
+[ext_resource type="Texture2D" path="res://assets/ui/ui_shop_button_locked_blank.png" id="3_shop_button_locked"]
+[ext_resource type="Texture2D" path="res://assets/ui/ui_pixel_button_blank.png" id="4_pixel_button"]
+[ext_resource type="Texture2D" path="res://assets/ui/ui_shop_title_loja.png" id="7_shop_title"]
+[ext_resource type="Texture2D" path="res://assets/ui/ui_coin_icon.png" id="8_coin_icon"]
+[ext_resource type="Texture2D" path="res://assets/ui/ui_stat_pill_blank.png" id="9_stat_pill"]
+
+[sub_resource type="StyleBoxFlat" id="FrameStyle"]
+bg_color = Color(0.050980393, 0.17254902, 0.2901961, 1)
+border_width_left = 6
+border_width_top = 6
+border_width_right = 6
+border_width_bottom = 6
+border_color = Color(0.14117648, 0.09019608, 0.047058824, 1)
+
+[sub_resource type="StyleBoxFlat" id="ShopStyle"]
+bg_color = Color(0.61960787, 0.31764707, 0.16078432, 1)
+border_width_left = 6
+border_width_top = 6
+border_width_right = 6
+border_width_bottom = 6
+border_color = Color(0.20784314, 0.09411765, 0.023529412, 1)
+shadow_color = Color(0, 0, 0, 0.2)
+shadow_size = 6
+
+[sub_resource type="StyleBoxFlat" id="HudStyle"]
+content_margin_left = 9.0
+content_margin_top = 4.0
+content_margin_right = 9.0
+content_margin_bottom = 4.0
+bg_color = Color(1, 0.9411765, 0.6901961, 1)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.14117648, 0.09019608, 0.047058824, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+shadow_color = Color(0, 0, 0, 0.22)
+shadow_size = 4
+
+[sub_resource type="StyleBoxFlat" id="InfoStyle"]
+bg_color = Color(0.9019608, 0.65882355, 0.2509804, 1)
+border_width_left = 5
+border_width_top = 5
+border_width_right = 5
+border_width_bottom = 5
+border_color = Color(0.14117648, 0.09019608, 0.047058824, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="FloatingStyle"]
+content_margin_left = 14.0
+content_margin_top = 9.0
+content_margin_right = 14.0
+content_margin_bottom = 9.0
+bg_color = Color(0.9019608, 0.65882355, 0.2509804, 1)
+border_width_left = 5
+border_width_top = 5
+border_width_right = 5
+border_width_bottom = 5
+border_color = Color(0.14117648, 0.09019608, 0.047058824, 1)
+shadow_color = Color(0, 0, 0, 0.25)
+shadow_size = 6
+
+[sub_resource type="StyleBoxFlat" id="ComboCounterStyle"]
+content_margin_left = 8.0
+content_margin_top = 4.0
+content_margin_right = 8.0
+content_margin_bottom = 4.0
+bg_color = Color(0.08627451, 0.043137256, 0, 0.82)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(1, 0.90588236, 0.41960785, 1)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+shadow_color = Color(0, 0, 0, 0.34)
+shadow_size = 4
+
+[sub_resource type="StyleBoxFlat" id="ButtonNormal"]
+bg_color = Color(0.96862745, 0.7137255, 0.09019608, 1)
+border_width_left = 5
+border_width_top = 5
+border_width_right = 5
+border_width_bottom = 5
+border_color = Color(0.14117648, 0.09019608, 0.047058824, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+shadow_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+shadow_size = 4
+
+[sub_resource type="StyleBoxFlat" id="ButtonPressed"]
+bg_color = Color(0.84705883, 0.54901963, 0.0627451, 1)
+border_width_left = 5
+border_width_top = 5
+border_width_right = 5
+border_width_bottom = 5
+border_color = Color(0.14117648, 0.09019608, 0.047058824, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+shadow_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+shadow_size = 2
+
+[sub_resource type="StyleBoxFlat" id="ButtonHover"]
+bg_color = Color(1, 0.8509804, 0.41960785, 1)
+border_width_left = 5
+border_width_top = 5
+border_width_right = 5
+border_width_bottom = 5
+border_color = Color(0.14117648, 0.09019608, 0.047058824, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+shadow_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+shadow_size = 4
+
+[sub_resource type="StyleBoxFlat" id="ButtonActive"]
+bg_color = Color(1, 0.89411765, 0.4509804, 1)
+border_width_left = 5
+border_width_top = 5
+border_width_right = 5
+border_width_bottom = 5
+border_color = Color(1, 0.9411765, 0.6313726, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+shadow_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+shadow_size = 4
+
+[sub_resource type="StyleBoxFlat" id="ButtonDisabled"]
+bg_color = Color(0.54509807, 0.5058824, 0.45490196, 1)
+border_width_left = 5
+border_width_top = 5
+border_width_right = 5
+border_width_bottom = 5
+border_color = Color(0.14117648, 0.09019608, 0.047058824, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxTexture" id="ShopButtonNormal"]
+texture = ExtResource("2_shop_button")
+texture_margin_left = 10.0
+texture_margin_top = 10.0
+texture_margin_right = 14.0
+texture_margin_bottom = 16.0
+
+[sub_resource type="StyleBoxTexture" id="ShopButtonPressed"]
+texture = ExtResource("2_shop_button")
+texture_margin_left = 10.0
+texture_margin_top = 10.0
+texture_margin_right = 14.0
+texture_margin_bottom = 16.0
+modulate_color = Color(0.82, 0.72, 0.52, 1)
+
+[sub_resource type="StyleBoxTexture" id="ShopButtonHover"]
+texture = ExtResource("2_shop_button")
+texture_margin_left = 10.0
+texture_margin_top = 10.0
+texture_margin_right = 14.0
+texture_margin_bottom = 16.0
+modulate_color = Color(1, 0.94, 0.72, 1)
+
+[sub_resource type="StyleBoxTexture" id="ShopButtonActive"]
+texture = ExtResource("2_shop_button")
+texture_margin_left = 10.0
+texture_margin_top = 10.0
+texture_margin_right = 14.0
+texture_margin_bottom = 16.0
+modulate_color = Color(1, 0.98, 0.55, 1)
+
+[sub_resource type="StyleBoxTexture" id="ShopButtonDisabled"]
+texture = ExtResource("3_shop_button_locked")
+texture_margin_left = 10.0
+texture_margin_top = 10.0
+texture_margin_right = 14.0
+texture_margin_bottom = 16.0
+
+[sub_resource type="StyleBoxTexture" id="PixelButtonNormal"]
+texture = ExtResource("4_pixel_button")
+texture_margin_left = 14.0
+texture_margin_top = 12.0
+texture_margin_right = 14.0
+texture_margin_bottom = 18.0
+
+[sub_resource type="StyleBoxTexture" id="PixelButtonPressed"]
+texture = ExtResource("4_pixel_button")
+texture_margin_left = 14.0
+texture_margin_top = 12.0
+texture_margin_right = 14.0
+texture_margin_bottom = 18.0
+modulate_color = Color(0.82, 0.72, 0.52, 1)
+
+[sub_resource type="StyleBoxTexture" id="PixelButtonHover"]
+texture = ExtResource("4_pixel_button")
+texture_margin_left = 14.0
+texture_margin_top = 12.0
+texture_margin_right = 14.0
+texture_margin_bottom = 18.0
+modulate_color = Color(1, 0.94, 0.72, 1)
+
+[sub_resource type="StyleBoxTexture" id="PixelButtonActive"]
+texture = ExtResource("4_pixel_button")
+texture_margin_left = 14.0
+texture_margin_top = 12.0
+texture_margin_right = 14.0
+texture_margin_bottom = 18.0
+modulate_color = Color(1, 0.98, 0.55, 1)
+
+[sub_resource type="StyleBoxTexture" id="MoneyPillStyle"]
+texture = ExtResource("9_stat_pill")
+texture_margin_left = 12.0
+texture_margin_top = 10.0
+texture_margin_right = 14.0
+texture_margin_bottom = 12.0
+
+[sub_resource type="StyleBoxEmpty" id="IconButtonEmpty"]
+
+[sub_resource type="StyleBoxFlat" id="VictoryCardStyle"]
+bg_color = Color(0.9411765, 0.7529412, 0.28627452, 1)
+border_width_left = 20
+border_width_top = 20
+border_width_right = 20
+border_width_bottom = 20
+border_color = Color(0.07450981, 0.07450981, 0.07450981, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+shadow_color = Color(1, 0.7176471, 0.011764706, 1)
+shadow_size = 14
+
+[sub_resource type="StyleBoxFlat" id="VictoryStatStyle"]
+bg_color = Color(0.08627451, 0.043137256, 0, 1)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(1, 0.90588236, 0.41960785, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="CardChoicePanelStyle"]
+bg_color = Color(1, 0.8784314, 0.47843137, 1)
+border_width_left = 5
+border_width_top = 5
+border_width_right = 5
+border_width_bottom = 5
+border_color = Color(0.08627451, 0.043137256, 0, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+shadow_color = Color(0, 0, 0, 0.42)
+shadow_size = 10
+
+[sub_resource type="StyleBoxFlat" id="CardChoiceKickerStyle"]
+content_margin_left = 8.0
+content_margin_top = 4.0
+content_margin_right = 8.0
+content_margin_bottom = 4.0
+bg_color = Color(0.09019608, 0.16470589, 0.20784314, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.08627451, 0.043137256, 0, 1)
+
+[sub_resource type="StyleBoxFlat" id="CardChoiceBackStyle"]
+content_margin_left = 12.0
+content_margin_top = 12.0
+content_margin_right = 12.0
+content_margin_bottom = 12.0
+bg_color = Color(0.09411765, 0.20784314, 0.2784314, 1)
+border_width_left = 5
+border_width_top = 5
+border_width_right = 5
+border_width_bottom = 5
+border_color = Color(0.07058824, 0.043137256, 0.02745098, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+shadow_color = Color(0, 0, 0, 0.36)
+shadow_size = 6
+
+[sub_resource type="StyleBoxFlat" id="CardChoiceBackHoverStyle"]
+content_margin_left = 12.0
+content_margin_top = 12.0
+content_margin_right = 12.0
+content_margin_bottom = 12.0
+bg_color = Color(0.11764706, 0.25490198, 0.3372549, 1)
+border_width_left = 5
+border_width_top = 5
+border_width_right = 5
+border_width_bottom = 5
+border_color = Color(1, 0.90588236, 0.41960785, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+shadow_color = Color(0, 0, 0, 0.36)
+shadow_size = 6
+
+[sub_resource type="StyleBoxFlat" id="CardChoiceResultStyle"]
+bg_color = Color(0.09019608, 0.16470589, 0.20784314, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.08627451, 0.043137256, 0, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="PauseMenuCardStyle"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(1, 0.827451, 0.3529412, 1)
+border_width_left = 5
+border_width_top = 5
+border_width_right = 5
+border_width_bottom = 5
+border_color = Color(0.08627451, 0.043137256, 0, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+shadow_color = Color(0, 0, 0, 0.42)
+shadow_size = 8
+
+[sub_resource type="StyleBoxFlat" id="PauseSoundPanelStyle"]
+bg_color = Color(0.9019608, 0.65882355, 0.2509804, 1)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.08627451, 0.043137256, 0, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+shadow_color = Color(1, 1, 1, 0.18)
+shadow_size = 3
+
+[node name="Gameplay" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture_filter = 1
+script = ExtResource("1_gameplay_script")
+
+[node name="AppBackground" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.050980393, 0.17254902, 0.2901961, 1)
+
+[node name="GameFrame" type="Panel" parent="AppBackground"]
+layout_mode = 0
+offset_left = 90.0
+offset_right = 1830.0
+offset_bottom = 1080.0
+theme_override_styles/panel = SubResource("FrameStyle")
+
+[node name="GameLayout" type="Control" parent="AppBackground/GameFrame"]
+layout_mode = 0
+offset_left = 30.0
+offset_top = 22.0
+offset_right = 1710.0
+offset_bottom = 1057.0
+
+[node name="BoardStage" type="ColorRect" parent="AppBackground/GameFrame/GameLayout"]
+layout_mode = 0
+offset_right = 1260.0
+offset_bottom = 1035.0
+color = Color(0.05882353, 0.25490198, 0.101960786, 1)
+
+[node name="Board" type="GridContainer" parent="AppBackground/GameFrame/GameLayout/BoardStage"]
+clip_contents = true
+layout_mode = 0
+offset_top = 54.0
+offset_right = 1260.0
+offset_bottom = 999.0
+theme_override_constants/h_separation = 0
+theme_override_constants/v_separation = 0
+columns = 12
+
+[node name="RangeLayer" type="Control" parent="AppBackground/GameFrame/GameLayout/BoardStage"]
+clip_contents = true
+layout_mode = 0
+offset_top = 54.0
+offset_right = 1260.0
+offset_bottom = 999.0
+mouse_filter = 2
+
+[node name="TowerLayer" type="Control" parent="AppBackground/GameFrame/GameLayout/BoardStage"]
+clip_contents = true
+layout_mode = 0
+offset_top = 54.0
+offset_right = 1260.0
+offset_bottom = 999.0
+mouse_filter = 2
+
+[node name="EnemyLayer" type="Control" parent="AppBackground/GameFrame/GameLayout/BoardStage"]
+clip_contents = true
+layout_mode = 0
+offset_top = 54.0
+offset_right = 1260.0
+offset_bottom = 999.0
+mouse_filter = 2
+
+[node name="ProjectileLayer" type="Control" parent="AppBackground/GameFrame/GameLayout/BoardStage"]
+clip_contents = true
+layout_mode = 0
+offset_top = 54.0
+offset_right = 1260.0
+offset_bottom = 999.0
+mouse_filter = 2
+
+[node name="EffectLayer" type="Control" parent="AppBackground/GameFrame/GameLayout/BoardStage"]
+clip_contents = true
+layout_mode = 0
+offset_top = 54.0
+offset_right = 1260.0
+offset_bottom = 999.0
+mouse_filter = 2
+
+[node name="TopHud" type="HBoxContainer" parent="AppBackground/GameFrame/GameLayout/BoardStage"]
+layout_mode = 0
+offset_left = 207.0
+offset_top = 9.0
+offset_right = 1053.0
+offset_bottom = 45.0
+theme_override_constants/separation = 10
+
+[node name="LivesPill" type="PanelContainer" parent="AppBackground/GameFrame/GameLayout/BoardStage/TopHud"]
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+theme_override_styles/panel = SubResource("HudStyle")
+
+[node name="LivesLabel" type="Label" parent="AppBackground/GameFrame/GameLayout/BoardStage/TopHud/LivesPill"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.09411765, 0.047058824, 0.011764706, 1)
+theme_override_font_sizes/font_size = 18
+text = "Vidas 10"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="WavePill" type="PanelContainer" parent="AppBackground/GameFrame/GameLayout/BoardStage/TopHud"]
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+theme_override_styles/panel = SubResource("HudStyle")
+
+[node name="WaveLabel" type="Label" parent="AppBackground/GameFrame/GameLayout/BoardStage/TopHud/WavePill"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.09411765, 0.047058824, 0.011764706, 1)
+theme_override_font_sizes/font_size = 18
+text = "Onda 0/12"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="DefeatedPill" type="PanelContainer" parent="AppBackground/GameFrame/GameLayout/BoardStage/TopHud"]
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+theme_override_styles/panel = SubResource("HudStyle")
+
+[node name="DefeatedLabel" type="Label" parent="AppBackground/GameFrame/GameLayout/BoardStage/TopHud/DefeatedPill"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.09411765, 0.047058824, 0.011764706, 1)
+theme_override_font_sizes/font_size = 18
+text = "Derrotou 0"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="TimePill" type="PanelContainer" parent="AppBackground/GameFrame/GameLayout/BoardStage/TopHud"]
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+theme_override_styles/panel = SubResource("HudStyle")
+
+[node name="TimeLabel" type="Label" parent="AppBackground/GameFrame/GameLayout/BoardStage/TopHud/TimePill"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.09411765, 0.047058824, 0.011764706, 1)
+theme_override_font_sizes/font_size = 18
+text = "Tempo 00:00"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ComboCounter" type="PanelContainer" parent="AppBackground/GameFrame/GameLayout/BoardStage"]
+visible = false
+custom_minimum_size = Vector2(48, 36)
+layout_mode = 0
+offset_left = 1202.0
+offset_top = 9.0
+offset_right = 1250.0
+offset_bottom = 45.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("ComboCounterStyle")
+
+[node name="ComboCounterLabel" type="Label" parent="AppBackground/GameFrame/GameLayout/BoardStage/ComboCounter"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.96862745, 0.8, 1)
+theme_override_font_sizes/font_size = 22
+text = "0X"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="WaveBanner" type="PanelContainer" parent="AppBackground/GameFrame/GameLayout/BoardStage"]
+visible = false
+layout_mode = 0
+offset_left = 390.0
+offset_top = 420.0
+offset_right = 870.0
+offset_bottom = 516.0
+theme_override_styles/panel = SubResource("FloatingStyle")
+
+[node name="WaveBannerLabel" type="Label" parent="AppBackground/GameFrame/GameLayout/BoardStage/WaveBanner"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+theme_override_font_sizes/font_size = 32
+text = "Onda 1"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="FloatingMessage" type="PanelContainer" parent="AppBackground/GameFrame/GameLayout/BoardStage"]
+visible = false
+layout_mode = 0
+offset_left = 536.0
+offset_top = 930.0
+offset_right = 724.0
+offset_bottom = 978.0
+theme_override_styles/panel = SubResource("FloatingStyle")
+
+[node name="FloatingMessageLabel" type="Label" parent="AppBackground/GameFrame/GameLayout/BoardStage/FloatingMessage"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+theme_override_font_sizes/font_size = 18
+text = "Preparando onda 1."
+
+[node name="VictoryOverlay" type="Control" parent="AppBackground/GameFrame/GameLayout/BoardStage"]
+visible = false
+layout_mode = 0
+offset_right = 1260.0
+offset_bottom = 1035.0
+
+[node name="VictoryDimmer" type="ColorRect" parent="AppBackground/GameFrame/GameLayout/BoardStage/VictoryOverlay"]
+layout_mode = 0
+offset_right = 1260.0
+offset_bottom = 1035.0
+color = Color(0.05882353, 0.15686275, 0.043137256, 0.42)
+
+[node name="VictoryCard" type="PanelContainer" parent="AppBackground/GameFrame/GameLayout/BoardStage/VictoryOverlay"]
+layout_mode = 0
+offset_left = 351.0
+offset_top = 168.0
+offset_right = 909.0
+offset_bottom = 867.0
+theme_override_styles/panel = SubResource("VictoryCardStyle")
+
+[node name="VictoryInset" type="MarginContainer" parent="AppBackground/GameFrame/GameLayout/BoardStage/VictoryOverlay/VictoryCard"]
+layout_mode = 2
+theme_override_constants/margin_left = 48
+theme_override_constants/margin_top = 48
+theme_override_constants/margin_right = 48
+theme_override_constants/margin_bottom = 48
+
+[node name="VictoryContent" type="VBoxContainer" parent="AppBackground/GameFrame/GameLayout/BoardStage/VictoryOverlay/VictoryCard/VictoryInset"]
+layout_mode = 2
+theme_override_constants/separation = 24
+alignment = 1
+
+[node name="VictoryTitle" type="Label" parent="AppBackground/GameFrame/GameLayout/BoardStage/VictoryOverlay/VictoryCard/VictoryInset/VictoryContent"]
+custom_minimum_size = Vector2(0, 112)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.02745098, 0.10980392, 0.043137256, 1)
+theme_override_font_sizes/font_size = 48
+text = "Parque Protegido!"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="VictorySummary" type="Label" parent="AppBackground/GameFrame/GameLayout/BoardStage/VictoryOverlay/VictoryCard/VictoryInset/VictoryContent"]
+custom_minimum_size = Vector2(0, 52)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.09411765, 0.047058824, 0.011764706, 1)
+theme_override_font_sizes/font_size = 22
+text = "Todas as ondas foram concluidas."
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="VictoryStats" type="HBoxContainer" parent="AppBackground/GameFrame/GameLayout/BoardStage/VictoryOverlay/VictoryCard/VictoryInset/VictoryContent"]
+custom_minimum_size = Vector2(0, 86)
+layout_mode = 2
+theme_override_constants/separation = 12
+alignment = 1
+
+[node name="TimeStat" type="PanelContainer" parent="AppBackground/GameFrame/GameLayout/BoardStage/VictoryOverlay/VictoryCard/VictoryInset/VictoryContent/VictoryStats"]
+custom_minimum_size = Vector2(136, 82)
+layout_mode = 2
+theme_override_styles/panel = SubResource("VictoryStatStyle")
+
+[node name="TimeBox" type="VBoxContainer" parent="AppBackground/GameFrame/GameLayout/BoardStage/VictoryOverlay/VictoryCard/VictoryInset/VictoryContent/VictoryStats/TimeStat"]
+layout_mode = 2
+theme_override_constants/separation = 4
+alignment = 1
+
+[node name="TimeLabel" type="Label" parent="AppBackground/GameFrame/GameLayout/BoardStage/VictoryOverlay/VictoryCard/VictoryInset/VictoryContent/VictoryStats/TimeStat/TimeBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.9529412, 0.7490196, 1)
+theme_override_font_sizes/font_size = 16
+text = "Tempo"
+horizontal_alignment = 1
+
+[node name="TimeValue" type="Label" parent="AppBackground/GameFrame/GameLayout/BoardStage/VictoryOverlay/VictoryCard/VictoryInset/VictoryContent/VictoryStats/TimeStat/TimeBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.9529412, 0.7490196, 1)
+theme_override_font_sizes/font_size = 28
+text = "00:00"
+horizontal_alignment = 1
+
+[node name="WaveStat" type="PanelContainer" parent="AppBackground/GameFrame/GameLayout/BoardStage/VictoryOverlay/VictoryCard/VictoryInset/VictoryContent/VictoryStats"]
+custom_minimum_size = Vector2(136, 82)
+layout_mode = 2
+theme_override_styles/panel = SubResource("VictoryStatStyle")
+
+[node name="WaveBox" type="VBoxContainer" parent="AppBackground/GameFrame/GameLayout/BoardStage/VictoryOverlay/VictoryCard/VictoryInset/VictoryContent/VictoryStats/WaveStat"]
+layout_mode = 2
+theme_override_constants/separation = 4
+alignment = 1
+
+[node name="WaveLabel" type="Label" parent="AppBackground/GameFrame/GameLayout/BoardStage/VictoryOverlay/VictoryCard/VictoryInset/VictoryContent/VictoryStats/WaveStat/WaveBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.9529412, 0.7490196, 1)
+theme_override_font_sizes/font_size = 16
+text = "Onda"
+horizontal_alignment = 1
+
+[node name="WaveValue" type="Label" parent="AppBackground/GameFrame/GameLayout/BoardStage/VictoryOverlay/VictoryCard/VictoryInset/VictoryContent/VictoryStats/WaveStat/WaveBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.9529412, 0.7490196, 1)
+theme_override_font_sizes/font_size = 28
+text = "0/0"
+horizontal_alignment = 1
+
+[node name="DefeatedStat" type="PanelContainer" parent="AppBackground/GameFrame/GameLayout/BoardStage/VictoryOverlay/VictoryCard/VictoryInset/VictoryContent/VictoryStats"]
+custom_minimum_size = Vector2(136, 82)
+layout_mode = 2
+theme_override_styles/panel = SubResource("VictoryStatStyle")
+
+[node name="DefeatedBox" type="VBoxContainer" parent="AppBackground/GameFrame/GameLayout/BoardStage/VictoryOverlay/VictoryCard/VictoryInset/VictoryContent/VictoryStats/DefeatedStat"]
+layout_mode = 2
+theme_override_constants/separation = 4
+alignment = 1
+
+[node name="DefeatedLabel" type="Label" parent="AppBackground/GameFrame/GameLayout/BoardStage/VictoryOverlay/VictoryCard/VictoryInset/VictoryContent/VictoryStats/DefeatedStat/DefeatedBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.9529412, 0.7490196, 1)
+theme_override_font_sizes/font_size = 16
+text = "Derrotou"
+horizontal_alignment = 1
+
+[node name="DefeatedValue" type="Label" parent="AppBackground/GameFrame/GameLayout/BoardStage/VictoryOverlay/VictoryCard/VictoryInset/VictoryContent/VictoryStats/DefeatedStat/DefeatedBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.9529412, 0.7490196, 1)
+theme_override_font_sizes/font_size = 28
+text = "0"
+horizontal_alignment = 1
+
+[node name="VictoryActions" type="VBoxContainer" parent="AppBackground/GameFrame/GameLayout/BoardStage/VictoryOverlay/VictoryCard/VictoryInset/VictoryContent"]
+layout_mode = 2
+theme_override_constants/separation = 18
+alignment = 1
+
+[node name="VictoryContinueButton" type="Button" parent="AppBackground/GameFrame/GameLayout/BoardStage/VictoryOverlay/VictoryCard/VictoryInset/VictoryContent/VictoryActions"]
+visible = false
+custom_minimum_size = Vector2(430, 70)
+layout_mode = 2
+disabled = true
+theme_override_colors/font_color = Color(0.023529412, 0.023529412, 0.023529412, 1)
+theme_override_font_sizes/font_size = 32
+theme_override_styles/normal = SubResource("ButtonNormal")
+theme_override_styles/pressed = SubResource("ButtonPressed")
+theme_override_styles/hover = SubResource("ButtonHover")
+theme_override_styles/disabled = SubResource("ButtonDisabled")
+text = "Continuar"
+
+[node name="VictoryRestartButton" type="Button" parent="AppBackground/GameFrame/GameLayout/BoardStage/VictoryOverlay/VictoryCard/VictoryInset/VictoryContent/VictoryActions"]
+custom_minimum_size = Vector2(430, 70)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.023529412, 0.023529412, 0.023529412, 1)
+theme_override_font_sizes/font_size = 32
+theme_override_styles/normal = SubResource("ButtonNormal")
+theme_override_styles/pressed = SubResource("ButtonPressed")
+theme_override_styles/hover = SubResource("ButtonHover")
+theme_override_styles/disabled = SubResource("ButtonDisabled")
+text = "Jogar novamente!"
+
+[node name="VictoryMenuButton" type="Button" parent="AppBackground/GameFrame/GameLayout/BoardStage/VictoryOverlay/VictoryCard/VictoryInset/VictoryContent/VictoryActions"]
+custom_minimum_size = Vector2(430, 70)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.023529412, 0.023529412, 0.023529412, 1)
+theme_override_font_sizes/font_size = 32
+theme_override_styles/normal = SubResource("ButtonNormal")
+theme_override_styles/pressed = SubResource("ButtonPressed")
+theme_override_styles/hover = SubResource("ButtonHover")
+theme_override_styles/disabled = SubResource("ButtonDisabled")
+text = "Menu"
+
+[node name="TowerDeleteConfirmOverlay" type="Control" parent="AppBackground/GameFrame/GameLayout/BoardStage"]
+visible = false
+layout_mode = 0
+offset_right = 1260.0
+offset_bottom = 1035.0
+mouse_filter = 0
+
+[node name="TowerDeleteDimmer" type="ColorRect" parent="AppBackground/GameFrame/GameLayout/BoardStage/TowerDeleteConfirmOverlay"]
+layout_mode = 0
+offset_right = 1260.0
+offset_bottom = 1035.0
+mouse_filter = 0
+color = Color(0.09411765, 0.047058824, 0.011764706, 0.48)
+
+[node name="TowerDeleteCard" type="PanelContainer" parent="AppBackground/GameFrame/GameLayout/BoardStage/TowerDeleteConfirmOverlay"]
+layout_mode = 0
+offset_left = 360.0
+offset_top = 342.0
+offset_right = 900.0
+offset_bottom = 682.0
+theme_override_styles/panel = SubResource("VictoryCardStyle")
+
+[node name="TowerDeleteInset" type="MarginContainer" parent="AppBackground/GameFrame/GameLayout/BoardStage/TowerDeleteConfirmOverlay/TowerDeleteCard"]
+layout_mode = 2
+theme_override_constants/margin_left = 40
+theme_override_constants/margin_top = 38
+theme_override_constants/margin_right = 40
+theme_override_constants/margin_bottom = 38
+
+[node name="TowerDeleteContent" type="VBoxContainer" parent="AppBackground/GameFrame/GameLayout/BoardStage/TowerDeleteConfirmOverlay/TowerDeleteCard/TowerDeleteInset"]
+layout_mode = 2
+theme_override_constants/separation = 18
+alignment = 1
+
+[node name="TowerDeleteTitle" type="Label" parent="AppBackground/GameFrame/GameLayout/BoardStage/TowerDeleteConfirmOverlay/TowerDeleteCard/TowerDeleteInset/TowerDeleteContent"]
+custom_minimum_size = Vector2(0, 72)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.02745098, 0.10980392, 0.043137256, 1)
+theme_override_font_sizes/font_size = 34
+text = "Remover esta torre?"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="TowerDeleteSummary" type="Label" parent="AppBackground/GameFrame/GameLayout/BoardStage/TowerDeleteConfirmOverlay/TowerDeleteCard/TowerDeleteInset/TowerDeleteContent"]
+custom_minimum_size = Vector2(0, 60)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.09411765, 0.047058824, 0.011764706, 1)
+theme_override_font_sizes/font_size = 20
+text = "A torre sera removida sem reembolso."
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="TowerDeleteActions" type="HBoxContainer" parent="AppBackground/GameFrame/GameLayout/BoardStage/TowerDeleteConfirmOverlay/TowerDeleteCard/TowerDeleteInset/TowerDeleteContent"]
+custom_minimum_size = Vector2(0, 74)
+layout_mode = 2
+theme_override_constants/separation = 18
+alignment = 1
+
+[node name="TowerDeleteRemoveButton" type="Button" parent="AppBackground/GameFrame/GameLayout/BoardStage/TowerDeleteConfirmOverlay/TowerDeleteCard/TowerDeleteInset/TowerDeleteContent/TowerDeleteActions"]
+custom_minimum_size = Vector2(210, 66)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.023529412, 0.023529412, 0.023529412, 1)
+theme_override_font_sizes/font_size = 24
+theme_override_styles/normal = SubResource("ButtonNormal")
+theme_override_styles/pressed = SubResource("ButtonPressed")
+theme_override_styles/hover = SubResource("ButtonHover")
+theme_override_styles/disabled = SubResource("ButtonDisabled")
+text = "Remover"
+
+[node name="TowerDeleteCancelButton" type="Button" parent="AppBackground/GameFrame/GameLayout/BoardStage/TowerDeleteConfirmOverlay/TowerDeleteCard/TowerDeleteInset/TowerDeleteContent/TowerDeleteActions"]
+custom_minimum_size = Vector2(210, 66)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.023529412, 0.023529412, 0.023529412, 1)
+theme_override_font_sizes/font_size = 24
+theme_override_styles/normal = SubResource("ButtonNormal")
+theme_override_styles/pressed = SubResource("ButtonPressed")
+theme_override_styles/hover = SubResource("ButtonHover")
+theme_override_styles/disabled = SubResource("ButtonDisabled")
+text = "Cancelar"
+
+[node name="CardChoiceOverlay" type="Control" parent="AppBackground/GameFrame/GameLayout/BoardStage"]
+visible = false
+layout_mode = 0
+offset_right = 1260.0
+offset_bottom = 1035.0
+mouse_filter = 0
+
+[node name="CardChoiceDimmer" type="ColorRect" parent="AppBackground/GameFrame/GameLayout/BoardStage/CardChoiceOverlay"]
+layout_mode = 0
+offset_right = 1260.0
+offset_bottom = 1035.0
+mouse_filter = 0
+color = Color(0.023529412, 0.050980393, 0.07058824, 0.72)
+
+[node name="CardChoicePanel" type="PanelContainer" parent="AppBackground/GameFrame/GameLayout/BoardStage/CardChoiceOverlay"]
+layout_mode = 0
+offset_left = 250.0
+offset_top = 278.0
+offset_right = 1010.0
+offset_bottom = 758.0
+theme_override_styles/panel = SubResource("CardChoicePanelStyle")
+
+[node name="CardChoiceInset" type="MarginContainer" parent="AppBackground/GameFrame/GameLayout/BoardStage/CardChoiceOverlay/CardChoicePanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 30
+theme_override_constants/margin_top = 30
+theme_override_constants/margin_right = 30
+theme_override_constants/margin_bottom = 30
+
+[node name="CardChoiceContent" type="VBoxContainer" parent="AppBackground/GameFrame/GameLayout/BoardStage/CardChoiceOverlay/CardChoicePanel/CardChoiceInset"]
+layout_mode = 2
+theme_override_constants/separation = 18
+alignment = 1
+
+[node name="CardChoiceKicker" type="PanelContainer" parent="AppBackground/GameFrame/GameLayout/BoardStage/CardChoiceOverlay/CardChoicePanel/CardChoiceInset/CardChoiceContent"]
+visible = false
+custom_minimum_size = Vector2(0, 30)
+layout_mode = 2
+theme_override_styles/panel = SubResource("CardChoiceKickerStyle")
+
+[node name="CardChoiceKickerLabel" type="Label" parent="AppBackground/GameFrame/GameLayout/BoardStage/CardChoiceOverlay/CardChoicePanel/CardChoiceInset/CardChoiceContent/CardChoiceKicker"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.9607843, 0.78039217, 1)
+theme_override_font_sizes/font_size = 16
+text = "Evento da onda"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="CardChoiceTitle" type="Label" parent="AppBackground/GameFrame/GameLayout/BoardStage/CardChoiceOverlay/CardChoicePanel/CardChoiceInset/CardChoiceContent"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.02745098, 0.10980392, 0.043137256, 1)
+theme_override_font_sizes/font_size = 40
+text = "Escolha uma carta"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="CardChoiceCards" type="GridContainer" parent="AppBackground/GameFrame/GameLayout/BoardStage/CardChoiceOverlay/CardChoicePanel/CardChoiceInset/CardChoiceContent"]
+custom_minimum_size = Vector2(0, 236)
+layout_mode = 2
+theme_override_constants/h_separation = 14
+theme_override_constants/v_separation = 14
+columns = 4
+
+[node name="CardChoiceButton1" type="Button" parent="AppBackground/GameFrame/GameLayout/BoardStage/CardChoiceOverlay/CardChoicePanel/CardChoiceInset/CardChoiceContent/CardChoiceCards"]
+custom_minimum_size = Vector2(150, 210)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.96862745, 0.81960785, 1)
+theme_override_font_sizes/font_size = 18
+theme_override_styles/normal = SubResource("CardChoiceBackStyle")
+theme_override_styles/pressed = SubResource("CardChoiceBackHoverStyle")
+theme_override_styles/hover = SubResource("CardChoiceBackHoverStyle")
+theme_override_styles/disabled = SubResource("CardChoiceBackStyle")
+
+[node name="CardChoiceButton2" type="Button" parent="AppBackground/GameFrame/GameLayout/BoardStage/CardChoiceOverlay/CardChoicePanel/CardChoiceInset/CardChoiceContent/CardChoiceCards"]
+custom_minimum_size = Vector2(150, 210)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.96862745, 0.81960785, 1)
+theme_override_font_sizes/font_size = 18
+theme_override_styles/normal = SubResource("CardChoiceBackStyle")
+theme_override_styles/pressed = SubResource("CardChoiceBackHoverStyle")
+theme_override_styles/hover = SubResource("CardChoiceBackHoverStyle")
+theme_override_styles/disabled = SubResource("CardChoiceBackStyle")
+
+[node name="CardChoiceButton3" type="Button" parent="AppBackground/GameFrame/GameLayout/BoardStage/CardChoiceOverlay/CardChoicePanel/CardChoiceInset/CardChoiceContent/CardChoiceCards"]
+custom_minimum_size = Vector2(150, 210)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.96862745, 0.81960785, 1)
+theme_override_font_sizes/font_size = 18
+theme_override_styles/normal = SubResource("CardChoiceBackStyle")
+theme_override_styles/pressed = SubResource("CardChoiceBackHoverStyle")
+theme_override_styles/hover = SubResource("CardChoiceBackHoverStyle")
+theme_override_styles/disabled = SubResource("CardChoiceBackStyle")
+
+[node name="CardChoiceButton4" type="Button" parent="AppBackground/GameFrame/GameLayout/BoardStage/CardChoiceOverlay/CardChoicePanel/CardChoiceInset/CardChoiceContent/CardChoiceCards"]
+custom_minimum_size = Vector2(150, 210)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.96862745, 0.81960785, 1)
+theme_override_font_sizes/font_size = 18
+theme_override_styles/normal = SubResource("CardChoiceBackStyle")
+theme_override_styles/pressed = SubResource("CardChoiceBackHoverStyle")
+theme_override_styles/hover = SubResource("CardChoiceBackHoverStyle")
+theme_override_styles/disabled = SubResource("CardChoiceBackStyle")
+
+[node name="CardChoiceResult" type="PanelContainer" parent="AppBackground/GameFrame/GameLayout/BoardStage/CardChoiceOverlay/CardChoicePanel/CardChoiceInset/CardChoiceContent"]
+visible = false
+custom_minimum_size = Vector2(0, 54)
+layout_mode = 2
+theme_override_styles/panel = SubResource("CardChoiceResultStyle")
+
+[node name="CardChoiceResultLabel" type="Label" parent="AppBackground/GameFrame/GameLayout/BoardStage/CardChoiceOverlay/CardChoicePanel/CardChoiceInset/CardChoiceContent/CardChoiceResult"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.96862745, 0.8, 1)
+theme_override_font_sizes/font_size = 18
+text = "Resultado"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="CardChoiceContinueButton" type="Button" parent="AppBackground/GameFrame/GameLayout/BoardStage/CardChoiceOverlay/CardChoicePanel/CardChoiceInset/CardChoiceContent"]
+visible = false
+custom_minimum_size = Vector2(300, 54)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.023529412, 0.023529412, 0.023529412, 1)
+theme_override_font_sizes/font_size = 24
+theme_override_styles/normal = SubResource("PixelButtonNormal")
+theme_override_styles/pressed = SubResource("PixelButtonPressed")
+theme_override_styles/hover = SubResource("PixelButtonHover")
+theme_override_styles/disabled = SubResource("ButtonDisabled")
+text = "Continuar"
+
+[node name="ShopPanel" type="Panel" parent="AppBackground/GameFrame/GameLayout"]
+layout_mode = 0
+offset_left = 1260.0
+offset_right = 1680.0
+offset_bottom = 1035.0
+theme_override_styles/panel = SubResource("ShopStyle")
+
+[node name="ShopContent" type="VBoxContainer" parent="AppBackground/GameFrame/GameLayout/ShopPanel"]
+layout_mode = 0
+offset_left = 12.0
+offset_top = 12.0
+offset_right = 408.0
+offset_bottom = 1023.0
+theme_override_constants/separation = 10
+
+[node name="ShopHeader" type="Control" parent="AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent"]
+custom_minimum_size = Vector2(396, 65)
+layout_mode = 2
+
+[node name="MoneyRow" type="HBoxContainer" parent="AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent/ShopHeader"]
+layout_mode = 0
+offset_top = 7.0
+offset_right = 124.0
+offset_bottom = 57.0
+theme_override_constants/separation = 8
+
+[node name="MoneyPanel" type="PanelContainer" parent="AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent/ShopHeader/MoneyRow"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+theme_override_styles/panel = SubResource("IconButtonEmpty")
+
+[node name="MoneyContent" type="HBoxContainer" parent="AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent/ShopHeader/MoneyRow/MoneyPanel"]
+layout_mode = 2
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="CoinIcon" type="TextureRect" parent="AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent/ShopHeader/MoneyRow/MoneyPanel/MoneyContent"]
+custom_minimum_size = Vector2(43, 43)
+layout_mode = 2
+texture = ExtResource("8_coin_icon")
+stretch_mode = 2
+
+[node name="MoneyLabel" type="Label" parent="AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent/ShopHeader/MoneyRow/MoneyPanel/MoneyContent"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.9411765, 0.6901961, 1)
+theme_override_font_sizes/font_size = 24
+text = "300"
+vertical_alignment = 1
+
+[node name="ShopTitle" type="TextureRect" parent="AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent/ShopHeader"]
+custom_minimum_size = Vector2(134, 65)
+layout_mode = 0
+offset_left = 131.0
+offset_right = 265.0
+offset_bottom = 65.0
+texture = ExtResource("7_shop_title")
+stretch_mode = 3
+
+[node name="SessionInfo" type="PanelContainer" parent="AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent"]
+visible = false
+custom_minimum_size = Vector2(384, 132)
+layout_mode = 2
+theme_override_styles/panel = SubResource("InfoStyle")
+
+[node name="SessionRows" type="GridContainer" parent="AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent/SessionInfo"]
+layout_mode = 2
+theme_override_constants/h_separation = 18
+theme_override_constants/v_separation = 8
+columns = 2
+
+[node name="DifficultyLabel" type="Label" parent="AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent/SessionInfo/SessionRows"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+text = "Dificuldade"
+
+[node name="DifficultyValue" type="Label" parent="AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent/SessionInfo/SessionRows"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+text = "Medio"
+
+[node name="WavesLabel" type="Label" parent="AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent/SessionInfo/SessionRows"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+text = "Ondas"
+
+[node name="WavesValue" type="Label" parent="AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent/SessionInfo/SessionRows"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+text = "12"
+
+[node name="CardsLabel" type="Label" parent="AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent/SessionInfo/SessionRows"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+text = "Cartas"
+
+[node name="CardsValue" type="Label" parent="AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent/SessionInfo/SessionRows"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+text = "3 ondas"
+
+[node name="TowerGrid" type="GridContainer" parent="AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent"]
+layout_mode = 2
+theme_override_constants/h_separation = 10
+theme_override_constants/v_separation = 10
+columns = 2
+
+[node name="SentinelButton" type="Button" parent="AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent/TowerGrid"]
+custom_minimum_size = Vector2(193, 110)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+theme_override_font_sizes/font_size = 16
+theme_override_styles/normal = SubResource("ShopButtonNormal")
+theme_override_styles/pressed = SubResource("ShopButtonActive")
+theme_override_styles/hover = SubResource("ShopButtonHover")
+theme_override_styles/disabled = SubResource("ShopButtonDisabled")
+text = "Sentinela\n$100\nATQ 18\nALC 2.8"
+alignment = 0
+
+[node name="SlowButton" type="Button" parent="AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent/TowerGrid"]
+custom_minimum_size = Vector2(193, 110)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+theme_override_font_sizes/font_size = 16
+theme_override_styles/normal = SubResource("ShopButtonNormal")
+theme_override_styles/pressed = SubResource("ShopButtonActive")
+theme_override_styles/hover = SubResource("ShopButtonHover")
+theme_override_styles/disabled = SubResource("ShopButtonDisabled")
+text = "Gelida\n$75\nATQ 7\nALC 2.4"
+alignment = 0
+
+[node name="SplashButton" type="Button" parent="AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent/TowerGrid"]
+custom_minimum_size = Vector2(193, 110)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+theme_override_font_sizes/font_size = 16
+theme_override_styles/normal = SubResource("ShopButtonNormal")
+theme_override_styles/pressed = SubResource("ShopButtonActive")
+theme_override_styles/hover = SubResource("ShopButtonHover")
+theme_override_styles/disabled = SubResource("ShopButtonDisabled")
+text = "Canhao\n$125\nATQ 24\nALC 2.5"
+alignment = 0
+
+[node name="FlameButton" type="Button" parent="AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent/TowerGrid"]
+custom_minimum_size = Vector2(193, 110)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+theme_override_font_sizes/font_size = 16
+theme_override_styles/normal = SubResource("ShopButtonNormal")
+theme_override_styles/pressed = SubResource("ShopButtonActive")
+theme_override_styles/hover = SubResource("ShopButtonHover")
+theme_override_styles/disabled = SubResource("ShopButtonDisabled")
+text = "Chama\n$150\nATQ 9\nALC 1.9"
+alignment = 0
+
+[node name="ToolsGrid" type="GridContainer" parent="AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent"]
+layout_mode = 2
+theme_override_constants/h_separation = 10
+theme_override_constants/v_separation = 10
+columns = 2
+
+[node name="UndoButton" type="Button" parent="AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent/ToolsGrid"]
+visible = false
+custom_minimum_size = Vector2(193, 62)
+layout_mode = 2
+disabled = true
+theme_override_colors/font_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+theme_override_font_sizes/font_size = 17
+theme_override_styles/normal = SubResource("ShopButtonNormal")
+theme_override_styles/pressed = SubResource("ShopButtonPressed")
+theme_override_styles/hover = SubResource("ShopButtonHover")
+theme_override_styles/disabled = SubResource("ShopButtonDisabled")
+text = "Desfazer"
+
+[node name="DeleteButton" type="Button" parent="AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent/ToolsGrid"]
+custom_minimum_size = Vector2(193, 62)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+theme_override_font_sizes/font_size = 17
+theme_override_styles/normal = SubResource("ShopButtonNormal")
+theme_override_styles/pressed = SubResource("ShopButtonActive")
+theme_override_styles/hover = SubResource("ShopButtonHover")
+theme_override_styles/disabled = SubResource("ShopButtonDisabled")
+text = "Excluir\nSelecionar"
+
+[node name="ControlRow" type="HBoxContainer" parent="AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="PauseButton" type="Button" parent="AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent/ControlRow"]
+custom_minimum_size = Vector2(193, 68)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+theme_override_font_sizes/font_size = 20
+theme_override_styles/normal = SubResource("PixelButtonNormal")
+theme_override_styles/pressed = SubResource("PixelButtonActive")
+theme_override_styles/hover = SubResource("PixelButtonHover")
+theme_override_styles/disabled = SubResource("ButtonDisabled")
+text = "Pause"
+
+[node name="SpeedButton" type="Button" parent="AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent/ControlRow"]
+custom_minimum_size = Vector2(193, 68)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+theme_override_font_sizes/font_size = 20
+theme_override_styles/normal = SubResource("PixelButtonNormal")
+theme_override_styles/pressed = SubResource("PixelButtonActive")
+theme_override_styles/hover = SubResource("PixelButtonHover")
+theme_override_styles/disabled = SubResource("ButtonDisabled")
+text = "1x"
+
+[node name="PauseMenuOverlay" type="Control" parent="AppBackground/GameFrame/GameLayout"]
+process_mode = 3
+visible = false
+layout_mode = 0
+offset_right = 1680.0
+offset_bottom = 1035.0
+mouse_filter = 0
+
+[node name="PauseMenuDimmer" type="ColorRect" parent="AppBackground/GameFrame/GameLayout/PauseMenuOverlay"]
+layout_mode = 0
+offset_right = 1680.0
+offset_bottom = 1035.0
+mouse_filter = 0
+color = Color(0.03137255, 0.043137256, 0.050980393, 0.7)
+
+[node name="PauseMenuCard" type="PanelContainer" parent="AppBackground/GameFrame/GameLayout/PauseMenuOverlay"]
+layout_mode = 0
+offset_left = 525.0
+offset_top = 246.0
+offset_right = 1155.0
+offset_bottom = 789.0
+theme_override_styles/panel = SubResource("PauseMenuCardStyle")
+
+[node name="PauseMenuInset" type="MarginContainer" parent="AppBackground/GameFrame/GameLayout/PauseMenuOverlay/PauseMenuCard"]
+layout_mode = 2
+theme_override_constants/margin_left = 48
+theme_override_constants/margin_top = 44
+theme_override_constants/margin_right = 48
+theme_override_constants/margin_bottom = 44
+
+[node name="PauseMenuContent" type="VBoxContainer" parent="AppBackground/GameFrame/GameLayout/PauseMenuOverlay/PauseMenuCard/PauseMenuInset"]
+layout_mode = 2
+theme_override_constants/separation = 18
+alignment = 1
+
+[node name="PauseMenuTitle" type="Label" parent="AppBackground/GameFrame/GameLayout/PauseMenuOverlay/PauseMenuCard/PauseMenuInset/PauseMenuContent"]
+custom_minimum_size = Vector2(0, 66)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.08627451, 0.043137256, 0, 1)
+theme_override_font_sizes/font_size = 48
+text = "Pausado"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="PauseMenuActions" type="VBoxContainer" parent="AppBackground/GameFrame/GameLayout/PauseMenuOverlay/PauseMenuCard/PauseMenuInset/PauseMenuContent"]
+layout_mode = 2
+theme_override_constants/separation = 14
+alignment = 1
+
+[node name="PauseResumeButton" type="Button" parent="AppBackground/GameFrame/GameLayout/PauseMenuOverlay/PauseMenuCard/PauseMenuInset/PauseMenuContent/PauseMenuActions"]
+custom_minimum_size = Vector2(450, 78)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.023529412, 0.023529412, 0.023529412, 1)
+theme_override_font_sizes/font_size = 28
+theme_override_styles/normal = SubResource("PixelButtonNormal")
+theme_override_styles/pressed = SubResource("PixelButtonPressed")
+theme_override_styles/hover = SubResource("PixelButtonHover")
+theme_override_styles/disabled = SubResource("ButtonDisabled")
+text = "Retomar"
+
+[node name="PauseRestartButton" type="Button" parent="AppBackground/GameFrame/GameLayout/PauseMenuOverlay/PauseMenuCard/PauseMenuInset/PauseMenuContent/PauseMenuActions"]
+custom_minimum_size = Vector2(450, 78)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.023529412, 0.023529412, 0.023529412, 1)
+theme_override_font_sizes/font_size = 28
+theme_override_styles/normal = SubResource("PixelButtonNormal")
+theme_override_styles/pressed = SubResource("PixelButtonPressed")
+theme_override_styles/hover = SubResource("PixelButtonHover")
+theme_override_styles/disabled = SubResource("ButtonDisabled")
+text = "Reiniciar"
+
+[node name="PauseSoundButton" type="Button" parent="AppBackground/GameFrame/GameLayout/PauseMenuOverlay/PauseMenuCard/PauseMenuInset/PauseMenuContent/PauseMenuActions"]
+custom_minimum_size = Vector2(450, 78)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.023529412, 0.023529412, 0.023529412, 1)
+theme_override_font_sizes/font_size = 28
+theme_override_styles/normal = SubResource("PixelButtonNormal")
+theme_override_styles/pressed = SubResource("PixelButtonPressed")
+theme_override_styles/hover = SubResource("PixelButtonHover")
+theme_override_styles/disabled = SubResource("ButtonDisabled")
+text = "Som"
+
+[node name="PauseSaveExitButton" type="Button" parent="AppBackground/GameFrame/GameLayout/PauseMenuOverlay/PauseMenuCard/PauseMenuInset/PauseMenuContent/PauseMenuActions"]
+custom_minimum_size = Vector2(450, 78)
+layout_mode = 2
+disabled = true
+tooltip_text = "Salvar ainda nao esta disponivel neste port."
+theme_override_colors/font_color = Color(0.023529412, 0.023529412, 0.023529412, 1)
+theme_override_font_sizes/font_size = 28
+theme_override_styles/normal = SubResource("PixelButtonNormal")
+theme_override_styles/pressed = SubResource("PixelButtonPressed")
+theme_override_styles/hover = SubResource("PixelButtonHover")
+theme_override_styles/disabled = SubResource("ButtonDisabled")
+text = "Salvar e sair"
+
+[node name="PauseRestartConfirmPanel" type="PanelContainer" parent="AppBackground/GameFrame/GameLayout/PauseMenuOverlay/PauseMenuCard/PauseMenuInset/PauseMenuContent"]
+visible = false
+layout_mode = 2
+theme_override_styles/panel = SubResource("PauseSoundPanelStyle")
+
+[node name="PauseRestartConfirmInset" type="MarginContainer" parent="AppBackground/GameFrame/GameLayout/PauseMenuOverlay/PauseMenuCard/PauseMenuInset/PauseMenuContent/PauseRestartConfirmPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 18
+theme_override_constants/margin_top = 18
+theme_override_constants/margin_right = 18
+theme_override_constants/margin_bottom = 18
+
+[node name="PauseRestartConfirmContent" type="VBoxContainer" parent="AppBackground/GameFrame/GameLayout/PauseMenuOverlay/PauseMenuCard/PauseMenuInset/PauseMenuContent/PauseRestartConfirmPanel/PauseRestartConfirmInset"]
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="PauseRestartConfirmText" type="Label" parent="AppBackground/GameFrame/GameLayout/PauseMenuOverlay/PauseMenuCard/PauseMenuInset/PauseMenuContent/PauseRestartConfirmPanel/PauseRestartConfirmInset/PauseRestartConfirmContent"]
+custom_minimum_size = Vector2(0, 96)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.08627451, 0.043137256, 0, 1)
+theme_override_font_sizes/font_size = 26
+text = "Você tem certeza de que quer reiniciar o jogo?"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="PauseRestartConfirmActions" type="HBoxContainer" parent="AppBackground/GameFrame/GameLayout/PauseMenuOverlay/PauseMenuCard/PauseMenuInset/PauseMenuContent/PauseRestartConfirmPanel/PauseRestartConfirmInset/PauseRestartConfirmContent"]
+custom_minimum_size = Vector2(0, 70)
+layout_mode = 2
+theme_override_constants/separation = 14
+alignment = 1
+
+[node name="PauseRestartConfirmYesButton" type="Button" parent="AppBackground/GameFrame/GameLayout/PauseMenuOverlay/PauseMenuCard/PauseMenuInset/PauseMenuContent/PauseRestartConfirmPanel/PauseRestartConfirmInset/PauseRestartConfirmContent/PauseRestartConfirmActions"]
+custom_minimum_size = Vector2(210, 64)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.023529412, 0.023529412, 0.023529412, 1)
+theme_override_font_sizes/font_size = 24
+theme_override_styles/normal = SubResource("PixelButtonNormal")
+theme_override_styles/pressed = SubResource("PixelButtonPressed")
+theme_override_styles/hover = SubResource("PixelButtonHover")
+theme_override_styles/disabled = SubResource("ButtonDisabled")
+text = "Sim"
+
+[node name="PauseRestartConfirmNoButton" type="Button" parent="AppBackground/GameFrame/GameLayout/PauseMenuOverlay/PauseMenuCard/PauseMenuInset/PauseMenuContent/PauseRestartConfirmPanel/PauseRestartConfirmInset/PauseRestartConfirmContent/PauseRestartConfirmActions"]
+custom_minimum_size = Vector2(210, 64)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.023529412, 0.023529412, 0.023529412, 1)
+theme_override_font_sizes/font_size = 24
+theme_override_styles/normal = SubResource("PixelButtonNormal")
+theme_override_styles/pressed = SubResource("PixelButtonPressed")
+theme_override_styles/hover = SubResource("PixelButtonHover")
+theme_override_styles/disabled = SubResource("ButtonDisabled")
+text = "Não"
+
+[node name="PauseSoundPanel" type="PanelContainer" parent="AppBackground/GameFrame/GameLayout/PauseMenuOverlay/PauseMenuCard/PauseMenuInset/PauseMenuContent"]
+visible = false
+layout_mode = 2
+theme_override_styles/panel = SubResource("PauseSoundPanelStyle")
+
+[node name="PauseSoundInset" type="MarginContainer" parent="AppBackground/GameFrame/GameLayout/PauseMenuOverlay/PauseMenuCard/PauseMenuInset/PauseMenuContent/PauseSoundPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 18
+theme_override_constants/margin_top = 18
+theme_override_constants/margin_right = 18
+theme_override_constants/margin_bottom = 18
+
+[node name="PauseSoundContent" type="VBoxContainer" parent="AppBackground/GameFrame/GameLayout/PauseMenuOverlay/PauseMenuCard/PauseMenuInset/PauseMenuContent/PauseSoundPanel/PauseSoundInset"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="PauseSoundTitle" type="Label" parent="AppBackground/GameFrame/GameLayout/PauseMenuOverlay/PauseMenuCard/PauseMenuInset/PauseMenuContent/PauseSoundPanel/PauseSoundInset/PauseSoundContent"]
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.08627451, 0.043137256, 0, 1)
+theme_override_font_sizes/font_size = 26
+text = "Som"
+vertical_alignment = 1
+
+[node name="PauseSoundToggleButtons" type="HBoxContainer" parent="AppBackground/GameFrame/GameLayout/PauseMenuOverlay/PauseMenuCard/PauseMenuInset/PauseMenuContent/PauseSoundPanel/PauseSoundInset/PauseSoundContent"]
+custom_minimum_size = Vector2(0, 62)
+layout_mode = 2
+theme_override_constants/separation = 14
+alignment = 1
+
+[node name="PauseBgmToggleButton" type="Button" parent="AppBackground/GameFrame/GameLayout/PauseMenuOverlay/PauseMenuCard/PauseMenuInset/PauseMenuContent/PauseSoundPanel/PauseSoundInset/PauseSoundContent/PauseSoundToggleButtons"]
+custom_minimum_size = Vector2(210, 58)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.023529412, 0.023529412, 0.023529412, 1)
+theme_override_font_sizes/font_size = 20
+theme_override_styles/normal = SubResource("ButtonNormal")
+theme_override_styles/pressed = SubResource("ButtonActive")
+theme_override_styles/hover = SubResource("ButtonHover")
+theme_override_styles/disabled = SubResource("ButtonDisabled")
+text = "BGM Lig"
+
+[node name="PauseSfxToggleButton" type="Button" parent="AppBackground/GameFrame/GameLayout/PauseMenuOverlay/PauseMenuCard/PauseMenuInset/PauseMenuContent/PauseSoundPanel/PauseSoundInset/PauseSoundContent/PauseSoundToggleButtons"]
+custom_minimum_size = Vector2(210, 58)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.023529412, 0.023529412, 0.023529412, 1)
+theme_override_font_sizes/font_size = 20
+theme_override_styles/normal = SubResource("ButtonNormal")
+theme_override_styles/pressed = SubResource("ButtonActive")
+theme_override_styles/hover = SubResource("ButtonHover")
+theme_override_styles/disabled = SubResource("ButtonDisabled")
+text = "SFX Lig"
+
+[node name="PauseBgmVolumeRow" type="HBoxContainer" parent="AppBackground/GameFrame/GameLayout/PauseMenuOverlay/PauseMenuCard/PauseMenuInset/PauseMenuContent/PauseSoundPanel/PauseSoundInset/PauseSoundContent"]
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="PauseBgmVolumeLabel" type="Label" parent="AppBackground/GameFrame/GameLayout/PauseMenuOverlay/PauseMenuCard/PauseMenuInset/PauseMenuContent/PauseSoundPanel/PauseSoundInset/PauseSoundContent/PauseBgmVolumeRow"]
+custom_minimum_size = Vector2(58, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.08627451, 0.043137256, 0, 1)
+theme_override_font_sizes/font_size = 20
+text = "BGM"
+vertical_alignment = 1
+
+[node name="PauseBgmVolumeSlider" type="HSlider" parent="AppBackground/GameFrame/GameLayout/PauseMenuOverlay/PauseMenuCard/PauseMenuInset/PauseMenuContent/PauseSoundPanel/PauseSoundInset/PauseSoundContent/PauseBgmVolumeRow"]
+custom_minimum_size = Vector2(300, 36)
+layout_mode = 2
+max_value = 100.0
+step = 5.0
+value = 100.0
+
+[node name="PauseBgmVolumeText" type="Label" parent="AppBackground/GameFrame/GameLayout/PauseMenuOverlay/PauseMenuCard/PauseMenuInset/PauseMenuContent/PauseSoundPanel/PauseSoundInset/PauseSoundContent/PauseBgmVolumeRow"]
+custom_minimum_size = Vector2(64, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.08627451, 0.043137256, 0, 1)
+theme_override_font_sizes/font_size = 20
+text = "100%"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="PauseSfxVolumeRow" type="HBoxContainer" parent="AppBackground/GameFrame/GameLayout/PauseMenuOverlay/PauseMenuCard/PauseMenuInset/PauseMenuContent/PauseSoundPanel/PauseSoundInset/PauseSoundContent"]
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="PauseSfxVolumeLabel" type="Label" parent="AppBackground/GameFrame/GameLayout/PauseMenuOverlay/PauseMenuCard/PauseMenuInset/PauseMenuContent/PauseSoundPanel/PauseSoundInset/PauseSoundContent/PauseSfxVolumeRow"]
+custom_minimum_size = Vector2(58, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.08627451, 0.043137256, 0, 1)
+theme_override_font_sizes/font_size = 20
+text = "SFX"
+vertical_alignment = 1
+
+[node name="PauseSfxVolumeSlider" type="HSlider" parent="AppBackground/GameFrame/GameLayout/PauseMenuOverlay/PauseMenuCard/PauseMenuInset/PauseMenuContent/PauseSoundPanel/PauseSoundInset/PauseSoundContent/PauseSfxVolumeRow"]
+custom_minimum_size = Vector2(300, 36)
+layout_mode = 2
+max_value = 100.0
+step = 5.0
+value = 100.0
+
+[node name="PauseSfxVolumeText" type="Label" parent="AppBackground/GameFrame/GameLayout/PauseMenuOverlay/PauseMenuCard/PauseMenuInset/PauseMenuContent/PauseSoundPanel/PauseSoundInset/PauseSoundContent/PauseSfxVolumeRow"]
+custom_minimum_size = Vector2(64, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.08627451, 0.043137256, 0, 1)
+theme_override_font_sizes/font_size = 20
+text = "100%"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="PauseSoundBackButton" type="Button" parent="AppBackground/GameFrame/GameLayout/PauseMenuOverlay/PauseMenuCard/PauseMenuInset/PauseMenuContent/PauseSoundPanel/PauseSoundInset/PauseSoundContent"]
+custom_minimum_size = Vector2(450, 70)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.023529412, 0.023529412, 0.023529412, 1)
+theme_override_font_sizes/font_size = 24
+theme_override_styles/normal = SubResource("PixelButtonNormal")
+theme_override_styles/pressed = SubResource("PixelButtonPressed")
+theme_override_styles/hover = SubResource("PixelButtonHover")
+theme_override_styles/disabled = SubResource("ButtonDisabled")
+text = "Voltar"
+
+[node name="ThemeTransitionOverlay" type="Control" parent="AppBackground/GameFrame/GameLayout"]
+visible = false
+layout_mode = 0
+offset_right = 1680.0
+offset_bottom = 1035.0
+mouse_filter = 0
+
+[node name="ThemeTransitionDimmer" type="ColorRect" parent="AppBackground/GameFrame/GameLayout/ThemeTransitionOverlay"]
+layout_mode = 0
+offset_right = 1680.0
+offset_bottom = 1035.0
+mouse_filter = 0
+color = Color(0.015686275, 0.05490196, 0.078431375, 0.92)
+
+[node name="ThemeTransitionLabel" type="Label" parent="AppBackground/GameFrame/GameLayout/ThemeTransitionOverlay"]
+layout_mode = 0
+offset_left = 510.0
+offset_top = 417.0
+offset_right = 1170.0
+offset_bottom = 554.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 0.9529412, 0.7490196, 1)
+theme_override_font_sizes/font_size = 56
+text = "Lagoa"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="FloatingMessageTimer" type="Timer" parent="."]
+wait_time = 1.8
+one_shot = true
+
+[node name="WaveBannerTimer" type="Timer" parent="."]
+wait_time = 1.25
+one_shot = true
+
+[node name="UndoPlacementTimer" type="Timer" parent="."]
+wait_time = 5.0
+one_shot = true
+ignore_time_scale = true

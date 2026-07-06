@@ -1,0 +1,1394 @@
+{
+  "app": "No Trash Park HTML sprite export",
+  "scaleKey": "current_1x",
+  "scale": 1,
+  "tilePixels": 70,
+  "image": "current_1x/sheets/all_sprites.png",
+  "size": {
+    "width": 4093,
+    "height": 339
+  },
+  "paddingPx": 2,
+  "frames": {
+    "placement_range_sentinel_4_cells": {
+      "frame": {
+        "x": 2,
+        "y": 2,
+        "w": 288,
+        "h": 288
+      },
+      "pivotPx": {
+        "x": 144,
+        "y": 144
+      },
+      "originalPivotPx": {
+        "x": 170,
+        "y": 170
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 0,
+        "y": 0
+      },
+      "category": "effects",
+      "theme": null,
+      "individualPath": "current_1x/individual/effects/placement_range_sentinel_4_cells.png"
+    },
+    "range_ring_4_cells": {
+      "frame": {
+        "x": 292,
+        "y": 2,
+        "w": 286,
+        "h": 286
+      },
+      "pivotPx": {
+        "x": 143,
+        "y": 143
+      },
+      "originalPivotPx": {
+        "x": 170,
+        "y": 170
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 0,
+        "y": 0
+      },
+      "category": "effects",
+      "theme": null,
+      "individualPath": "current_1x/individual/effects/range_ring_4_cells.png"
+    },
+    "placement_range_unavailable_4_cells": {
+      "frame": {
+        "x": 580,
+        "y": 2,
+        "w": 286,
+        "h": 286
+      },
+      "pivotPx": {
+        "x": 143,
+        "y": 143
+      },
+      "originalPivotPx": {
+        "x": 170,
+        "y": 170
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 0,
+        "y": 0
+      },
+      "category": "effects",
+      "theme": null,
+      "individualPath": "current_1x/individual/effects/placement_range_unavailable_4_cells.png"
+    },
+    "menu_path_curve": {
+      "frame": {
+        "x": 868,
+        "y": 2,
+        "w": 310,
+        "h": 150
+      },
+      "pivotPx": {
+        "x": 149,
+        "y": 71
+      },
+      "originalPivotPx": {
+        "x": 195,
+        "y": 125
+      },
+      "godotOffsetFromCenterPx": {
+        "x": -6,
+        "y": -4
+      },
+      "category": "menu",
+      "theme": null,
+      "individualPath": "current_1x/individual/menu/menu_path_curve.png"
+    },
+    "menu_logo_block_ntp": {
+      "frame": {
+        "x": 1180,
+        "y": 2,
+        "w": 270,
+        "h": 130
+      },
+      "pivotPx": {
+        "x": 125,
+        "y": 55
+      },
+      "originalPivotPx": {
+        "x": 155,
+        "y": 85
+      },
+      "godotOffsetFromCenterPx": {
+        "x": -10,
+        "y": -10
+      },
+      "category": "menu",
+      "theme": null,
+      "individualPath": "current_1x/individual/menu/menu_logo_block_ntp.png"
+    },
+    "tower_sentinel_delete_target": {
+      "frame": {
+        "x": 1452,
+        "y": 2,
+        "w": 64,
+        "h": 84
+      },
+      "pivotPx": {
+        "x": 32,
+        "y": 49
+      },
+      "originalPivotPx": {
+        "x": 75,
+        "y": 75
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 0,
+        "y": 7
+      },
+      "category": "towers",
+      "theme": null,
+      "individualPath": "current_1x/individual/towers/tower_sentinel_delete_target.png"
+    },
+    "ui_victory_stat_panel": {
+      "frame": {
+        "x": 1518,
+        "y": 2,
+        "w": 140,
+        "h": 80
+      },
+      "pivotPx": {
+        "x": 60,
+        "y": 30
+      },
+      "originalPivotPx": {
+        "x": 85,
+        "y": 55
+      },
+      "godotOffsetFromCenterPx": {
+        "x": -10,
+        "y": -10
+      },
+      "category": "ui",
+      "theme": null,
+      "individualPath": "current_1x/individual/ui/ui_victory_stat_panel.png"
+    },
+    "ui_pixel_button_blank": {
+      "frame": {
+        "x": 1660,
+        "y": 2,
+        "w": 180,
+        "h": 78
+      },
+      "pivotPx": {
+        "x": 85,
+        "y": 35
+      },
+      "originalPivotPx": {
+        "x": 100,
+        "y": 50
+      },
+      "godotOffsetFromCenterPx": {
+        "x": -5,
+        "y": -4
+      },
+      "category": "ui",
+      "theme": null,
+      "individualPath": "current_1x/individual/ui/ui_pixel_button_blank.png"
+    },
+    "park_terrain_detail_a": {
+      "frame": {
+        "x": 1842,
+        "y": 2,
+        "w": 70,
+        "h": 70
+      },
+      "pivotPx": {
+        "x": 35,
+        "y": 35
+      },
+      "originalPivotPx": {
+        "x": 35,
+        "y": 35
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 0,
+        "y": 0
+      },
+      "category": "tiles",
+      "theme": "park",
+      "individualPath": "current_1x/individual/tiles/park_terrain_detail_a.png"
+    },
+    "park_terrain_detail_b": {
+      "frame": {
+        "x": 1914,
+        "y": 2,
+        "w": 70,
+        "h": 70
+      },
+      "pivotPx": {
+        "x": 35,
+        "y": 35
+      },
+      "originalPivotPx": {
+        "x": 35,
+        "y": 35
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 0,
+        "y": 0
+      },
+      "category": "tiles",
+      "theme": "park",
+      "individualPath": "current_1x/individual/tiles/park_terrain_detail_b.png"
+    },
+    "park_terrain_detail_c": {
+      "frame": {
+        "x": 1986,
+        "y": 2,
+        "w": 70,
+        "h": 70
+      },
+      "pivotPx": {
+        "x": 35,
+        "y": 35
+      },
+      "originalPivotPx": {
+        "x": 35,
+        "y": 35
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 0,
+        "y": 0
+      },
+      "category": "tiles",
+      "theme": "park",
+      "individualPath": "current_1x/individual/tiles/park_terrain_detail_c.png"
+    },
+    "park_terrain_blocked": {
+      "frame": {
+        "x": 2058,
+        "y": 2,
+        "w": 70,
+        "h": 70
+      },
+      "pivotPx": {
+        "x": 35,
+        "y": 35
+      },
+      "originalPivotPx": {
+        "x": 35,
+        "y": 35
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 0,
+        "y": 0
+      },
+      "category": "tiles",
+      "theme": "park",
+      "individualPath": "current_1x/individual/tiles/park_terrain_blocked.png"
+    },
+    "park_path": {
+      "frame": {
+        "x": 2130,
+        "y": 2,
+        "w": 70,
+        "h": 70
+      },
+      "pivotPx": {
+        "x": 35,
+        "y": 35
+      },
+      "originalPivotPx": {
+        "x": 35,
+        "y": 35
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 0,
+        "y": 0
+      },
+      "category": "tiles",
+      "theme": "park",
+      "individualPath": "current_1x/individual/tiles/park_path.png"
+    },
+    "park_path_preview_available": {
+      "frame": {
+        "x": 2202,
+        "y": 2,
+        "w": 70,
+        "h": 70
+      },
+      "pivotPx": {
+        "x": 35,
+        "y": 35
+      },
+      "originalPivotPx": {
+        "x": 35,
+        "y": 35
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 0,
+        "y": 0
+      },
+      "category": "tiles",
+      "theme": "park",
+      "individualPath": "current_1x/individual/tiles/park_path_preview_available.png"
+    },
+    "park_path_preview_unavailable": {
+      "frame": {
+        "x": 2274,
+        "y": 2,
+        "w": 70,
+        "h": 70
+      },
+      "pivotPx": {
+        "x": 35,
+        "y": 35
+      },
+      "originalPivotPx": {
+        "x": 35,
+        "y": 35
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 0,
+        "y": 0
+      },
+      "category": "tiles",
+      "theme": "park",
+      "individualPath": "current_1x/individual/tiles/park_path_preview_unavailable.png"
+    },
+    "lagoon_terrain_detail_a": {
+      "frame": {
+        "x": 2346,
+        "y": 2,
+        "w": 70,
+        "h": 70
+      },
+      "pivotPx": {
+        "x": 35,
+        "y": 35
+      },
+      "originalPivotPx": {
+        "x": 35,
+        "y": 35
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 0,
+        "y": 0
+      },
+      "category": "tiles",
+      "theme": "lagoon",
+      "individualPath": "current_1x/individual/tiles/lagoon_terrain_detail_a.png"
+    },
+    "lagoon_terrain_detail_b": {
+      "frame": {
+        "x": 2418,
+        "y": 2,
+        "w": 70,
+        "h": 70
+      },
+      "pivotPx": {
+        "x": 35,
+        "y": 35
+      },
+      "originalPivotPx": {
+        "x": 35,
+        "y": 35
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 0,
+        "y": 0
+      },
+      "category": "tiles",
+      "theme": "lagoon",
+      "individualPath": "current_1x/individual/tiles/lagoon_terrain_detail_b.png"
+    },
+    "lagoon_terrain_detail_c": {
+      "frame": {
+        "x": 2490,
+        "y": 2,
+        "w": 70,
+        "h": 70
+      },
+      "pivotPx": {
+        "x": 35,
+        "y": 35
+      },
+      "originalPivotPx": {
+        "x": 35,
+        "y": 35
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 0,
+        "y": 0
+      },
+      "category": "tiles",
+      "theme": "lagoon",
+      "individualPath": "current_1x/individual/tiles/lagoon_terrain_detail_c.png"
+    },
+    "lagoon_terrain_blocked": {
+      "frame": {
+        "x": 2562,
+        "y": 2,
+        "w": 70,
+        "h": 70
+      },
+      "pivotPx": {
+        "x": 35,
+        "y": 35
+      },
+      "originalPivotPx": {
+        "x": 35,
+        "y": 35
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 0,
+        "y": 0
+      },
+      "category": "tiles",
+      "theme": "lagoon",
+      "individualPath": "current_1x/individual/tiles/lagoon_terrain_blocked.png"
+    },
+    "lagoon_path": {
+      "frame": {
+        "x": 2634,
+        "y": 2,
+        "w": 70,
+        "h": 70
+      },
+      "pivotPx": {
+        "x": 35,
+        "y": 35
+      },
+      "originalPivotPx": {
+        "x": 35,
+        "y": 35
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 0,
+        "y": 0
+      },
+      "category": "tiles",
+      "theme": "lagoon",
+      "individualPath": "current_1x/individual/tiles/lagoon_path.png"
+    },
+    "lagoon_path_preview_available": {
+      "frame": {
+        "x": 2706,
+        "y": 2,
+        "w": 70,
+        "h": 70
+      },
+      "pivotPx": {
+        "x": 35,
+        "y": 35
+      },
+      "originalPivotPx": {
+        "x": 35,
+        "y": 35
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 0,
+        "y": 0
+      },
+      "category": "tiles",
+      "theme": "lagoon",
+      "individualPath": "current_1x/individual/tiles/lagoon_path_preview_available.png"
+    },
+    "lagoon_path_preview_unavailable": {
+      "frame": {
+        "x": 2778,
+        "y": 2,
+        "w": 70,
+        "h": 70
+      },
+      "pivotPx": {
+        "x": 35,
+        "y": 35
+      },
+      "originalPivotPx": {
+        "x": 35,
+        "y": 35
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 0,
+        "y": 0
+      },
+      "category": "tiles",
+      "theme": "lagoon",
+      "individualPath": "current_1x/individual/tiles/lagoon_path_preview_unavailable.png"
+    },
+    "lava_terrain_detail_a": {
+      "frame": {
+        "x": 2850,
+        "y": 2,
+        "w": 70,
+        "h": 70
+      },
+      "pivotPx": {
+        "x": 35,
+        "y": 35
+      },
+      "originalPivotPx": {
+        "x": 35,
+        "y": 35
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 0,
+        "y": 0
+      },
+      "category": "tiles",
+      "theme": "lava",
+      "individualPath": "current_1x/individual/tiles/lava_terrain_detail_a.png"
+    },
+    "lava_terrain_detail_b": {
+      "frame": {
+        "x": 2922,
+        "y": 2,
+        "w": 70,
+        "h": 70
+      },
+      "pivotPx": {
+        "x": 35,
+        "y": 35
+      },
+      "originalPivotPx": {
+        "x": 35,
+        "y": 35
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 0,
+        "y": 0
+      },
+      "category": "tiles",
+      "theme": "lava",
+      "individualPath": "current_1x/individual/tiles/lava_terrain_detail_b.png"
+    },
+    "lava_terrain_detail_c": {
+      "frame": {
+        "x": 2994,
+        "y": 2,
+        "w": 70,
+        "h": 70
+      },
+      "pivotPx": {
+        "x": 35,
+        "y": 35
+      },
+      "originalPivotPx": {
+        "x": 35,
+        "y": 35
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 0,
+        "y": 0
+      },
+      "category": "tiles",
+      "theme": "lava",
+      "individualPath": "current_1x/individual/tiles/lava_terrain_detail_c.png"
+    },
+    "lava_terrain_blocked": {
+      "frame": {
+        "x": 3066,
+        "y": 2,
+        "w": 70,
+        "h": 70
+      },
+      "pivotPx": {
+        "x": 35,
+        "y": 35
+      },
+      "originalPivotPx": {
+        "x": 35,
+        "y": 35
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 0,
+        "y": 0
+      },
+      "category": "tiles",
+      "theme": "lava",
+      "individualPath": "current_1x/individual/tiles/lava_terrain_blocked.png"
+    },
+    "lava_path": {
+      "frame": {
+        "x": 3138,
+        "y": 2,
+        "w": 70,
+        "h": 70
+      },
+      "pivotPx": {
+        "x": 35,
+        "y": 35
+      },
+      "originalPivotPx": {
+        "x": 35,
+        "y": 35
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 0,
+        "y": 0
+      },
+      "category": "tiles",
+      "theme": "lava",
+      "individualPath": "current_1x/individual/tiles/lava_path.png"
+    },
+    "lava_path_preview_available": {
+      "frame": {
+        "x": 3210,
+        "y": 2,
+        "w": 70,
+        "h": 70
+      },
+      "pivotPx": {
+        "x": 35,
+        "y": 35
+      },
+      "originalPivotPx": {
+        "x": 35,
+        "y": 35
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 0,
+        "y": 0
+      },
+      "category": "tiles",
+      "theme": "lava",
+      "individualPath": "current_1x/individual/tiles/lava_path_preview_available.png"
+    },
+    "lava_path_preview_unavailable": {
+      "frame": {
+        "x": 3282,
+        "y": 2,
+        "w": 70,
+        "h": 70
+      },
+      "pivotPx": {
+        "x": 35,
+        "y": 35
+      },
+      "originalPivotPx": {
+        "x": 35,
+        "y": 35
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 0,
+        "y": 0
+      },
+      "category": "tiles",
+      "theme": "lava",
+      "individualPath": "current_1x/individual/tiles/lava_path_preview_unavailable.png"
+    },
+    "ui_card_back": {
+      "frame": {
+        "x": 3354,
+        "y": 2,
+        "w": 70,
+        "h": 70
+      },
+      "pivotPx": {
+        "x": 35,
+        "y": 35
+      },
+      "originalPivotPx": {
+        "x": 65,
+        "y": 65
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 0,
+        "y": 0
+      },
+      "category": "ui",
+      "theme": null,
+      "individualPath": "current_1x/individual/ui/ui_card_back.png"
+    },
+    "ui_shop_button_blank": {
+      "frame": {
+        "x": 3426,
+        "y": 2,
+        "w": 130,
+        "h": 66
+      },
+      "pivotPx": {
+        "x": 60,
+        "y": 35
+      },
+      "originalPivotPx": {
+        "x": 75,
+        "y": 50
+      },
+      "godotOffsetFromCenterPx": {
+        "x": -5,
+        "y": 2
+      },
+      "category": "ui",
+      "theme": null,
+      "individualPath": "current_1x/individual/ui/ui_shop_button_blank.png"
+    },
+    "ui_shop_button_locked_blank": {
+      "frame": {
+        "x": 3558,
+        "y": 2,
+        "w": 130,
+        "h": 66
+      },
+      "pivotPx": {
+        "x": 60,
+        "y": 35
+      },
+      "originalPivotPx": {
+        "x": 75,
+        "y": 50
+      },
+      "godotOffsetFromCenterPx": {
+        "x": -5,
+        "y": 2
+      },
+      "category": "ui",
+      "theme": null,
+      "individualPath": "current_1x/individual/ui/ui_shop_button_locked_blank.png"
+    },
+    "impact_frame_2": {
+      "frame": {
+        "x": 3690,
+        "y": 2,
+        "w": 61,
+        "h": 61
+      },
+      "pivotPx": {
+        "x": 31,
+        "y": 31
+      },
+      "originalPivotPx": {
+        "x": 70,
+        "y": 70
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 1,
+        "y": 1
+      },
+      "category": "effects",
+      "theme": null,
+      "individualPath": "current_1x/individual/effects/impact_frame_2.png"
+    },
+    "menu_creature_a": {
+      "frame": {
+        "x": 3753,
+        "y": 2,
+        "w": 73,
+        "h": 57
+      },
+      "pivotPx": {
+        "x": 21,
+        "y": 23
+      },
+      "originalPivotPx": {
+        "x": 75,
+        "y": 72
+      },
+      "godotOffsetFromCenterPx": {
+        "x": -15,
+        "y": -5
+      },
+      "category": "menu",
+      "theme": null,
+      "individualPath": "current_1x/individual/menu/menu_creature_a.png"
+    },
+    "menu_tower_a": {
+      "frame": {
+        "x": 3828,
+        "y": 2,
+        "w": 38,
+        "h": 54
+      },
+      "pivotPx": {
+        "x": 8,
+        "y": 40
+      },
+      "originalPivotPx": {
+        "x": 60,
+        "y": 92
+      },
+      "godotOffsetFromCenterPx": {
+        "x": -11,
+        "y": 13
+      },
+      "category": "menu",
+      "theme": null,
+      "individualPath": "current_1x/individual/menu/menu_tower_a.png"
+    },
+    "tower_sentinel": {
+      "frame": {
+        "x": 3868,
+        "y": 2,
+        "w": 29,
+        "h": 52
+      },
+      "pivotPx": {
+        "x": 14,
+        "y": 34
+      },
+      "originalPivotPx": {
+        "x": 70,
+        "y": 70
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 0,
+        "y": 8
+      },
+      "category": "towers",
+      "theme": null,
+      "individualPath": "current_1x/individual/towers/tower_sentinel.png"
+    },
+    "tower_slow": {
+      "frame": {
+        "x": 3899,
+        "y": 2,
+        "w": 29,
+        "h": 52
+      },
+      "pivotPx": {
+        "x": 14,
+        "y": 34
+      },
+      "originalPivotPx": {
+        "x": 70,
+        "y": 70
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 0,
+        "y": 8
+      },
+      "category": "towers",
+      "theme": null,
+      "individualPath": "current_1x/individual/towers/tower_slow.png"
+    },
+    "tower_splash": {
+      "frame": {
+        "x": 3930,
+        "y": 2,
+        "w": 29,
+        "h": 52
+      },
+      "pivotPx": {
+        "x": 14,
+        "y": 34
+      },
+      "originalPivotPx": {
+        "x": 70,
+        "y": 70
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 0,
+        "y": 8
+      },
+      "category": "towers",
+      "theme": null,
+      "individualPath": "current_1x/individual/towers/tower_splash.png"
+    },
+    "tower_flame": {
+      "frame": {
+        "x": 3961,
+        "y": 2,
+        "w": 29,
+        "h": 52
+      },
+      "pivotPx": {
+        "x": 14,
+        "y": 34
+      },
+      "originalPivotPx": {
+        "x": 70,
+        "y": 70
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 0,
+        "y": 8
+      },
+      "category": "towers",
+      "theme": null,
+      "individualPath": "current_1x/individual/towers/tower_flame.png"
+    },
+    "menu_creature_b": {
+      "frame": {
+        "x": 3992,
+        "y": 2,
+        "w": 55,
+        "h": 50
+      },
+      "pivotPx": {
+        "x": 15,
+        "y": 18
+      },
+      "originalPivotPx": {
+        "x": 75,
+        "y": 72
+      },
+      "godotOffsetFromCenterPx": {
+        "x": -12,
+        "y": -7
+      },
+      "category": "menu",
+      "theme": null,
+      "individualPath": "current_1x/individual/menu/menu_creature_b.png"
+    },
+    "enemy_runner_with_health": {
+      "frame": {
+        "x": 4049,
+        "y": 2,
+        "w": 42,
+        "h": 46
+      },
+      "pivotPx": {
+        "x": 20,
+        "y": 23
+      },
+      "originalPivotPx": {
+        "x": 75,
+        "y": 80
+      },
+      "godotOffsetFromCenterPx": {
+        "x": -1,
+        "y": 0
+      },
+      "category": "enemies",
+      "theme": null,
+      "individualPath": "current_1x/individual/enemies/enemy_runner_with_health.png"
+    },
+    "enemy_runner_slowed": {
+      "frame": {
+        "x": 2,
+        "y": 292,
+        "w": 44,
+        "h": 45
+      },
+      "pivotPx": {
+        "x": 22,
+        "y": 22
+      },
+      "originalPivotPx": {
+        "x": 75,
+        "y": 75
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 0,
+        "y": 0
+      },
+      "category": "enemies",
+      "theme": null,
+      "individualPath": "current_1x/individual/enemies/enemy_runner_slowed.png"
+    },
+    "ui_stat_pill_blank": {
+      "frame": {
+        "x": 48,
+        "y": 292,
+        "w": 124,
+        "h": 45
+      },
+      "pivotPx": {
+        "x": 57,
+        "y": 17
+      },
+      "originalPivotPx": {
+        "x": 75,
+        "y": 35
+      },
+      "godotOffsetFromCenterPx": {
+        "x": -5,
+        "y": -5
+      },
+      "category": "ui",
+      "theme": null,
+      "individualPath": "current_1x/individual/ui/ui_stat_pill_blank.png"
+    },
+    "menu_tower_b": {
+      "frame": {
+        "x": 174,
+        "y": 292,
+        "w": 30,
+        "h": 44
+      },
+      "pivotPx": {
+        "x": 4,
+        "y": 35
+      },
+      "originalPivotPx": {
+        "x": 60,
+        "y": 92
+      },
+      "godotOffsetFromCenterPx": {
+        "x": -11,
+        "y": 13
+      },
+      "category": "menu",
+      "theme": null,
+      "individualPath": "current_1x/individual/menu/menu_tower_b.png"
+    },
+    "ui_shop_title_loja": {
+      "frame": {
+        "x": 206,
+        "y": 292,
+        "w": 89,
+        "h": 43
+      },
+      "pivotPx": {
+        "x": 56,
+        "y": 20
+      },
+      "originalPivotPx": {
+        "x": 80,
+        "y": 40
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 12,
+        "y": -1
+      },
+      "category": "ui",
+      "theme": null,
+      "individualPath": "current_1x/individual/ui/ui_shop_title_loja.png"
+    },
+    "enemy_runner": {
+      "frame": {
+        "x": 297,
+        "y": 292,
+        "w": 40,
+        "h": 41
+      },
+      "pivotPx": {
+        "x": 18,
+        "y": 18
+      },
+      "originalPivotPx": {
+        "x": 70,
+        "y": 70
+      },
+      "godotOffsetFromCenterPx": {
+        "x": -2,
+        "y": -2
+      },
+      "category": "enemies",
+      "theme": null,
+      "individualPath": "current_1x/individual/enemies/enemy_runner.png"
+    },
+    "enemy_brute": {
+      "frame": {
+        "x": 339,
+        "y": 292,
+        "w": 40,
+        "h": 41
+      },
+      "pivotPx": {
+        "x": 18,
+        "y": 18
+      },
+      "originalPivotPx": {
+        "x": 70,
+        "y": 70
+      },
+      "godotOffsetFromCenterPx": {
+        "x": -2,
+        "y": -2
+      },
+      "category": "enemies",
+      "theme": null,
+      "individualPath": "current_1x/individual/enemies/enemy_brute.png"
+    },
+    "enemy_shield": {
+      "frame": {
+        "x": 381,
+        "y": 292,
+        "w": 40,
+        "h": 41
+      },
+      "pivotPx": {
+        "x": 18,
+        "y": 18
+      },
+      "originalPivotPx": {
+        "x": 70,
+        "y": 70
+      },
+      "godotOffsetFromCenterPx": {
+        "x": -2,
+        "y": -2
+      },
+      "category": "enemies",
+      "theme": null,
+      "individualPath": "current_1x/individual/enemies/enemy_shield.png"
+    },
+    "impact_frame_1": {
+      "frame": {
+        "x": 423,
+        "y": 292,
+        "w": 41,
+        "h": 41
+      },
+      "pivotPx": {
+        "x": 21,
+        "y": 21
+      },
+      "originalPivotPx": {
+        "x": 70,
+        "y": 70
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 1,
+        "y": 1
+      },
+      "category": "effects",
+      "theme": null,
+      "individualPath": "current_1x/individual/effects/impact_frame_1.png"
+    },
+    "ui_menu_icon_button": {
+      "frame": {
+        "x": 466,
+        "y": 292,
+        "w": 36,
+        "h": 38
+      },
+      "pivotPx": {
+        "x": 18,
+        "y": 17
+      },
+      "originalPivotPx": {
+        "x": 35,
+        "y": 35
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 0,
+        "y": -2
+      },
+      "category": "ui",
+      "theme": null,
+      "individualPath": "current_1x/individual/ui/ui_menu_icon_button.png"
+    },
+    "ui_restart_icon_button": {
+      "frame": {
+        "x": 504,
+        "y": 292,
+        "w": 36,
+        "h": 38
+      },
+      "pivotPx": {
+        "x": 18,
+        "y": 17
+      },
+      "originalPivotPx": {
+        "x": 35,
+        "y": 35
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 0,
+        "y": -2
+      },
+      "category": "ui",
+      "theme": null,
+      "individualPath": "current_1x/individual/ui/ui_restart_icon_button.png"
+    },
+    "ui_coin_icon": {
+      "frame": {
+        "x": 542,
+        "y": 292,
+        "w": 28,
+        "h": 28
+      },
+      "pivotPx": {
+        "x": 14,
+        "y": 14
+      },
+      "originalPivotPx": {
+        "x": 35,
+        "y": 35
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 0,
+        "y": 0
+      },
+      "category": "ui",
+      "theme": null,
+      "individualPath": "current_1x/individual/ui/ui_coin_icon.png"
+    },
+    "menu_cloud_large": {
+      "frame": {
+        "x": 572,
+        "y": 292,
+        "w": 127,
+        "h": 26
+      },
+      "pivotPx": {
+        "x": 0,
+        "y": 6
+      },
+      "originalPivotPx": {
+        "x": 24,
+        "y": 32
+      },
+      "godotOffsetFromCenterPx": {
+        "x": -63,
+        "y": -7
+      },
+      "category": "menu",
+      "theme": null,
+      "individualPath": "current_1x/individual/menu/menu_cloud_large.png"
+    },
+    "menu_cloud_small": {
+      "frame": {
+        "x": 701,
+        "y": 292,
+        "w": 109,
+        "h": 26
+      },
+      "pivotPx": {
+        "x": 0,
+        "y": 6
+      },
+      "originalPivotPx": {
+        "x": 24,
+        "y": 32
+      },
+      "godotOffsetFromCenterPx": {
+        "x": -54,
+        "y": -7
+      },
+      "category": "menu",
+      "theme": null,
+      "individualPath": "current_1x/individual/menu/menu_cloud_small.png"
+    },
+    "impact_frame_0": {
+      "frame": {
+        "x": 812,
+        "y": 292,
+        "w": 21,
+        "h": 21
+      },
+      "pivotPx": {
+        "x": 11,
+        "y": 11
+      },
+      "originalPivotPx": {
+        "x": 70,
+        "y": 70
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 1,
+        "y": 1
+      },
+      "category": "effects",
+      "theme": null,
+      "individualPath": "current_1x/individual/effects/impact_frame_0.png"
+    },
+    "projectile_splash": {
+      "frame": {
+        "x": 835,
+        "y": 292,
+        "w": 14,
+        "h": 14
+      },
+      "pivotPx": {
+        "x": 7,
+        "y": 7
+      },
+      "originalPivotPx": {
+        "x": 45,
+        "y": 45
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 0,
+        "y": 0
+      },
+      "category": "projectiles",
+      "theme": null,
+      "individualPath": "current_1x/individual/projectiles/projectile_splash.png"
+    },
+    "ui_heart_dot": {
+      "frame": {
+        "x": 851,
+        "y": 292,
+        "w": 13,
+        "h": 13
+      },
+      "pivotPx": {
+        "x": 9,
+        "y": 9
+      },
+      "originalPivotPx": {
+        "x": 25,
+        "y": 25
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 3,
+        "y": 3
+      },
+      "category": "ui",
+      "theme": null,
+      "individualPath": "current_1x/individual/ui/ui_heart_dot.png"
+    },
+    "projectile_default": {
+      "frame": {
+        "x": 866,
+        "y": 292,
+        "w": 12,
+        "h": 12
+      },
+      "pivotPx": {
+        "x": 6,
+        "y": 6
+      },
+      "originalPivotPx": {
+        "x": 45,
+        "y": 45
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 0,
+        "y": 0
+      },
+      "category": "projectiles",
+      "theme": null,
+      "individualPath": "current_1x/individual/projectiles/projectile_default.png"
+    },
+    "projectile_slow": {
+      "frame": {
+        "x": 880,
+        "y": 292,
+        "w": 12,
+        "h": 12
+      },
+      "pivotPx": {
+        "x": 6,
+        "y": 6
+      },
+      "originalPivotPx": {
+        "x": 45,
+        "y": 45
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 0,
+        "y": 0
+      },
+      "category": "projectiles",
+      "theme": null,
+      "individualPath": "current_1x/individual/projectiles/projectile_slow.png"
+    },
+    "projectile_flame": {
+      "frame": {
+        "x": 894,
+        "y": 292,
+        "w": 12,
+        "h": 12
+      },
+      "pivotPx": {
+        "x": 6,
+        "y": 6
+      },
+      "originalPivotPx": {
+        "x": 45,
+        "y": 45
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 0,
+        "y": 0
+      },
+      "category": "projectiles",
+      "theme": null,
+      "individualPath": "current_1x/individual/projectiles/projectile_flame.png"
+    }
+  }
+}

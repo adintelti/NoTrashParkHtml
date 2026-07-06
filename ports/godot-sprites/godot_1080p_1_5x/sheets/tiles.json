@@ -1,0 +1,497 @@
+{
+  "app": "No Trash Park HTML sprite export",
+  "scaleKey": "godot_1080p_1_5x",
+  "scale": 1.5,
+  "tilePixels": 105,
+  "image": "godot_1080p_1_5x/sheets/tiles.png",
+  "size": {
+    "width": 2271,
+    "height": 111
+  },
+  "paddingPx": 3,
+  "frames": {
+    "park_terrain_detail_a": {
+      "frame": {
+        "x": 3,
+        "y": 3,
+        "w": 105,
+        "h": 105
+      },
+      "pivotPx": {
+        "x": 53,
+        "y": 53
+      },
+      "originalPivotPx": {
+        "x": 53,
+        "y": 53
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 1,
+        "y": 1
+      },
+      "category": "tiles",
+      "theme": "park",
+      "individualPath": "godot_1080p_1_5x/individual/tiles/park_terrain_detail_a.png"
+    },
+    "park_terrain_detail_b": {
+      "frame": {
+        "x": 111,
+        "y": 3,
+        "w": 105,
+        "h": 105
+      },
+      "pivotPx": {
+        "x": 53,
+        "y": 53
+      },
+      "originalPivotPx": {
+        "x": 53,
+        "y": 53
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 1,
+        "y": 1
+      },
+      "category": "tiles",
+      "theme": "park",
+      "individualPath": "godot_1080p_1_5x/individual/tiles/park_terrain_detail_b.png"
+    },
+    "park_terrain_detail_c": {
+      "frame": {
+        "x": 219,
+        "y": 3,
+        "w": 105,
+        "h": 105
+      },
+      "pivotPx": {
+        "x": 53,
+        "y": 53
+      },
+      "originalPivotPx": {
+        "x": 53,
+        "y": 53
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 1,
+        "y": 1
+      },
+      "category": "tiles",
+      "theme": "park",
+      "individualPath": "godot_1080p_1_5x/individual/tiles/park_terrain_detail_c.png"
+    },
+    "park_terrain_blocked": {
+      "frame": {
+        "x": 327,
+        "y": 3,
+        "w": 105,
+        "h": 105
+      },
+      "pivotPx": {
+        "x": 53,
+        "y": 53
+      },
+      "originalPivotPx": {
+        "x": 53,
+        "y": 53
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 1,
+        "y": 1
+      },
+      "category": "tiles",
+      "theme": "park",
+      "individualPath": "godot_1080p_1_5x/individual/tiles/park_terrain_blocked.png"
+    },
+    "park_path": {
+      "frame": {
+        "x": 435,
+        "y": 3,
+        "w": 105,
+        "h": 105
+      },
+      "pivotPx": {
+        "x": 53,
+        "y": 53
+      },
+      "originalPivotPx": {
+        "x": 53,
+        "y": 53
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 1,
+        "y": 1
+      },
+      "category": "tiles",
+      "theme": "park",
+      "individualPath": "godot_1080p_1_5x/individual/tiles/park_path.png"
+    },
+    "park_path_preview_available": {
+      "frame": {
+        "x": 543,
+        "y": 3,
+        "w": 105,
+        "h": 105
+      },
+      "pivotPx": {
+        "x": 53,
+        "y": 53
+      },
+      "originalPivotPx": {
+        "x": 53,
+        "y": 53
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 1,
+        "y": 1
+      },
+      "category": "tiles",
+      "theme": "park",
+      "individualPath": "godot_1080p_1_5x/individual/tiles/park_path_preview_available.png"
+    },
+    "park_path_preview_unavailable": {
+      "frame": {
+        "x": 651,
+        "y": 3,
+        "w": 105,
+        "h": 105
+      },
+      "pivotPx": {
+        "x": 53,
+        "y": 53
+      },
+      "originalPivotPx": {
+        "x": 53,
+        "y": 53
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 1,
+        "y": 1
+      },
+      "category": "tiles",
+      "theme": "park",
+      "individualPath": "godot_1080p_1_5x/individual/tiles/park_path_preview_unavailable.png"
+    },
+    "lagoon_terrain_detail_a": {
+      "frame": {
+        "x": 759,
+        "y": 3,
+        "w": 105,
+        "h": 105
+      },
+      "pivotPx": {
+        "x": 53,
+        "y": 53
+      },
+      "originalPivotPx": {
+        "x": 53,
+        "y": 53
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 1,
+        "y": 1
+      },
+      "category": "tiles",
+      "theme": "lagoon",
+      "individualPath": "godot_1080p_1_5x/individual/tiles/lagoon_terrain_detail_a.png"
+    },
+    "lagoon_terrain_detail_b": {
+      "frame": {
+        "x": 867,
+        "y": 3,
+        "w": 105,
+        "h": 105
+      },
+      "pivotPx": {
+        "x": 53,
+        "y": 53
+      },
+      "originalPivotPx": {
+        "x": 53,
+        "y": 53
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 1,
+        "y": 1
+      },
+      "category": "tiles",
+      "theme": "lagoon",
+      "individualPath": "godot_1080p_1_5x/individual/tiles/lagoon_terrain_detail_b.png"
+    },
+    "lagoon_terrain_detail_c": {
+      "frame": {
+        "x": 975,
+        "y": 3,
+        "w": 105,
+        "h": 105
+      },
+      "pivotPx": {
+        "x": 53,
+        "y": 53
+      },
+      "originalPivotPx": {
+        "x": 53,
+        "y": 53
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 1,
+        "y": 1
+      },
+      "category": "tiles",
+      "theme": "lagoon",
+      "individualPath": "godot_1080p_1_5x/individual/tiles/lagoon_terrain_detail_c.png"
+    },
+    "lagoon_terrain_blocked": {
+      "frame": {
+        "x": 1083,
+        "y": 3,
+        "w": 105,
+        "h": 105
+      },
+      "pivotPx": {
+        "x": 53,
+        "y": 53
+      },
+      "originalPivotPx": {
+        "x": 53,
+        "y": 53
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 1,
+        "y": 1
+      },
+      "category": "tiles",
+      "theme": "lagoon",
+      "individualPath": "godot_1080p_1_5x/individual/tiles/lagoon_terrain_blocked.png"
+    },
+    "lagoon_path": {
+      "frame": {
+        "x": 1191,
+        "y": 3,
+        "w": 105,
+        "h": 105
+      },
+      "pivotPx": {
+        "x": 53,
+        "y": 53
+      },
+      "originalPivotPx": {
+        "x": 53,
+        "y": 53
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 1,
+        "y": 1
+      },
+      "category": "tiles",
+      "theme": "lagoon",
+      "individualPath": "godot_1080p_1_5x/individual/tiles/lagoon_path.png"
+    },
+    "lagoon_path_preview_available": {
+      "frame": {
+        "x": 1299,
+        "y": 3,
+        "w": 105,
+        "h": 105
+      },
+      "pivotPx": {
+        "x": 53,
+        "y": 53
+      },
+      "originalPivotPx": {
+        "x": 53,
+        "y": 53
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 1,
+        "y": 1
+      },
+      "category": "tiles",
+      "theme": "lagoon",
+      "individualPath": "godot_1080p_1_5x/individual/tiles/lagoon_path_preview_available.png"
+    },
+    "lagoon_path_preview_unavailable": {
+      "frame": {
+        "x": 1407,
+        "y": 3,
+        "w": 105,
+        "h": 105
+      },
+      "pivotPx": {
+        "x": 53,
+        "y": 53
+      },
+      "originalPivotPx": {
+        "x": 53,
+        "y": 53
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 1,
+        "y": 1
+      },
+      "category": "tiles",
+      "theme": "lagoon",
+      "individualPath": "godot_1080p_1_5x/individual/tiles/lagoon_path_preview_unavailable.png"
+    },
+    "lava_terrain_detail_a": {
+      "frame": {
+        "x": 1515,
+        "y": 3,
+        "w": 105,
+        "h": 105
+      },
+      "pivotPx": {
+        "x": 53,
+        "y": 53
+      },
+      "originalPivotPx": {
+        "x": 53,
+        "y": 53
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 1,
+        "y": 1
+      },
+      "category": "tiles",
+      "theme": "lava",
+      "individualPath": "godot_1080p_1_5x/individual/tiles/lava_terrain_detail_a.png"
+    },
+    "lava_terrain_detail_b": {
+      "frame": {
+        "x": 1623,
+        "y": 3,
+        "w": 105,
+        "h": 105
+      },
+      "pivotPx": {
+        "x": 53,
+        "y": 53
+      },
+      "originalPivotPx": {
+        "x": 53,
+        "y": 53
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 1,
+        "y": 1
+      },
+      "category": "tiles",
+      "theme": "lava",
+      "individualPath": "godot_1080p_1_5x/individual/tiles/lava_terrain_detail_b.png"
+    },
+    "lava_terrain_detail_c": {
+      "frame": {
+        "x": 1731,
+        "y": 3,
+        "w": 105,
+        "h": 105
+      },
+      "pivotPx": {
+        "x": 53,
+        "y": 53
+      },
+      "originalPivotPx": {
+        "x": 53,
+        "y": 53
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 1,
+        "y": 1
+      },
+      "category": "tiles",
+      "theme": "lava",
+      "individualPath": "godot_1080p_1_5x/individual/tiles/lava_terrain_detail_c.png"
+    },
+    "lava_terrain_blocked": {
+      "frame": {
+        "x": 1839,
+        "y": 3,
+        "w": 105,
+        "h": 105
+      },
+      "pivotPx": {
+        "x": 53,
+        "y": 53
+      },
+      "originalPivotPx": {
+        "x": 53,
+        "y": 53
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 1,
+        "y": 1
+      },
+      "category": "tiles",
+      "theme": "lava",
+      "individualPath": "godot_1080p_1_5x/individual/tiles/lava_terrain_blocked.png"
+    },
+    "lava_path": {
+      "frame": {
+        "x": 1947,
+        "y": 3,
+        "w": 105,
+        "h": 105
+      },
+      "pivotPx": {
+        "x": 53,
+        "y": 53
+      },
+      "originalPivotPx": {
+        "x": 53,
+        "y": 53
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 1,
+        "y": 1
+      },
+      "category": "tiles",
+      "theme": "lava",
+      "individualPath": "godot_1080p_1_5x/individual/tiles/lava_path.png"
+    },
+    "lava_path_preview_available": {
+      "frame": {
+        "x": 2055,
+        "y": 3,
+        "w": 105,
+        "h": 105
+      },
+      "pivotPx": {
+        "x": 53,
+        "y": 53
+      },
+      "originalPivotPx": {
+        "x": 53,
+        "y": 53
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 1,
+        "y": 1
+      },
+      "category": "tiles",
+      "theme": "lava",
+      "individualPath": "godot_1080p_1_5x/individual/tiles/lava_path_preview_available.png"
+    },
+    "lava_path_preview_unavailable": {
+      "frame": {
+        "x": 2163,
+        "y": 3,
+        "w": 105,
+        "h": 105
+      },
+      "pivotPx": {
+        "x": 53,
+        "y": 53
+      },
+      "originalPivotPx": {
+        "x": 53,
+        "y": 53
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 1,
+        "y": 1
+      },
+      "category": "tiles",
+      "theme": "lava",
+      "individualPath": "godot_1080p_1_5x/individual/tiles/lava_path_preview_unavailable.png"
+    }
+  }
+}

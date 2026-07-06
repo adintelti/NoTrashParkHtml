@@ -1,0 +1,691 @@
+[gd_scene format=3 uid="uid://5tbxg5pir1yg"]
+
+[ext_resource type="Texture2D" uid="uid://ch26i76de15se" path="res://assets/menu/menu_cloud_large.png" id="1_cloud_large"]
+[ext_resource type="Texture2D" uid="uid://01kd7kfcqoex" path="res://assets/menu/menu_cloud_small.png" id="2_cloud_small"]
+[ext_resource type="Texture2D" uid="uid://b76abue4ey1qn" path="res://assets/menu/menu_path_curve.png" id="3_path_curve"]
+[ext_resource type="Texture2D" uid="uid://dty677bu7uud6" path="res://assets/menu/menu_creature_a.png" id="4_creature_a"]
+[ext_resource type="Texture2D" uid="uid://22bda8bj5rw3" path="res://assets/menu/menu_creature_b.png" id="5_creature_b"]
+[ext_resource type="Texture2D" uid="uid://bnwkmbmrug4lr" path="res://assets/menu/menu_tower_a.png" id="6_tower_a"]
+[ext_resource type="Texture2D" uid="uid://b0nyo3q20mb50" path="res://assets/menu/menu_tower_b.png" id="7_tower_b"]
+[ext_resource type="Texture2D" uid="uid://dt114o13e5008" path="res://assets/menu/menu_logo_block_ntp.png" id="8_logo"]
+[ext_resource type="Script" path="res://scripts/main_menu.gd" id="9_menu_script"]
+
+[sub_resource type="StyleBoxFlat" id="FrameStyle"]
+bg_color = Color(0.43137255, 0.80784315, 0.32156864, 1)
+border_width_left = 6
+border_width_top = 6
+border_width_right = 6
+border_width_bottom = 6
+border_color = Color(0.050980393, 0.17254902, 0.2901961, 1)
+
+[sub_resource type="StyleBoxFlat" id="PanelStyle"]
+content_margin_left = 24.0
+content_margin_top = 18.0
+content_margin_right = 24.0
+content_margin_bottom = 18.0
+bg_color = Color(0.9019608, 0.65882355, 0.2509804, 1)
+border_width_left = 6
+border_width_top = 6
+border_width_right = 6
+border_width_bottom = 6
+border_color = Color(0.14117648, 0.09019608, 0.047058824, 1)
+shadow_color = Color(0, 0, 0, 0.25)
+shadow_size = 7
+
+[sub_resource type="StyleBoxFlat" id="VersionStyle"]
+content_margin_left = 8.0
+content_margin_top = 6.0
+content_margin_right = 8.0
+content_margin_bottom = 6.0
+bg_color = Color(1, 0.9411765, 0.6901961, 0.78)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.050980393, 0.34901962, 0.21960784, 1)
+shadow_color = Color(0, 0, 0, 0.16)
+shadow_size = 4
+
+[sub_resource type="StyleBoxFlat" id="ButtonNormal"]
+bg_color = Color(0.96862745, 0.7137255, 0.09019608, 1)
+border_width_left = 5
+border_width_top = 5
+border_width_right = 5
+border_width_bottom = 5
+border_color = Color(0.14117648, 0.09019608, 0.047058824, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+shadow_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+shadow_size = 4
+
+[sub_resource type="StyleBoxFlat" id="ButtonPressed"]
+bg_color = Color(0.84705883, 0.54901963, 0.0627451, 1)
+border_width_left = 5
+border_width_top = 5
+border_width_right = 5
+border_width_bottom = 5
+border_color = Color(0.14117648, 0.09019608, 0.047058824, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+shadow_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+shadow_size = 2
+
+[sub_resource type="StyleBoxFlat" id="ButtonHover"]
+bg_color = Color(1, 0.8509804, 0.41960785, 1)
+border_width_left = 5
+border_width_top = 5
+border_width_right = 5
+border_width_bottom = 5
+border_color = Color(0.14117648, 0.09019608, 0.047058824, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+shadow_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+shadow_size = 4
+
+[sub_resource type="StyleBoxFlat" id="ButtonActive"]
+bg_color = Color(1, 0.89411765, 0.4509804, 1)
+border_width_left = 5
+border_width_top = 5
+border_width_right = 5
+border_width_bottom = 5
+border_color = Color(1, 0.9411765, 0.6313726, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+shadow_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+shadow_size = 4
+
+[sub_resource type="StyleBoxFlat" id="ButtonDisabled"]
+bg_color = Color(0.54509807, 0.5058824, 0.45490196, 1)
+border_width_left = 5
+border_width_top = 5
+border_width_right = 5
+border_width_bottom = 5
+border_color = Color(0.14117648, 0.09019608, 0.047058824, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[node name="MainMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture_filter = 1
+script = ExtResource("9_menu_script")
+
+[node name="AppBackground" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.08235294, 0.3372549, 0.56078434, 1)
+
+[node name="GameFrame" type="Panel" parent="AppBackground"]
+layout_mode = 0
+offset_left = 90.0
+offset_right = 1830.0
+offset_bottom = 1080.0
+theme_override_styles/panel = SubResource("FrameStyle")
+
+[node name="MenuWorld" type="Control" parent="AppBackground/GameFrame"]
+layout_mode = 0
+offset_left = 6.0
+offset_top = 6.0
+offset_right = 1734.0
+offset_bottom = 1074.0
+
+[node name="Sky" type="ColorRect" parent="AppBackground/GameFrame/MenuWorld"]
+layout_mode = 0
+offset_right = 1728.0
+offset_bottom = 449.0
+color = Color(0.08235294, 0.5803922, 0.8666667, 1)
+
+[node name="Ground" type="ColorRect" parent="AppBackground/GameFrame/MenuWorld"]
+layout_mode = 0
+offset_top = 449.0
+offset_right = 1728.0
+offset_bottom = 1068.0
+color = Color(0.5647059, 0.8862745, 0.44705883, 1)
+
+[node name="CloudLarge" type="TextureRect" parent="AppBackground/GameFrame/MenuWorld"]
+layout_mode = 0
+offset_left = 905.0
+offset_top = 102.0
+offset_right = 1096.0
+offset_bottom = 141.0
+texture = ExtResource("1_cloud_large")
+stretch_mode = 2
+
+[node name="CloudSmall" type="TextureRect" parent="AppBackground/GameFrame/MenuWorld"]
+layout_mode = 0
+offset_left = 162.0
+offset_top = 219.0
+offset_right = 326.0
+offset_bottom = 258.0
+texture = ExtResource("2_cloud_small")
+stretch_mode = 2
+
+[node name="PathCurve" type="TextureRect" parent="AppBackground/GameFrame/MenuWorld"]
+layout_mode = 0
+offset_left = 75.0
+offset_top = 726.0
+offset_right = 540.0
+offset_bottom = 951.0
+texture = ExtResource("3_path_curve")
+stretch_mode = 2
+
+[node name="CreatureA" type="TextureRect" parent="AppBackground/GameFrame/MenuWorld"]
+layout_mode = 0
+offset_left = 390.0
+offset_top = 819.0
+offset_right = 499.0
+offset_bottom = 905.0
+pivot_offset = Vector2(54.5, 43)
+rotation = -0.27925268
+texture = ExtResource("4_creature_a")
+stretch_mode = 2
+
+[node name="CreatureB" type="TextureRect" parent="AppBackground/GameFrame/MenuWorld"]
+layout_mode = 0
+offset_left = 504.0
+offset_top = 779.0
+offset_right = 588.0
+offset_bottom = 854.0
+pivot_offset = Vector2(42, 37.5)
+rotation = 0.20943952
+texture = ExtResource("5_creature_b")
+stretch_mode = 2
+
+[node name="TowerA" type="TextureRect" parent="AppBackground/GameFrame/MenuWorld"]
+layout_mode = 0
+offset_left = 111.0
+offset_top = 885.0
+offset_right = 168.0
+offset_bottom = 966.0
+texture = ExtResource("6_tower_a")
+stretch_mode = 2
+
+[node name="TowerB" type="TextureRect" parent="AppBackground/GameFrame/MenuWorld"]
+layout_mode = 0
+offset_left = 255.0
+offset_top = 906.0
+offset_right = 300.0
+offset_bottom = 971.0
+texture = ExtResource("7_tower_b")
+stretch_mode = 2
+
+[node name="TitleGroup" type="Control" parent="AppBackground/GameFrame"]
+layout_mode = 0
+offset_left = 60.0
+offset_top = 383.0
+offset_right = 960.0
+offset_bottom = 698.0
+pivot_offset = Vector2(450, 157.5)
+rotation = 0.08726646
+
+[node name="Logo" type="TextureRect" parent="AppBackground/GameFrame/TitleGroup"]
+layout_mode = 0
+offset_right = 405.0
+offset_bottom = 195.0
+texture = ExtResource("8_logo")
+stretch_mode = 2
+
+[node name="Title" type="Label" parent="AppBackground/GameFrame/TitleGroup"]
+layout_mode = 0
+offset_left = 50.0
+offset_top = 205.0
+offset_right = 550.0
+offset_bottom = 265.0
+theme_override_colors/font_color = Color(0.078431375, 0.19215687, 0.16470589, 1)
+theme_override_font_sizes/font_size = 42
+text = "NO TRASH PARK"
+
+[node name="VersionPanel" type="PanelContainer" parent="AppBackground/GameFrame"]
+layout_mode = 0
+offset_left = 60.0
+offset_top = 984.0
+offset_right = 300.0
+offset_bottom = 1032.0
+theme_override_styles/panel = SubResource("VersionStyle")
+
+[node name="VersionLabel" type="Label" parent="AppBackground/GameFrame/VersionPanel"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.078431375, 0.19215687, 0.16470589, 1)
+theme_override_font_sizes/font_size = 20
+text = "Versao 2.1.6"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="MenuButtons" type="VBoxContainer" parent="AppBackground/GameFrame"]
+layout_mode = 0
+offset_left = 1362.0
+offset_top = 323.0
+offset_right = 1587.0
+offset_bottom = 758.0
+theme_override_constants/separation = 51
+
+[node name="ContinueButton" type="Button" parent="AppBackground/GameFrame/MenuButtons"]
+visible = false
+custom_minimum_size = Vector2(225, 111)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+theme_override_styles/normal = SubResource("ButtonNormal")
+theme_override_styles/pressed = SubResource("ButtonPressed")
+theme_override_styles/hover = SubResource("ButtonHover")
+theme_override_styles/disabled = SubResource("ButtonDisabled")
+text = "Continuar"
+
+[node name="PlayButton" type="Button" parent="AppBackground/GameFrame/MenuButtons"]
+custom_minimum_size = Vector2(225, 111)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+theme_override_styles/normal = SubResource("ButtonNormal")
+theme_override_styles/pressed = SubResource("ButtonPressed")
+theme_override_styles/hover = SubResource("ButtonHover")
+theme_override_styles/disabled = SubResource("ButtonDisabled")
+text = "Jogar"
+
+[node name="ConfigButton" type="Button" parent="AppBackground/GameFrame/MenuButtons"]
+custom_minimum_size = Vector2(225, 111)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+theme_override_styles/normal = SubResource("ButtonNormal")
+theme_override_styles/pressed = SubResource("ButtonPressed")
+theme_override_styles/hover = SubResource("ButtonHover")
+theme_override_styles/disabled = SubResource("ButtonDisabled")
+text = "Config."
+
+[node name="ExitButton" type="Button" parent="AppBackground/GameFrame/MenuButtons"]
+custom_minimum_size = Vector2(225, 111)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+theme_override_styles/normal = SubResource("ButtonNormal")
+theme_override_styles/pressed = SubResource("ButtonPressed")
+theme_override_styles/hover = SubResource("ButtonHover")
+theme_override_styles/disabled = SubResource("ButtonDisabled")
+text = "Sair"
+
+[node name="DifficultyPanel" type="PanelContainer" parent="AppBackground/GameFrame"]
+visible = false
+layout_mode = 0
+offset_left = 800.0
+offset_top = 330.0
+offset_right = 1320.0
+offset_bottom = 760.0
+theme_override_styles/panel = SubResource("PanelStyle")
+
+[node name="DifficultyContent" type="VBoxContainer" parent="AppBackground/GameFrame/DifficultyPanel"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="DifficultyTitle" type="Label" parent="AppBackground/GameFrame/DifficultyPanel/DifficultyContent"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+theme_override_font_sizes/font_size = 24
+text = "Dificuldade"
+
+[node name="DifficultyGrid" type="GridContainer" parent="AppBackground/GameFrame/DifficultyPanel/DifficultyContent"]
+layout_mode = 2
+theme_override_constants/h_separation = 9
+theme_override_constants/v_separation = 9
+columns = 2
+
+[node name="EasyButton" type="Button" parent="AppBackground/GameFrame/DifficultyPanel/DifficultyContent/DifficultyGrid"]
+custom_minimum_size = Vector2(225, 69)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+theme_override_colors/font_pressed_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+theme_override_colors/font_hover_pressed_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+theme_override_styles/normal = SubResource("ButtonNormal")
+theme_override_styles/pressed = SubResource("ButtonActive")
+theme_override_styles/hover = SubResource("ButtonHover")
+theme_override_styles/disabled = SubResource("ButtonDisabled")
+text = "Facil
+5"
+
+[node name="MediumButton" type="Button" parent="AppBackground/GameFrame/DifficultyPanel/DifficultyContent/DifficultyGrid"]
+custom_minimum_size = Vector2(225, 69)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+theme_override_colors/font_pressed_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+theme_override_colors/font_hover_pressed_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+theme_override_styles/normal = SubResource("ButtonNormal")
+theme_override_styles/pressed = SubResource("ButtonActive")
+theme_override_styles/hover = SubResource("ButtonHover")
+theme_override_styles/disabled = SubResource("ButtonDisabled")
+text = "Medio
+12"
+
+[node name="HardButton" type="Button" parent="AppBackground/GameFrame/DifficultyPanel/DifficultyContent/DifficultyGrid"]
+custom_minimum_size = Vector2(225, 69)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+theme_override_colors/font_pressed_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+theme_override_colors/font_hover_pressed_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+theme_override_styles/normal = SubResource("ButtonNormal")
+theme_override_styles/pressed = SubResource("ButtonActive")
+theme_override_styles/hover = SubResource("ButtonHover")
+theme_override_styles/disabled = SubResource("ButtonDisabled")
+text = "Dificil
+20"
+
+[node name="CustomButton" type="Button" parent="AppBackground/GameFrame/DifficultyPanel/DifficultyContent/DifficultyGrid"]
+custom_minimum_size = Vector2(225, 69)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+theme_override_colors/font_pressed_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+theme_override_colors/font_hover_pressed_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+theme_override_styles/normal = SubResource("ButtonNormal")
+theme_override_styles/pressed = SubResource("ButtonActive")
+theme_override_styles/hover = SubResource("ButtonHover")
+theme_override_styles/disabled = SubResource("ButtonDisabled")
+text = "Custom
+20-99"
+
+[node name="WavesRow" type="HBoxContainer" parent="AppBackground/GameFrame/DifficultyPanel/DifficultyContent"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="WavesLabel" type="Label" parent="AppBackground/GameFrame/DifficultyPanel/DifficultyContent/WavesRow"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+theme_override_font_sizes/font_size = 18
+text = "Ondas"
+vertical_alignment = 1
+
+[node name="WavesInput" type="LineEdit" parent="AppBackground/GameFrame/DifficultyPanel/DifficultyContent/WavesRow"]
+custom_minimum_size = Vector2(160, 57)
+layout_mode = 2
+text = "20"
+alignment = 1
+
+[node name="DifficultyActions" type="HBoxContainer" parent="AppBackground/GameFrame/DifficultyPanel/DifficultyContent"]
+layout_mode = 2
+theme_override_constants/separation = 9
+
+[node name="DifficultyBackButton" type="Button" parent="AppBackground/GameFrame/DifficultyPanel/DifficultyContent/DifficultyActions"]
+custom_minimum_size = Vector2(225, 72)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+theme_override_styles/normal = SubResource("ButtonNormal")
+theme_override_styles/pressed = SubResource("ButtonPressed")
+theme_override_styles/hover = SubResource("ButtonHover")
+theme_override_styles/disabled = SubResource("ButtonDisabled")
+text = "Voltar"
+
+[node name="StartButton" type="Button" parent="AppBackground/GameFrame/DifficultyPanel/DifficultyContent/DifficultyActions"]
+custom_minimum_size = Vector2(225, 72)
+layout_mode = 2
+disabled = true
+theme_override_colors/font_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+theme_override_styles/normal = SubResource("ButtonNormal")
+theme_override_styles/pressed = SubResource("ButtonPressed")
+theme_override_styles/hover = SubResource("ButtonHover")
+theme_override_styles/disabled = SubResource("ButtonDisabled")
+text = "Iniciar"
+
+[node name="ConfigPanel" type="PanelContainer" parent="AppBackground/GameFrame"]
+visible = false
+layout_mode = 0
+offset_left = 800.0
+offset_top = 205.0
+offset_right = 1320.0
+offset_bottom = 875.0
+theme_override_styles/panel = SubResource("PanelStyle")
+
+[node name="ConfigContent" type="VBoxContainer" parent="AppBackground/GameFrame/ConfigPanel"]
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="ControllerSection" type="VBoxContainer" parent="AppBackground/GameFrame/ConfigPanel/ConfigContent"]
+layout_mode = 2
+theme_override_constants/separation = 9
+
+[node name="ControllerTitle" type="Label" parent="AppBackground/GameFrame/ConfigPanel/ConfigContent/ControllerSection"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+theme_override_font_sizes/font_size = 20
+text = "Controle"
+
+[node name="ControllerButtons" type="HBoxContainer" parent="AppBackground/GameFrame/ConfigPanel/ConfigContent/ControllerSection"]
+layout_mode = 2
+theme_override_constants/separation = 9
+
+[node name="XboxLayoutButton" type="Button" parent="AppBackground/GameFrame/ConfigPanel/ConfigContent/ControllerSection/ControllerButtons"]
+custom_minimum_size = Vector2(210, 57)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+theme_override_colors/font_pressed_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+theme_override_colors/font_hover_pressed_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+theme_override_styles/normal = SubResource("ButtonNormal")
+theme_override_styles/pressed = SubResource("ButtonActive")
+theme_override_styles/hover = SubResource("ButtonHover")
+theme_override_styles/disabled = SubResource("ButtonDisabled")
+text = "Xbox"
+
+[node name="SwitchLayoutButton" type="Button" parent="AppBackground/GameFrame/ConfigPanel/ConfigContent/ControllerSection/ControllerButtons"]
+custom_minimum_size = Vector2(210, 57)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+theme_override_colors/font_pressed_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+theme_override_colors/font_hover_pressed_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+theme_override_styles/normal = SubResource("ButtonNormal")
+theme_override_styles/pressed = SubResource("ButtonActive")
+theme_override_styles/hover = SubResource("ButtonHover")
+theme_override_styles/disabled = SubResource("ButtonDisabled")
+text = "Switch Pro"
+
+[node name="LanguageSection" type="VBoxContainer" parent="AppBackground/GameFrame/ConfigPanel/ConfigContent"]
+layout_mode = 2
+theme_override_constants/separation = 9
+
+[node name="LanguageTitle" type="Label" parent="AppBackground/GameFrame/ConfigPanel/ConfigContent/LanguageSection"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+theme_override_font_sizes/font_size = 20
+text = "Idioma"
+
+[node name="LanguageButtons" type="HBoxContainer" parent="AppBackground/GameFrame/ConfigPanel/ConfigContent/LanguageSection"]
+layout_mode = 2
+theme_override_constants/separation = 9
+
+[node name="PtLanguageButton" type="Button" parent="AppBackground/GameFrame/ConfigPanel/ConfigContent/LanguageSection/LanguageButtons"]
+custom_minimum_size = Vector2(135, 57)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+theme_override_colors/font_pressed_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+theme_override_colors/font_hover_pressed_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+theme_override_styles/normal = SubResource("ButtonNormal")
+theme_override_styles/pressed = SubResource("ButtonActive")
+theme_override_styles/hover = SubResource("ButtonHover")
+theme_override_styles/disabled = SubResource("ButtonDisabled")
+text = "PT-BR"
+
+[node name="EnLanguageButton" type="Button" parent="AppBackground/GameFrame/ConfigPanel/ConfigContent/LanguageSection/LanguageButtons"]
+custom_minimum_size = Vector2(135, 57)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+theme_override_colors/font_pressed_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+theme_override_colors/font_hover_pressed_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+theme_override_styles/normal = SubResource("ButtonNormal")
+theme_override_styles/pressed = SubResource("ButtonActive")
+theme_override_styles/hover = SubResource("ButtonHover")
+theme_override_styles/disabled = SubResource("ButtonDisabled")
+text = "EN"
+
+[node name="EsLanguageButton" type="Button" parent="AppBackground/GameFrame/ConfigPanel/ConfigContent/LanguageSection/LanguageButtons"]
+custom_minimum_size = Vector2(135, 57)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+theme_override_colors/font_pressed_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+theme_override_colors/font_hover_pressed_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+theme_override_styles/normal = SubResource("ButtonNormal")
+theme_override_styles/pressed = SubResource("ButtonActive")
+theme_override_styles/hover = SubResource("ButtonHover")
+theme_override_styles/disabled = SubResource("ButtonDisabled")
+text = "ES"
+
+[node name="CardSection" type="VBoxContainer" parent="AppBackground/GameFrame/ConfigPanel/ConfigContent"]
+layout_mode = 2
+theme_override_constants/separation = 9
+
+[node name="CardTitle" type="Label" parent="AppBackground/GameFrame/ConfigPanel/ConfigContent/CardSection"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+theme_override_font_sizes/font_size = 20
+text = "Cartas"
+
+[node name="CardFrequencyRow" type="HBoxContainer" parent="AppBackground/GameFrame/ConfigPanel/ConfigContent/CardSection"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="CardFrequencyLabel" type="Label" parent="AppBackground/GameFrame/ConfigPanel/ConfigContent/CardSection/CardFrequencyRow"]
+custom_minimum_size = Vector2(70, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+text = "Freq."
+vertical_alignment = 1
+
+[node name="CardFrequencySlider" type="HSlider" parent="AppBackground/GameFrame/ConfigPanel/ConfigContent/CardSection/CardFrequencyRow"]
+custom_minimum_size = Vector2(260, 0)
+layout_mode = 2
+max_value = 10.0
+step = 1.0
+value = 3.0
+
+[node name="CardFrequencyText" type="Label" parent="AppBackground/GameFrame/ConfigPanel/ConfigContent/CardSection/CardFrequencyRow"]
+custom_minimum_size = Vector2(90, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+text = "3 ondas"
+vertical_alignment = 1
+
+[node name="SoundSection" type="VBoxContainer" parent="AppBackground/GameFrame/ConfigPanel/ConfigContent"]
+layout_mode = 2
+theme_override_constants/separation = 9
+
+[node name="SoundTitle" type="Label" parent="AppBackground/GameFrame/ConfigPanel/ConfigContent/SoundSection"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+theme_override_font_sizes/font_size = 20
+text = "Som"
+
+[node name="SoundToggleButtons" type="HBoxContainer" parent="AppBackground/GameFrame/ConfigPanel/ConfigContent/SoundSection"]
+layout_mode = 2
+theme_override_constants/separation = 9
+
+[node name="BgmToggleButton" type="Button" parent="AppBackground/GameFrame/ConfigPanel/ConfigContent/SoundSection/SoundToggleButtons"]
+custom_minimum_size = Vector2(210, 57)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+theme_override_colors/font_pressed_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+theme_override_colors/font_hover_pressed_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+theme_override_styles/normal = SubResource("ButtonNormal")
+theme_override_styles/pressed = SubResource("ButtonActive")
+theme_override_styles/hover = SubResource("ButtonHover")
+theme_override_styles/disabled = SubResource("ButtonDisabled")
+text = "BGM Lig"
+
+[node name="SfxToggleButton" type="Button" parent="AppBackground/GameFrame/ConfigPanel/ConfigContent/SoundSection/SoundToggleButtons"]
+custom_minimum_size = Vector2(210, 57)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+theme_override_colors/font_pressed_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+theme_override_colors/font_hover_pressed_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+theme_override_styles/normal = SubResource("ButtonNormal")
+theme_override_styles/pressed = SubResource("ButtonActive")
+theme_override_styles/hover = SubResource("ButtonHover")
+theme_override_styles/disabled = SubResource("ButtonDisabled")
+text = "SFX Lig"
+
+[node name="BgmVolumeRow" type="HBoxContainer" parent="AppBackground/GameFrame/ConfigPanel/ConfigContent/SoundSection"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="BgmLabel" type="Label" parent="AppBackground/GameFrame/ConfigPanel/ConfigContent/SoundSection/BgmVolumeRow"]
+custom_minimum_size = Vector2(70, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+text = "BGM"
+vertical_alignment = 1
+
+[node name="BgmVolumeSlider" type="HSlider" parent="AppBackground/GameFrame/ConfigPanel/ConfigContent/SoundSection/BgmVolumeRow"]
+custom_minimum_size = Vector2(260, 0)
+layout_mode = 2
+max_value = 100.0
+step = 5.0
+value = 100.0
+
+[node name="BgmVolumeText" type="Label" parent="AppBackground/GameFrame/ConfigPanel/ConfigContent/SoundSection/BgmVolumeRow"]
+custom_minimum_size = Vector2(90, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+text = "100%"
+vertical_alignment = 1
+
+[node name="SfxVolumeRow" type="HBoxContainer" parent="AppBackground/GameFrame/ConfigPanel/ConfigContent/SoundSection"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="SfxLabel" type="Label" parent="AppBackground/GameFrame/ConfigPanel/ConfigContent/SoundSection/SfxVolumeRow"]
+custom_minimum_size = Vector2(70, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+text = "SFX"
+vertical_alignment = 1
+
+[node name="SfxVolumeSlider" type="HSlider" parent="AppBackground/GameFrame/ConfigPanel/ConfigContent/SoundSection/SfxVolumeRow"]
+custom_minimum_size = Vector2(260, 0)
+layout_mode = 2
+max_value = 100.0
+step = 5.0
+value = 100.0
+
+[node name="SfxVolumeText" type="Label" parent="AppBackground/GameFrame/ConfigPanel/ConfigContent/SoundSection/SfxVolumeRow"]
+custom_minimum_size = Vector2(90, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+text = "100%"
+vertical_alignment = 1
+
+[node name="ConfigBackButton" type="Button" parent="AppBackground/GameFrame/ConfigPanel/ConfigContent"]
+custom_minimum_size = Vector2(452, 72)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+theme_override_styles/normal = SubResource("ButtonNormal")
+theme_override_styles/pressed = SubResource("ButtonPressed")
+theme_override_styles/hover = SubResource("ButtonHover")
+theme_override_styles/disabled = SubResource("ButtonDisabled")
+text = "Voltar"
+
+[node name="MenuNote" type="PanelContainer" parent="AppBackground/GameFrame"]
+visible = false
+layout_mode = 0
+offset_left = 1182.0
+offset_top = 972.0
+offset_right = 1686.0
+offset_bottom = 1044.0
+theme_override_styles/panel = SubResource("PanelStyle")
+
+[node name="MenuNoteLabel" type="Label" parent="AppBackground/GameFrame/MenuNote"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.20784314, 0.11372549, 0.043137256, 1)
+theme_override_font_sizes/font_size = 18
+text = "Demo pronta no Godot."
+
+[node name="MenuNoteTimer" type="Timer" parent="."]
+wait_time = 1.8
+one_shot = true

@@ -1,0 +1,451 @@
+{
+  "app": "No Trash Park HTML sprite export",
+  "scaleKey": "current_1x",
+  "scale": 1,
+  "tilePixels": 70,
+  "image": "current_1x/sheets/ui_menu.png",
+  "size": {
+    "width": 2028,
+    "height": 154
+  },
+  "paddingPx": 2,
+  "frames": {
+    "menu_path_curve": {
+      "frame": {
+        "x": 2,
+        "y": 2,
+        "w": 310,
+        "h": 150
+      },
+      "pivotPx": {
+        "x": 149,
+        "y": 71
+      },
+      "originalPivotPx": {
+        "x": 195,
+        "y": 125
+      },
+      "godotOffsetFromCenterPx": {
+        "x": -6,
+        "y": -4
+      },
+      "category": "menu",
+      "theme": null,
+      "individualPath": "current_1x/individual/menu/menu_path_curve.png"
+    },
+    "menu_logo_block_ntp": {
+      "frame": {
+        "x": 314,
+        "y": 2,
+        "w": 270,
+        "h": 130
+      },
+      "pivotPx": {
+        "x": 125,
+        "y": 55
+      },
+      "originalPivotPx": {
+        "x": 155,
+        "y": 85
+      },
+      "godotOffsetFromCenterPx": {
+        "x": -10,
+        "y": -10
+      },
+      "category": "menu",
+      "theme": null,
+      "individualPath": "current_1x/individual/menu/menu_logo_block_ntp.png"
+    },
+    "ui_victory_stat_panel": {
+      "frame": {
+        "x": 586,
+        "y": 2,
+        "w": 140,
+        "h": 80
+      },
+      "pivotPx": {
+        "x": 60,
+        "y": 30
+      },
+      "originalPivotPx": {
+        "x": 85,
+        "y": 55
+      },
+      "godotOffsetFromCenterPx": {
+        "x": -10,
+        "y": -10
+      },
+      "category": "ui",
+      "theme": null,
+      "individualPath": "current_1x/individual/ui/ui_victory_stat_panel.png"
+    },
+    "ui_pixel_button_blank": {
+      "frame": {
+        "x": 728,
+        "y": 2,
+        "w": 180,
+        "h": 78
+      },
+      "pivotPx": {
+        "x": 85,
+        "y": 35
+      },
+      "originalPivotPx": {
+        "x": 100,
+        "y": 50
+      },
+      "godotOffsetFromCenterPx": {
+        "x": -5,
+        "y": -4
+      },
+      "category": "ui",
+      "theme": null,
+      "individualPath": "current_1x/individual/ui/ui_pixel_button_blank.png"
+    },
+    "ui_card_back": {
+      "frame": {
+        "x": 910,
+        "y": 2,
+        "w": 70,
+        "h": 70
+      },
+      "pivotPx": {
+        "x": 35,
+        "y": 35
+      },
+      "originalPivotPx": {
+        "x": 65,
+        "y": 65
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 0,
+        "y": 0
+      },
+      "category": "ui",
+      "theme": null,
+      "individualPath": "current_1x/individual/ui/ui_card_back.png"
+    },
+    "ui_shop_button_blank": {
+      "frame": {
+        "x": 982,
+        "y": 2,
+        "w": 130,
+        "h": 66
+      },
+      "pivotPx": {
+        "x": 60,
+        "y": 35
+      },
+      "originalPivotPx": {
+        "x": 75,
+        "y": 50
+      },
+      "godotOffsetFromCenterPx": {
+        "x": -5,
+        "y": 2
+      },
+      "category": "ui",
+      "theme": null,
+      "individualPath": "current_1x/individual/ui/ui_shop_button_blank.png"
+    },
+    "ui_shop_button_locked_blank": {
+      "frame": {
+        "x": 1114,
+        "y": 2,
+        "w": 130,
+        "h": 66
+      },
+      "pivotPx": {
+        "x": 60,
+        "y": 35
+      },
+      "originalPivotPx": {
+        "x": 75,
+        "y": 50
+      },
+      "godotOffsetFromCenterPx": {
+        "x": -5,
+        "y": 2
+      },
+      "category": "ui",
+      "theme": null,
+      "individualPath": "current_1x/individual/ui/ui_shop_button_locked_blank.png"
+    },
+    "menu_creature_a": {
+      "frame": {
+        "x": 1246,
+        "y": 2,
+        "w": 73,
+        "h": 57
+      },
+      "pivotPx": {
+        "x": 21,
+        "y": 23
+      },
+      "originalPivotPx": {
+        "x": 75,
+        "y": 72
+      },
+      "godotOffsetFromCenterPx": {
+        "x": -15,
+        "y": -5
+      },
+      "category": "menu",
+      "theme": null,
+      "individualPath": "current_1x/individual/menu/menu_creature_a.png"
+    },
+    "menu_tower_a": {
+      "frame": {
+        "x": 1321,
+        "y": 2,
+        "w": 38,
+        "h": 54
+      },
+      "pivotPx": {
+        "x": 8,
+        "y": 40
+      },
+      "originalPivotPx": {
+        "x": 60,
+        "y": 92
+      },
+      "godotOffsetFromCenterPx": {
+        "x": -11,
+        "y": 13
+      },
+      "category": "menu",
+      "theme": null,
+      "individualPath": "current_1x/individual/menu/menu_tower_a.png"
+    },
+    "menu_creature_b": {
+      "frame": {
+        "x": 1361,
+        "y": 2,
+        "w": 55,
+        "h": 50
+      },
+      "pivotPx": {
+        "x": 15,
+        "y": 18
+      },
+      "originalPivotPx": {
+        "x": 75,
+        "y": 72
+      },
+      "godotOffsetFromCenterPx": {
+        "x": -12,
+        "y": -7
+      },
+      "category": "menu",
+      "theme": null,
+      "individualPath": "current_1x/individual/menu/menu_creature_b.png"
+    },
+    "ui_stat_pill_blank": {
+      "frame": {
+        "x": 1418,
+        "y": 2,
+        "w": 124,
+        "h": 45
+      },
+      "pivotPx": {
+        "x": 57,
+        "y": 17
+      },
+      "originalPivotPx": {
+        "x": 75,
+        "y": 35
+      },
+      "godotOffsetFromCenterPx": {
+        "x": -5,
+        "y": -5
+      },
+      "category": "ui",
+      "theme": null,
+      "individualPath": "current_1x/individual/ui/ui_stat_pill_blank.png"
+    },
+    "menu_tower_b": {
+      "frame": {
+        "x": 1544,
+        "y": 2,
+        "w": 30,
+        "h": 44
+      },
+      "pivotPx": {
+        "x": 4,
+        "y": 35
+      },
+      "originalPivotPx": {
+        "x": 60,
+        "y": 92
+      },
+      "godotOffsetFromCenterPx": {
+        "x": -11,
+        "y": 13
+      },
+      "category": "menu",
+      "theme": null,
+      "individualPath": "current_1x/individual/menu/menu_tower_b.png"
+    },
+    "ui_shop_title_loja": {
+      "frame": {
+        "x": 1576,
+        "y": 2,
+        "w": 89,
+        "h": 43
+      },
+      "pivotPx": {
+        "x": 56,
+        "y": 20
+      },
+      "originalPivotPx": {
+        "x": 80,
+        "y": 40
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 12,
+        "y": -1
+      },
+      "category": "ui",
+      "theme": null,
+      "individualPath": "current_1x/individual/ui/ui_shop_title_loja.png"
+    },
+    "ui_menu_icon_button": {
+      "frame": {
+        "x": 1667,
+        "y": 2,
+        "w": 36,
+        "h": 38
+      },
+      "pivotPx": {
+        "x": 18,
+        "y": 17
+      },
+      "originalPivotPx": {
+        "x": 35,
+        "y": 35
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 0,
+        "y": -2
+      },
+      "category": "ui",
+      "theme": null,
+      "individualPath": "current_1x/individual/ui/ui_menu_icon_button.png"
+    },
+    "ui_restart_icon_button": {
+      "frame": {
+        "x": 1705,
+        "y": 2,
+        "w": 36,
+        "h": 38
+      },
+      "pivotPx": {
+        "x": 18,
+        "y": 17
+      },
+      "originalPivotPx": {
+        "x": 35,
+        "y": 35
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 0,
+        "y": -2
+      },
+      "category": "ui",
+      "theme": null,
+      "individualPath": "current_1x/individual/ui/ui_restart_icon_button.png"
+    },
+    "ui_coin_icon": {
+      "frame": {
+        "x": 1743,
+        "y": 2,
+        "w": 28,
+        "h": 28
+      },
+      "pivotPx": {
+        "x": 14,
+        "y": 14
+      },
+      "originalPivotPx": {
+        "x": 35,
+        "y": 35
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 0,
+        "y": 0
+      },
+      "category": "ui",
+      "theme": null,
+      "individualPath": "current_1x/individual/ui/ui_coin_icon.png"
+    },
+    "menu_cloud_large": {
+      "frame": {
+        "x": 1773,
+        "y": 2,
+        "w": 127,
+        "h": 26
+      },
+      "pivotPx": {
+        "x": 0,
+        "y": 6
+      },
+      "originalPivotPx": {
+        "x": 24,
+        "y": 32
+      },
+      "godotOffsetFromCenterPx": {
+        "x": -63,
+        "y": -7
+      },
+      "category": "menu",
+      "theme": null,
+      "individualPath": "current_1x/individual/menu/menu_cloud_large.png"
+    },
+    "menu_cloud_small": {
+      "frame": {
+        "x": 1902,
+        "y": 2,
+        "w": 109,
+        "h": 26
+      },
+      "pivotPx": {
+        "x": 0,
+        "y": 6
+      },
+      "originalPivotPx": {
+        "x": 24,
+        "y": 32
+      },
+      "godotOffsetFromCenterPx": {
+        "x": -54,
+        "y": -7
+      },
+      "category": "menu",
+      "theme": null,
+      "individualPath": "current_1x/individual/menu/menu_cloud_small.png"
+    },
+    "ui_heart_dot": {
+      "frame": {
+        "x": 2013,
+        "y": 2,
+        "w": 13,
+        "h": 13
+      },
+      "pivotPx": {
+        "x": 9,
+        "y": 9
+      },
+      "originalPivotPx": {
+        "x": 25,
+        "y": 25
+      },
+      "godotOffsetFromCenterPx": {
+        "x": 3,
+        "y": 3
+      },
+      "category": "ui",
+      "theme": null,
+      "individualPath": "current_1x/individual/ui/ui_heart_dot.png"
+    }
+  }
+}
