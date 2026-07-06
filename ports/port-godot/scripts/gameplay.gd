@@ -243,8 +243,13 @@ var blocked_tiles: Array[Vector2i] = [
 @onready var _pause_menu_title: Label = get_node("AppBackground/GameFrame/GameLayout/PauseMenuOverlay/PauseMenuCard/PauseMenuInset/PauseMenuContent/PauseMenuTitle")
 @onready var _pause_menu_actions: VBoxContainer = get_node("AppBackground/GameFrame/GameLayout/PauseMenuOverlay/PauseMenuCard/PauseMenuInset/PauseMenuContent/PauseMenuActions")
 @onready var _pause_resume_button: Button = get_node("AppBackground/GameFrame/GameLayout/PauseMenuOverlay/PauseMenuCard/PauseMenuInset/PauseMenuContent/PauseMenuActions/PauseResumeButton")
+@onready var _pause_restart_button: Button = get_node("AppBackground/GameFrame/GameLayout/PauseMenuOverlay/PauseMenuCard/PauseMenuInset/PauseMenuContent/PauseMenuActions/PauseRestartButton")
 @onready var _pause_sound_button: Button = get_node("AppBackground/GameFrame/GameLayout/PauseMenuOverlay/PauseMenuCard/PauseMenuInset/PauseMenuContent/PauseMenuActions/PauseSoundButton")
 @onready var _pause_save_exit_button: Button = get_node("AppBackground/GameFrame/GameLayout/PauseMenuOverlay/PauseMenuCard/PauseMenuInset/PauseMenuContent/PauseMenuActions/PauseSaveExitButton")
+@onready var _pause_restart_confirm_panel: PanelContainer = get_node("AppBackground/GameFrame/GameLayout/PauseMenuOverlay/PauseMenuCard/PauseMenuInset/PauseMenuContent/PauseRestartConfirmPanel")
+@onready var _pause_restart_confirm_text: Label = get_node("AppBackground/GameFrame/GameLayout/PauseMenuOverlay/PauseMenuCard/PauseMenuInset/PauseMenuContent/PauseRestartConfirmPanel/PauseRestartConfirmInset/PauseRestartConfirmContent/PauseRestartConfirmText")
+@onready var _pause_restart_confirm_yes_button: Button = get_node("AppBackground/GameFrame/GameLayout/PauseMenuOverlay/PauseMenuCard/PauseMenuInset/PauseMenuContent/PauseRestartConfirmPanel/PauseRestartConfirmInset/PauseRestartConfirmContent/PauseRestartConfirmActions/PauseRestartConfirmYesButton")
+@onready var _pause_restart_confirm_no_button: Button = get_node("AppBackground/GameFrame/GameLayout/PauseMenuOverlay/PauseMenuCard/PauseMenuInset/PauseMenuContent/PauseRestartConfirmPanel/PauseRestartConfirmInset/PauseRestartConfirmContent/PauseRestartConfirmActions/PauseRestartConfirmNoButton")
 @onready var _pause_sound_panel: PanelContainer = get_node("AppBackground/GameFrame/GameLayout/PauseMenuOverlay/PauseMenuCard/PauseMenuInset/PauseMenuContent/PauseSoundPanel")
 @onready var _pause_sound_title: Label = get_node("AppBackground/GameFrame/GameLayout/PauseMenuOverlay/PauseMenuCard/PauseMenuInset/PauseMenuContent/PauseSoundPanel/PauseSoundInset/PauseSoundContent/PauseSoundTitle")
 @onready var _pause_bgm_toggle_button: Button = get_node("AppBackground/GameFrame/GameLayout/PauseMenuOverlay/PauseMenuCard/PauseMenuInset/PauseMenuContent/PauseSoundPanel/PauseSoundInset/PauseSoundContent/PauseSoundToggleButtons/PauseBgmToggleButton")
@@ -266,9 +271,7 @@ var blocked_tiles: Array[Vector2i] = [
 @onready var _waves_value: Label = get_node("AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent/SessionInfo/SessionRows/WavesValue")
 @onready var _cards_label: Label = get_node("AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent/SessionInfo/SessionRows/CardsLabel")
 @onready var _cards_value: Label = get_node("AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent/SessionInfo/SessionRows/CardsValue")
-@onready var _money_label: Label = get_node("AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent/ShopTop/MoneyPanel/MoneyContent/MoneyLabel")
-@onready var _restart_button: Button = get_node("AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent/ShopTop/ShopActions/RestartButton")
-@onready var _menu_button: Button = get_node("AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent/ShopTop/ShopActions/MenuButton")
+@onready var _money_label: Label = get_node("AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent/ShopHeader/MoneyRow/MoneyPanel/MoneyContent/MoneyLabel")
 @onready var _undo_button: Button = get_node("AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent/ToolsGrid/UndoButton")
 @onready var _delete_button: Button = get_node("AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent/ToolsGrid/DeleteButton")
 @onready var _pause_button: Button = get_node("AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent/ControlRow/PauseButton")
@@ -290,6 +293,7 @@ func _ready() -> void:
 	_tower_delete_confirm_overlay.hide()
 	_card_choice_overlay.hide()
 	_pause_menu_overlay.hide()
+	_pause_restart_confirm_panel.hide()
 	_pause_sound_panel.hide()
 	_theme_transition_overlay.hide()
 	_theme_transition_dimmer.color = Color(0.015686275, 0.05490196, 0.078431375, 0.92)
@@ -311,11 +315,11 @@ func _process(delta: float) -> void:
 	if game_over or victory_pending:
 		return
 
-	session_time += delta
 	if paused:
 		_sync_hud()
 		return
 
+	session_time += delta
 	var dt: float = delta * speed_multiplier
 	sim_time += dt
 	_update_wave_flow(dt)
@@ -333,6 +337,11 @@ func _unhandled_input(event: InputEvent) -> void:
 
 	if _pause_sound_panel.visible:
 		_hide_pause_sound_panel()
+		get_viewport().set_input_as_handled()
+		return
+
+	if _pause_restart_confirm_panel.visible:
+		_hide_pause_restart_confirm_panel()
 		get_viewport().set_input_as_handled()
 		return
 
@@ -394,7 +403,6 @@ func _start_run() -> void:
 	_set_delete_mode(false, "", false)
 	_sync_session_labels()
 	_sync_hud()
-	_show_status(GameSession.t("messages.prepareWave", {"wave": 1}))
 
 func _restore_saved_game() -> bool:
 	var saved_state: Dictionary = GameSession.load_game_state_snapshot()
@@ -795,7 +803,6 @@ func _start_next_wave() -> void:
 	spawn_timer = 0.0
 	wave_in_progress = true
 	_show_wave_banner(GameSession.t("hud.wave") + " %d" % wave)
-	_show_status(GameSession.t("messages.waveStarted", {"wave": wave}))
 
 func _update_spawn(dt: float) -> void:
 	if spawn_remaining <= 0:
@@ -830,7 +837,6 @@ func _complete_current_wave() -> void:
 
 func _start_between_wave_cooldown(finished_wave: int) -> void:
 	wave_cooldown = BETWEEN_WAVE_COOLDOWN
-	_show_status(GameSession.t("messages.nextWaveSoon", {"wave": finished_wave}))
 
 func _finish_victory() -> void:
 	GameSession.clear_saved_game()
@@ -845,7 +851,6 @@ func _finish_victory() -> void:
 	_clear_enemies()
 	_clear_projectiles()
 	_clear_impacts()
-	_show_status(GameSession.t("messages.allWavesDone"))
 	_sync_hud()
 	_show_victory_overlay()
 
@@ -853,6 +858,8 @@ func _end_game() -> void:
 	GameSession.clear_saved_game()
 	game_over = true
 	wave_in_progress = false
+	session_defeated += wave_defeated
+	wave_defeated = 0
 	wave_combo_visible = false
 	spawn_remaining = 0
 	_set_delete_mode(false, "", false)
@@ -862,9 +869,8 @@ func _end_game() -> void:
 	_clear_enemies()
 	_clear_projectiles()
 	_clear_impacts()
-	_show_wave_banner(GameSession.t("victory.gameOver"))
-	_show_status(GameSession.t("messages.themeLostLives", {"theme": GameSession.get_theme_name(current_theme)}))
 	_sync_hud()
+	_show_game_over_overlay()
 
 func _spawn_enemy() -> void:
 	var tier: int = _get_enemy_tier()
@@ -1005,7 +1011,6 @@ func _start_card_choice() -> void:
 	_sync_tower_shop_buttons()
 	_show_card_choice_overlay()
 	_sync_hud()
-	_show_status(GameSession.t("cards.kicker"))
 
 func _select_card_choice_index(card_index: int) -> void:
 	if not card_choice_active or card_choice_revealed:
@@ -2682,8 +2687,6 @@ func _connect_buttons() -> void:
 	_pause_bgm_toggle_button.toggle_mode = true
 	_pause_sfx_toggle_button.toggle_mode = true
 
-	_restart_button.pressed.connect(_start_run)
-	_menu_button.pressed.connect(_return_to_menu)
 	_victory_continue_button.pressed.connect(_continue_to_next_theme)
 	_victory_restart_button.pressed.connect(_start_run)
 	_victory_menu_button.pressed.connect(_return_to_menu)
@@ -2695,6 +2698,9 @@ func _connect_buttons() -> void:
 	_pause_button.pressed.connect(_toggle_pause)
 	_speed_button.pressed.connect(_toggle_speed)
 	_pause_resume_button.pressed.connect(_close_pause_menu.bind(true))
+	_pause_restart_button.pressed.connect(_show_pause_restart_confirm_panel)
+	_pause_restart_confirm_yes_button.pressed.connect(_confirm_pause_restart)
+	_pause_restart_confirm_no_button.pressed.connect(_hide_pause_restart_confirm_panel)
 	_pause_sound_button.pressed.connect(_show_pause_sound_panel)
 	_pause_save_exit_button.pressed.connect(_save_and_exit_from_pause)
 	_pause_sound_back_button.pressed.connect(_hide_pause_sound_panel)
@@ -2755,8 +2761,6 @@ func _continue_to_next_theme() -> void:
 	_sync_tower_action_ui()
 
 func _apply_static_translations() -> void:
-	_restart_button.tooltip_text = GameSession.t("shop.restart")
-	_menu_button.tooltip_text = GameSession.t("common.menu")
 	_difficulty_label.text = GameSession.t("difficulty.title")
 	_waves_label.text = GameSession.t("difficulty.waves")
 	_cards_label.text = GameSession.t("settings.cards")
@@ -2844,13 +2848,17 @@ func _sync_tower_action_ui() -> void:
 	]
 	_pause_button.disabled = transition_active or game_over or victory_pending or card_choice_active
 	_speed_button.disabled = transition_active or game_over or victory_pending or card_choice_active
-	_restart_button.disabled = transition_active or card_choice_active
-	_menu_button.disabled = transition_active or card_choice_active
 
 func _show_victory_overlay() -> void:
-	var has_next_theme: bool = GameSession.has_next_theme(current_theme)
-	_victory_title.text = _get_victory_title()
-	_victory_summary.text = GameSession.t("victory.summary")
+	_show_session_summary_overlay(true)
+
+func _show_game_over_overlay() -> void:
+	_show_session_summary_overlay(false)
+
+func _show_session_summary_overlay(won: bool) -> void:
+	var has_next_theme: bool = won and GameSession.has_next_theme(current_theme)
+	_victory_title.text = _get_victory_title() if won else GameSession.t("victory.gameOver")
+	_victory_summary.text = GameSession.t("victory.summary") if won else GameSession.t("gameOver.summary")
 	_victory_time_value.text = _format_session_time(session_time)
 	_victory_wave_value.text = "%d/%d" % [wave, wave_limit]
 	_victory_defeated_value.text = str(session_defeated)
@@ -2859,6 +2867,7 @@ func _show_victory_overlay() -> void:
 	_hide_floating_message()
 	_hide_wave_banner()
 	_victory_overlay.show()
+	_victory_overlay.move_to_front()
 	if has_next_theme:
 		_victory_continue_button.call_deferred("grab_focus")
 	else:
@@ -2942,14 +2951,33 @@ func _hide_pause_menu_overlay() -> void:
 	_show_pause_menu_actions()
 
 func _show_pause_menu_actions() -> void:
+	_pause_restart_confirm_panel.hide()
 	_pause_sound_panel.hide()
 	_pause_menu_actions.show()
+
+func _show_pause_restart_confirm_panel() -> void:
+	if not _pause_menu_overlay.visible:
+		return
+	_pause_menu_actions.hide()
+	_pause_sound_panel.hide()
+	_pause_restart_confirm_panel.show()
+	_pause_restart_confirm_no_button.call_deferred("grab_focus")
+
+func _hide_pause_restart_confirm_panel() -> void:
+	_pause_restart_confirm_panel.hide()
+	_pause_menu_actions.show()
+	if _pause_menu_overlay.visible:
+		_pause_restart_button.call_deferred("grab_focus")
+
+func _confirm_pause_restart() -> void:
+	_start_run()
 
 func _show_pause_sound_panel() -> void:
 	if not _pause_menu_overlay.visible:
 		return
 	_sync_pause_sound_controls()
 	_pause_menu_actions.hide()
+	_pause_restart_confirm_panel.hide()
 	_pause_sound_panel.show()
 	_pause_bgm_toggle_button.call_deferred("grab_focus")
 
@@ -2979,6 +3007,10 @@ func _can_save_game() -> bool:
 func _sync_pause_menu_controls() -> void:
 	_pause_menu_title.text = GameSession.t("pause.title")
 	_pause_resume_button.text = GameSession.t("actions.resume")
+	_pause_restart_button.text = GameSession.t("pause.restart")
+	_pause_restart_confirm_text.text = GameSession.t("pause.restartConfirm")
+	_pause_restart_confirm_yes_button.text = GameSession.t("common.yes")
+	_pause_restart_confirm_no_button.text = GameSession.t("common.no")
 	_pause_sound_button.text = GameSession.t("settings.sound")
 	_pause_save_exit_button.text = GameSession.t("pause.saveExit")
 	_pause_save_exit_button.disabled = not _can_save_game()

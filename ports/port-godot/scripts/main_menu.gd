@@ -304,7 +304,7 @@ func _hide_menu_note() -> void:
 	_menu_note.hide()
 
 func _apply_translations() -> void:
-	_version_label.text = GameSession.t("version.label", {"version": "2.1.5"})
+	_version_label.text = GameSession.t("version.label", {"version": "2.1.6"})
 	_continue_button.text = GameSession.t("menu.continue")
 	_play_button.text = GameSession.t("menu.play")
 	_config_button.text = GameSession.t("menu.config")
