@@ -29,6 +29,10 @@ shadow_color = Color(0, 0, 0, 0.2)
 shadow_size = 6
 
 [sub_resource type="StyleBoxFlat" id="HudStyle"]
+content_margin_left = 9.0
+content_margin_top = 4.0
+content_margin_right = 9.0
+content_margin_bottom = 4.0
 bg_color = Color(1, 0.9411765, 0.6901961, 1)
 border_width_left = 4
 border_width_top = 4
@@ -55,6 +59,10 @@ corner_radius_bottom_right = 4
 corner_radius_bottom_left = 4
 
 [sub_resource type="StyleBoxFlat" id="FloatingStyle"]
+content_margin_left = 14.0
+content_margin_top = 9.0
+content_margin_right = 14.0
+content_margin_bottom = 9.0
 bg_color = Color(0.9019608, 0.65882355, 0.2509804, 1)
 border_width_left = 5
 border_width_top = 5
@@ -65,10 +73,10 @@ shadow_color = Color(0, 0, 0, 0.25)
 shadow_size = 6
 
 [sub_resource type="StyleBoxFlat" id="ComboCounterStyle"]
-content_margin_left = 10.0
-content_margin_top = 6.0
-content_margin_right = 10.0
-content_margin_bottom = 6.0
+content_margin_left = 8.0
+content_margin_top = 4.0
+content_margin_right = 8.0
+content_margin_bottom = 4.0
 bg_color = Color(0.08627451, 0.043137256, 0, 0.82)
 border_width_left = 3
 border_width_top = 3
@@ -402,9 +410,9 @@ color = Color(0.05882353, 0.25490198, 0.101960786, 1)
 [node name="Board" type="GridContainer" parent="AppBackground/GameFrame/GameLayout/BoardStage"]
 clip_contents = true
 layout_mode = 0
-offset_top = 45.0
+offset_top = 54.0
 offset_right = 1260.0
-offset_bottom = 990.0
+offset_bottom = 999.0
 theme_override_constants/h_separation = 0
 theme_override_constants/v_separation = 0
 columns = 12
@@ -412,110 +420,118 @@ columns = 12
 [node name="RangeLayer" type="Control" parent="AppBackground/GameFrame/GameLayout/BoardStage"]
 clip_contents = true
 layout_mode = 0
-offset_top = 45.0
+offset_top = 54.0
 offset_right = 1260.0
-offset_bottom = 990.0
+offset_bottom = 999.0
 mouse_filter = 2
 
 [node name="TowerLayer" type="Control" parent="AppBackground/GameFrame/GameLayout/BoardStage"]
 clip_contents = true
 layout_mode = 0
-offset_top = 45.0
+offset_top = 54.0
 offset_right = 1260.0
-offset_bottom = 990.0
+offset_bottom = 999.0
 mouse_filter = 2
 
 [node name="EnemyLayer" type="Control" parent="AppBackground/GameFrame/GameLayout/BoardStage"]
 clip_contents = true
 layout_mode = 0
-offset_top = 45.0
+offset_top = 54.0
 offset_right = 1260.0
-offset_bottom = 990.0
+offset_bottom = 999.0
 mouse_filter = 2
 
 [node name="ProjectileLayer" type="Control" parent="AppBackground/GameFrame/GameLayout/BoardStage"]
 clip_contents = true
 layout_mode = 0
-offset_top = 45.0
+offset_top = 54.0
 offset_right = 1260.0
-offset_bottom = 990.0
+offset_bottom = 999.0
 mouse_filter = 2
 
 [node name="EffectLayer" type="Control" parent="AppBackground/GameFrame/GameLayout/BoardStage"]
 clip_contents = true
 layout_mode = 0
-offset_top = 45.0
+offset_top = 54.0
 offset_right = 1260.0
-offset_bottom = 990.0
+offset_bottom = 999.0
 mouse_filter = 2
 
 [node name="TopHud" type="HBoxContainer" parent="AppBackground/GameFrame/GameLayout/BoardStage"]
 layout_mode = 0
 offset_left = 207.0
-offset_top = 12.0
+offset_top = 9.0
 offset_right = 1053.0
-offset_bottom = 63.0
-theme_override_constants/separation = 12
+offset_bottom = 45.0
+theme_override_constants/separation = 10
 
 [node name="LivesPill" type="PanelContainer" parent="AppBackground/GameFrame/GameLayout/BoardStage/TopHud"]
-custom_minimum_size = Vector2(150, 48)
+custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
 theme_override_styles/panel = SubResource("HudStyle")
 
 [node name="LivesLabel" type="Label" parent="AppBackground/GameFrame/GameLayout/BoardStage/TopHud/LivesPill"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.09411765, 0.047058824, 0.011764706, 1)
-theme_override_font_sizes/font_size = 20
+theme_override_font_sizes/font_size = 18
 text = "Vidas 10"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="WavePill" type="PanelContainer" parent="AppBackground/GameFrame/GameLayout/BoardStage/TopHud"]
-custom_minimum_size = Vector2(180, 48)
+custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
 theme_override_styles/panel = SubResource("HudStyle")
 
 [node name="WaveLabel" type="Label" parent="AppBackground/GameFrame/GameLayout/BoardStage/TopHud/WavePill"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.09411765, 0.047058824, 0.011764706, 1)
-theme_override_font_sizes/font_size = 20
+theme_override_font_sizes/font_size = 18
 text = "Onda 0/12"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="DefeatedPill" type="PanelContainer" parent="AppBackground/GameFrame/GameLayout/BoardStage/TopHud"]
-custom_minimum_size = Vector2(210, 48)
+custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
 theme_override_styles/panel = SubResource("HudStyle")
 
 [node name="DefeatedLabel" type="Label" parent="AppBackground/GameFrame/GameLayout/BoardStage/TopHud/DefeatedPill"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.09411765, 0.047058824, 0.011764706, 1)
-theme_override_font_sizes/font_size = 20
+theme_override_font_sizes/font_size = 18
 text = "Derrotou 0"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="TimePill" type="PanelContainer" parent="AppBackground/GameFrame/GameLayout/BoardStage/TopHud"]
-custom_minimum_size = Vector2(190, 48)
+custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
 theme_override_styles/panel = SubResource("HudStyle")
 
 [node name="TimeLabel" type="Label" parent="AppBackground/GameFrame/GameLayout/BoardStage/TopHud/TimePill"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.09411765, 0.047058824, 0.011764706, 1)
-theme_override_font_sizes/font_size = 20
+theme_override_font_sizes/font_size = 18
 text = "Tempo 00:00"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="ComboCounter" type="PanelContainer" parent="AppBackground/GameFrame/GameLayout/BoardStage"]
 visible = false
-custom_minimum_size = Vector2(58, 42)
+custom_minimum_size = Vector2(48, 36)
 layout_mode = 0
-offset_left = 1190.0
-offset_top = 8.0
+offset_left = 1202.0
+offset_top = 9.0
 offset_right = 1250.0
-offset_bottom = 52.0
+offset_bottom = 45.0
 mouse_filter = 2
 theme_override_styles/panel = SubResource("ComboCounterStyle")
 
 [node name="ComboCounterLabel" type="Label" parent="AppBackground/GameFrame/GameLayout/BoardStage/ComboCounter"]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.96862745, 0.8, 1)
-theme_override_font_sizes/font_size = 24
+theme_override_font_sizes/font_size = 22
 text = "0X"
 horizontal_alignment = 1
 vertical_alignment = 1
@@ -540,10 +556,10 @@ vertical_alignment = 1
 [node name="FloatingMessage" type="PanelContainer" parent="AppBackground/GameFrame/GameLayout/BoardStage"]
 visible = false
 layout_mode = 0
-offset_left = 288.0
-offset_top = 912.0
-offset_right = 972.0
-offset_bottom = 984.0
+offset_left = 536.0
+offset_top = 930.0
+offset_right = 724.0
+offset_bottom = 978.0
 theme_override_styles/panel = SubResource("FloatingStyle")
 
 [node name="FloatingMessageLabel" type="Label" parent="AppBackground/GameFrame/GameLayout/BoardStage/FloatingMessage"]
@@ -1162,14 +1178,6 @@ theme_override_styles/pressed = SubResource("PixelButtonActive")
 theme_override_styles/hover = SubResource("PixelButtonHover")
 theme_override_styles/disabled = SubResource("ButtonDisabled")
 text = "1x"
-
-[node name="StatusLabel" type="Label" parent="AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent"]
-custom_minimum_size = Vector2(396, 58)
-layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.9411765, 0.6901961, 1)
-theme_override_font_sizes/font_size = 16
-text = "Preparando onda 1."
-autowrap_mode = 3
 
 [node name="PauseMenuOverlay" type="Control" parent="AppBackground/GameFrame/GameLayout"]
 process_mode = 3

@@ -63,6 +63,8 @@ const RANGE_RING_BASE_DIAMETER: float = 430.0
 const INITIAL_WAVE_COOLDOWN: float = 1.2
 const BETWEEN_WAVE_COOLDOWN: float = 2.4
 const UNDO_PLACEMENT_WINDOW: float = 5.0
+const COMBO_COUNTER_RIGHT_MARGIN: float = 10.0
+const FLOATING_MESSAGE_BOTTOM_MARGIN: float = 18.0
 const CARD_EFFECT_DURATION_WAVES: int = 1
 const CARD_COIN_GAIN: int = 100
 const CARD_COIN_LOSS: int = 70
@@ -196,6 +198,7 @@ var blocked_tiles: Array[Vector2i] = [
 @onready var _enemy_layer: Control = get_node("AppBackground/GameFrame/GameLayout/BoardStage/EnemyLayer")
 @onready var _projectile_layer: Control = get_node("AppBackground/GameFrame/GameLayout/BoardStage/ProjectileLayer")
 @onready var _effect_layer: Control = get_node("AppBackground/GameFrame/GameLayout/BoardStage/EffectLayer")
+@onready var _top_hud: HBoxContainer = get_node("AppBackground/GameFrame/GameLayout/BoardStage/TopHud")
 @onready var _lives_label: Label = get_node("AppBackground/GameFrame/GameLayout/BoardStage/TopHud/LivesPill/LivesLabel")
 @onready var _wave_label: Label = get_node("AppBackground/GameFrame/GameLayout/BoardStage/TopHud/WavePill/WaveLabel")
 @onready var _defeated_label: Label = get_node("AppBackground/GameFrame/GameLayout/BoardStage/TopHud/DefeatedPill/DefeatedLabel")
@@ -263,7 +266,6 @@ var blocked_tiles: Array[Vector2i] = [
 @onready var _waves_value: Label = get_node("AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent/SessionInfo/SessionRows/WavesValue")
 @onready var _cards_label: Label = get_node("AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent/SessionInfo/SessionRows/CardsLabel")
 @onready var _cards_value: Label = get_node("AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent/SessionInfo/SessionRows/CardsValue")
-@onready var _status_label: Label = get_node("AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent/StatusLabel")
 @onready var _money_label: Label = get_node("AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent/ShopTop/MoneyPanel/MoneyContent/MoneyLabel")
 @onready var _restart_button: Button = get_node("AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent/ShopTop/ShopActions/RestartButton")
 @onready var _menu_button: Button = get_node("AppBackground/GameFrame/GameLayout/ShopPanel/ShopContent/ShopTop/ShopActions/MenuButton")
@@ -2787,14 +2789,41 @@ func _sync_hud() -> void:
 	_defeated_label.text = GameSession.t("hud.defeated", {"count": session_defeated})
 	_time_label.text = GameSession.t("hud.time", {"time": _format_session_time(session_time)})
 	_money_label.text = str(coins)
+	_layout_top_hud()
 	_sync_combo_counter()
 	_sync_tower_action_ui()
+
+func _layout_top_hud() -> void:
+	_lives_label.update_minimum_size()
+	_wave_label.update_minimum_size()
+	_defeated_label.update_minimum_size()
+	_time_label.update_minimum_size()
+	_top_hud.update_minimum_size()
+	var hud_size: Vector2 = _top_hud.get_combined_minimum_size()
+	var hud_top: float = roundf((_board.position.y - hud_size.y) * 0.5)
+	_top_hud.size = hud_size
+	_top_hud.position = Vector2(
+		roundf((_board_stage.size.x - hud_size.x) * 0.5),
+		hud_top
+	)
 
 func _sync_combo_counter() -> void:
 	_combo_counter_label.text = "%dX" % wave_defeated
 	_combo_counter.visible = wave_combo_visible
 	var combo_color: Color = COMBO_ACTIVE_COLOR if wave_defeated > 0 else COMBO_INACTIVE_COLOR
 	_combo_counter_label.add_theme_color_override("font_color", combo_color)
+	_layout_combo_counter()
+
+func _layout_combo_counter() -> void:
+	_combo_counter_label.update_minimum_size()
+	_combo_counter.update_minimum_size()
+	var combo_size: Vector2 = _combo_counter.get_combined_minimum_size()
+	var combo_top: float = roundf((_board.position.y - combo_size.y) * 0.5)
+	_combo_counter.size = combo_size
+	_combo_counter.position = Vector2(
+		roundf(_board_stage.size.x - combo_size.x - COMBO_COUNTER_RIGHT_MARGIN),
+		combo_top
+	)
 
 func _sync_tower_action_ui() -> void:
 	var can_undo: bool = _is_undo_placement_available()
@@ -3089,10 +3118,21 @@ func _toggle_speed() -> void:
 	_show_status(GameSession.t("messages.speedFast") if _speed_button.button_pressed else GameSession.t("messages.speedNormal"))
 
 func _show_status(text: String) -> void:
-	_status_label.text = text
 	_floating_message_label.text = text
+	_layout_floating_message()
 	_floating_message.show()
 	_floating_message_timer.start()
+
+func _layout_floating_message() -> void:
+	_floating_message_label.update_minimum_size()
+	_floating_message.update_minimum_size()
+	var message_size: Vector2 = _floating_message.get_combined_minimum_size()
+	var board_bottom: float = _board.position.y + _board.size.y
+	_floating_message.size = message_size
+	_floating_message.position = Vector2(
+		roundf((_board_stage.size.x - message_size.x) * 0.5),
+		roundf(board_bottom - message_size.y - FLOATING_MESSAGE_BOTTOM_MARGIN)
+	)
 
 func _hide_floating_message() -> void:
 	_floating_message.hide()
