@@ -225,6 +225,100 @@
   background: #9fe36f;
 }
 
+.card-choice-card.is-heal.is-revealed {
+  position: relative;
+  overflow: visible;
+  background: #a9f08a;
+  box-shadow:
+    0 0 0 4px rgba(142, 230, 111, 0.28),
+    0 0 28px rgba(142, 230, 111, 0.9),
+    inset 4px 4px 0 #e4ffc7,
+    inset -4px -4px 0 #4a9b45;
+}
+
+.card-choice-card.is-heal.is-heal-activated {
+  animation: heal-card-pulse 700ms ease-out;
+}
+
+.card-choice-card.is-heal.is-heal-activated::after {
+  content: "";
+  position: absolute;
+  inset: 12px;
+  border: 3px solid rgba(223, 255, 196, 0.88);
+  box-shadow: 0 0 0 6px rgba(142, 230, 111, 0.28);
+  pointer-events: none;
+  animation: heal-card-ring 700ms ease-out;
+}
+
+@keyframes heal-card-pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+
+  35% {
+    transform: scale(1.035);
+  }
+
+  65% {
+    transform: scale(0.99);
+  }
+}
+
+@keyframes heal-card-ring {
+  0% {
+    opacity: 0;
+    transform: scale(0.78);
+  }
+
+  25% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(1.08);
+  }
+}
+
+.card-choice-heal-badge {
+  position: relative;
+  z-index: 1;
+  padding: 3px 8px;
+  color: #16491d;
+  background: #e4ffc7;
+  border: 3px solid #1f5c2a;
+  box-shadow: 0 3px 0 #4a9b45;
+  font-size: clamp(0.78rem, 2vw, 1.05rem);
+  line-height: 1;
+  animation: heal-badge-rise 700ms ease-out;
+}
+
+@keyframes heal-badge-rise {
+  0% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  35% {
+    opacity: 1;
+    transform: translateY(-3px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .heart-stack.is-healing,
+  .card-choice-card.is-heal.is-heal-activated,
+  .card-choice-card.is-heal.is-heal-activated::after,
+  .card-choice-heal-badge {
+    animation: none;
+  }
+}
+
 .card-choice-card.is-bane.is-revealed {
   color: #fff0d8;
   background: #a63c32;

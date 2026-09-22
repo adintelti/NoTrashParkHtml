@@ -118,6 +118,7 @@
         cards: [],
         selectedCardId: "",
         resultText: "",
+        healApplied: false,
         previousPaused: false
       },
       cardEffects: {

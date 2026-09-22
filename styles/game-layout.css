@@ -101,6 +101,25 @@
   gap: 2px;
 }
 
+.heart-stack.is-healing {
+  animation: heal-hearts 700ms ease-out;
+  filter: drop-shadow(0 0 5px rgba(142, 230, 111, 0.95));
+}
+
+@keyframes heal-hearts {
+  0%, 100% {
+    transform: scale(1);
+  }
+
+  35% {
+    transform: scale(1.24);
+  }
+
+  65% {
+    transform: scale(0.94);
+  }
+}
+
 .heart-dot {
   width: 9px;
   height: 9px;

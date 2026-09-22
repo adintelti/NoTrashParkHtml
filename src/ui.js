@@ -376,19 +376,25 @@
   function renderCardChoiceCard(card, index) {
     const isRevealed = state.cardChoice.revealed;
     const isSelected = state.cardChoice.selectedCardId === card.id;
+    const isHealCard = card.effect?.type === "heal";
     const button = document.createElement("button");
-    button.className = `card-choice-card is-${card.kind}`;
+    button.className = `card-choice-card is-${card.kind}${isHealCard ? " is-heal" : ""}`;
     button.type = "button";
     button.dataset.cardChoice = card.id;
     button.disabled = isRevealed;
     button.classList.toggle("is-revealed", isRevealed && isSelected);
     button.classList.toggle("is-dimmed", isRevealed && !isSelected);
+    button.classList.toggle("is-heal-activated", isHealCard && state.cardChoice.healApplied);
     button.setAttribute("aria-label", isRevealed && isSelected ? card.title : t("cards.cardAria", { index: index + 1 }));
 
     if (isRevealed && isSelected) {
       const categoryKey = card.category || card.kind;
       appendCardText(button, "span", "card-choice-kind", t(`cards.kind.${categoryKey}`, {}, t("cards.defaultKind")));
       appendCardText(button, "strong", "card-choice-name", card.title);
+      if (isHealCard && state.cardChoice.healApplied) {
+        const healBadge = appendCardText(button, "span", "card-choice-heal-badge", "+1 HP");
+        healBadge.setAttribute("aria-hidden", "true");
+      }
       return button;
     }
 

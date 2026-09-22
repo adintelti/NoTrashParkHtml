@@ -75,6 +75,7 @@
   let waveTransitionCallback = null;
   let cardChoiceCallback = null;
   let undoHideTimer = 0;
+  let healFeedbackTimer = 0;
   let screenShakeTimer = 0;
 
   function triggerScreenShake() {
@@ -626,6 +627,7 @@
       cards: [],
       selectedCardId: "",
       resultText: "",
+      healApplied: false,
       previousPaused: false
     });
   }
@@ -653,6 +655,7 @@
     state.cardChoice.cards = createCardChoices();
     state.cardChoice.selectedCardId = "";
     state.cardChoice.resultText = "";
+    state.cardChoice.healApplied = false;
     state.cardChoice.previousPaused = state.paused;
     state.paused = true;
     showCardChoice();
@@ -672,9 +675,14 @@
 
     state.cardChoice.selectedCardId = card.id;
     state.cardChoice.revealed = true;
+    const previousLives = state.lives;
     state.cardChoice.resultText = applyCardEffect(card);
+    state.cardChoice.healApplied = card.effect?.type === "heal" && state.lives > previousLives;
     showCardChoice();
     updateHud();
+    if (state.cardChoice.healApplied) {
+      triggerHealFeedback();
+    }
     logDebug("cards", "Card selected", {
       wave: state.wave,
       card: getDebugCardDetails(card),
@@ -738,6 +746,20 @@
 
     return [...requiredConfigs, ...randomConfigs]
       .map((config) => buildCard("boon", config));
+  }
+
+  function triggerHealFeedback() {
+    const heartStack = dom.heartStack;
+    if (!heartStack) return;
+
+    heartStack.classList.remove("is-healing");
+    void heartStack.offsetWidth;
+    heartStack.classList.add("is-healing");
+
+    window.clearTimeout(healFeedbackTimer);
+    healFeedbackTimer = window.setTimeout(() => {
+      heartStack.classList.remove("is-healing");
+    }, 700);
   }
 
   function createRequiredBoonCardConfigs() {
