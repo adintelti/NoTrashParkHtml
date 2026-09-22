@@ -294,6 +294,11 @@
     activeTrack = "";
   }
 
+  function stopMusic() {
+    desiredTrack = "";
+    stopActiveMusic();
+  }
+
   function getFadeInDuration(track) {
     return track === "menu" ? MENU_START_FADE_IN_MS : FADE_IN_MS;
   }
@@ -584,6 +589,7 @@
     initializeBackgroundMusic,
     playMenuMusic,
     playThemeMusic,
+    stopMusic,
     duckMusic,
     playSfx,
     setBgmEnabled,

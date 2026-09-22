@@ -27,6 +27,7 @@
     MAX_TOWER_RANGE,
     duckMusic,
     playSfx,
+    stopMusic,
     resetState,
     refreshPlacementPreview,
     ROWS,
@@ -1622,6 +1623,7 @@
   function endGame() {
     if (state.gameOver) return;
     state.gameOver = true;
+    stopMusic();
     state.waveComboVisible = false;
     ntp.clearSavedGame?.();
     setDeleteMode(false, { silent: true });
