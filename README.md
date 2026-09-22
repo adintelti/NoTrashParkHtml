@@ -9,7 +9,7 @@ characters, towers, projectiles, and obstacles.
 - Static HTML, CSS, and JavaScript demo.
 - Pixel-style menu and in-game shop panel.
 - Menu version label driven by `GAME_VERSION` in `src/constants.js`.
-- Three themed biomes: Park, Lagoon, and Fire.
+- Four themed biomes: Park, Lagoon, Fire, and Halloween.
 - Tower placement on valid map tiles.
 - Five-second undo window after placing a tower.
 - Shop delete mode for selecting and removing placed towers.
@@ -18,7 +18,7 @@ characters, towers, projectiles, and obstacles.
 - Projectile throw sound effect when towers fire.
 - Enemy defeat sound effect when a tower kill happens.
 - Victory flow after a configurable number of waves.
-- Biome progression: Park -> Lagoon -> Fire.
+- Biome progression: Park -> Lagoon -> Fire -> Halloween.
 - Final victory message after protecting all biomes.
 - Windows/Xbox-style gamepad support through the browser Gamepad API.
 - On-screen gamepad key hints while a connected controller is active.
@@ -82,7 +82,8 @@ When the player wins:
 
 - Park victory shows `Parque Protegido!` and `Continuar` moves to Lagoon.
 - Lagoon victory shows `Lagoa Protegida!` and `Continuar` moves to Fire.
-- Fire victory shows `Parabens voce protegeu todos os biomas` and only offers
+- Fire victory shows `Fogo Protegido!` and `Continuar` moves to Halloween.
+- Halloween victory shows `Parabens voce protegeu todos os biomas` and only offers
   `De novo!` and `Menu`.
 
 ## Project Structure
@@ -105,7 +106,7 @@ Current entities are CSS placeholders:
 - `.tower-*` classes represent tower types.
 - `.enemy-*` classes represent enemy types.
 - `.projectile-*` classes represent projectile visuals.
-- Tile theme classes live under `.theme-park`, `.theme-lagoon`, and
-  `.theme-lava`.
+- Tile theme classes live under `.theme-park`, `.theme-lagoon`,
+  `.theme-lava`, and `.theme-halloween`.
 
 These classes define the current geometric shapes and theme-specific visuals.

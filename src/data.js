@@ -78,6 +78,16 @@
         [1, 0], [2, 0], [3, 0], [3, 1], [4, 1], [4, 2], [5, 2],
         [5, 3], [6, 3], [7, 3], [8, 3], [8, 4], [8, 5], [9, 5], [10, 5], [10, 6], [10, 7], [10, 8]
       ]
+    },
+    halloween: {
+      boardClass: "theme-halloween",
+      name: "Halloween",
+      blocked: ["1,5", "2,7", "4,1", "6,2", "7,7", "10,2", "11,4"],
+      path: [
+        [0, 1], [1, 1], [2, 1], [2, 2], [3, 2], [3, 3], [4, 3],
+        [5, 3], [5, 4], [5, 5], [6, 5], [7, 5], [7, 4], [8, 4],
+        [9, 4], [9, 5], [9, 6], [10, 6], [11, 6]
+      ]
     }
   };
 
@@ -87,17 +97,19 @@
     { className: "enemy-shield", hp: 105, speed: 0.64, reward: 18 }
   ];
 
-  const themeOrder = ["park", "lagoon", "lava"];
+  const themeOrder = ["park", "lagoon", "lava", "halloween"];
   const towerOrder = Object.keys(towers);
   const towerUnlocksByTheme = {
     park: ["sentinel", "slow"],
     lagoon: ["sentinel", "slow", "splash"],
-    lava: towerOrder
+    lava: towerOrder,
+    halloween: towerOrder
   };
   const victoryTitles = {
     park: "Parque Protegido!",
     lagoon: "Lagoa Protegida!",
-    lava: "Parabens voce protegeu todos os biomas"
+    lava: "Fogo Protegido!",
+    halloween: "Parabens voce protegeu todos os biomas"
   };
 
   function getNextTheme(theme) {

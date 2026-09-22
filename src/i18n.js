@@ -135,12 +135,14 @@
       maps: {
         park: "Parque",
         lagoon: "Lagoa",
-        lava: "Fogo"
+        lava: "Fogo",
+        halloween: "Halloween"
       },
       victory: {
         park: "Parque Protegido!",
         lagoon: "Lagoa Protegida!",
-        lava: "Parabens voce protegeu todos os biomas",
+        lava: "Fogo Protegido!",
+        halloween: "Parabens voce protegeu todos os biomas",
         default: "Vitoria!",
         gameOver: "Fim de jogo, {map} destruido(a)",
         statsAria: "Resumo da sessao",
@@ -389,12 +391,14 @@
       maps: {
         park: "Park",
         lagoon: "Lagoon",
-        lava: "Fire"
+        lava: "Fire",
+        halloween: "Halloween"
       },
       victory: {
         park: "Park Protected!",
         lagoon: "Lagoon Protected!",
-        lava: "Congratulations, you protected every biome",
+        lava: "Fire Protected!",
+        halloween: "Congratulations, you protected every biome",
         default: "Victory!",
         gameOver: "Game over, {map} destroyed",
         statsAria: "Session summary",
@@ -643,12 +647,14 @@
       maps: {
         park: "Parque",
         lagoon: "Laguna",
-        lava: "Fuego"
+        lava: "Fuego",
+        halloween: "Halloween"
       },
       victory: {
         park: "Parque Protegido!",
         lagoon: "Laguna Protegida!",
-        lava: "Felicidades, protegiste todos los biomas",
+        lava: "Fuego Protegido!",
+        halloween: "Felicidades, protegiste todos los biomas",
         default: "Victoria!",
         gameOver: "Fin del juego, {map} destruido(a)",
         statsAria: "Resumen de la sesion",

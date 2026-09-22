@@ -190,3 +190,30 @@
     radial-gradient(circle at 52% 52%, #ffb12e 0 20%, #e54b16 21% 32%, transparent 33%),
     #8a3f1e;
 }
+
+.theme-halloween .tile.terrain {
+  color: #c97827;
+  background:
+    radial-gradient(circle at 28% 34%, #c97827 0 2px, transparent 3px),
+    radial-gradient(circle at 78% 74%, #285943 0 4px, transparent 5px),
+    linear-gradient(135deg, rgba(94, 46, 112, 0.24) 0 16%, transparent 17% 100%),
+    #17392f;
+}
+
+.theme-halloween .tile.path {
+  color: #261832;
+  background:
+    radial-gradient(circle at 30% 30%, #8e708f 0 6px, transparent 7px),
+    radial-gradient(circle at 70% 76%, #4c365d 0 5px, transparent 6px),
+    linear-gradient(90deg, rgba(23, 14, 30, 0.28) 0 4px, transparent 4px 18px),
+    #65506f;
+  border-color: #2b1b38;
+  box-shadow: inset 0 0 0 3px rgba(20, 10, 26, 0.36);
+}
+
+.theme-halloween .tile.terrain.blocked {
+  background:
+    radial-gradient(ellipse at 50% 58%, #e27a22 0 22%, #a4461f 23% 32%, transparent 33%),
+    radial-gradient(circle at 50% 36%, #315c2a 0 7%, transparent 8%),
+    #17392f;
+}

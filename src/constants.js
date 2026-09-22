@@ -3,7 +3,7 @@
 
   ntp.COLS = 12;
   ntp.ROWS = 9;
-  ntp.GAME_VERSION = "2.1.7";
+  ntp.GAME_VERSION = "2.1.8";
   ntp.DEFAULT_LANGUAGE = "pt-BR";
   ntp.SUPPORTED_LANGUAGES = ["pt-BR", "en", "es"];
   ntp.MIN_CUSTOM_WAVES = 20;
@@ -26,7 +26,8 @@
     menu: "sound/bmg/menu.mp3",
     park: "sound/bmg/level1-park.mp3",
     lagoon: "sound/bmg/level2-water.mp3",
-    lava: "sound/bmg/level3-fire.mp3"
+    lava: "sound/bmg/level3-fire.mp3",
+    halloween: "sound/bmg/level3-fire.mp3"
   };
 
   ntp.sfxTracks = {
