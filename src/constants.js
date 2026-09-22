@@ -3,7 +3,7 @@
 
   ntp.COLS = 12;
   ntp.ROWS = 9;
-  ntp.GAME_VERSION = "2.1.6";
+  ntp.GAME_VERSION = "2.1.7";
   ntp.DEFAULT_LANGUAGE = "pt-BR";
   ntp.SUPPORTED_LANGUAGES = ["pt-BR", "en", "es"];
   ntp.MIN_CUSTOM_WAVES = 20;
@@ -30,13 +30,15 @@
   };
 
   ntp.sfxTracks = {
-    projectileThrow: "sound/sfx/tap_stone.mp3",
-    enemyDeath: "sound/sfx/tail_whip.mp3"
+    projectileThrow: "sound/sfx/projectile_shot.mp3",
+    enemyDeath: "sound/sfx/enemy_defeat.mp3",
+    playerHit: "sound/sfx/player_hit.mp3"
   };
 
   ntp.sfxVolumes = {
-    projectileThrow: 0.05,
-    enemyDeath: 1
+    projectileThrow: 0.32,
+    enemyDeath: 0.92,
+    playerHit: 0.9
   };
 
   ntp.gamepadButtons = {

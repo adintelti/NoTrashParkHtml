@@ -27,6 +27,42 @@
   background: #0f411a;
 }
 
+.board-stage.is-screen-shaking .board {
+  animation: screen-shake 260ms ease-out;
+}
+
+@keyframes screen-shake {
+  0%, 100% {
+    transform: translate3d(0, 0, 0);
+  }
+
+  15% {
+    transform: translate3d(-6px, 4px, 0);
+  }
+
+  30% {
+    transform: translate3d(7px, -3px, 0);
+  }
+
+  45% {
+    transform: translate3d(-5px, -5px, 0);
+  }
+
+  60% {
+    transform: translate3d(5px, 3px, 0);
+  }
+
+  80% {
+    transform: translate3d(-2px, 2px, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .board-stage.is-screen-shaking .board {
+    animation: none;
+  }
+}
+
 .top-hud {
   position: absolute;
   top: 8px;

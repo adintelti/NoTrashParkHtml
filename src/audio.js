@@ -3,21 +3,27 @@
   const { dom, musicTracks, sfxTracks, sfxVolumes, t } = ntp;
 
   const SOUND_STORAGE_KEY = "ntp.soundSettings";
-  const MUSIC_VOLUME = 0.42;
-  const DEFAULT_SFX_VOLUME = 0.58;
+  const MUSIC_VOLUME = 0.36;
+  const DEFAULT_SFX_VOLUME = 0.78;
   const SFX_POOL_SIZE = 5;
   const SFX_MIN_INTERVAL_MS = {
     projectileThrow: 45,
-    enemyDeath: 70
+    enemyDeath: 70,
+    playerHit: 80
   };
   const SFX_MAX_OVERLAP = {
     projectileThrow: 4,
-    enemyDeath: 3
+    enemyDeath: 3,
+    playerHit: 2
   };
   const FADE_OUT_MS = 650;
   const FADE_IN_MS = 900;
   const MENU_START_FADE_IN_MS = 220;
   const FADE_INTERVAL_MS = 40;
+  const BGM_DUCK_MULTIPLIER = 0.62;
+  const BGM_DUCK_ATTACK_MS = 35;
+  const BGM_DUCK_HOLD_MS = 120;
+  const BGM_DUCK_RELEASE_MS = 160;
 
   const trackAudio = new Map();
   const sfxPools = new Map();
@@ -39,6 +45,8 @@
   let unlockEventsBound = false;
   let audioContext;
   let webAudioUnavailable = false;
+  let bgmDuckTimer = 0;
+  let bgmDuckToken = 0;
 
   function getAudio(track) {
     if (trackAudio.has(track)) {
@@ -200,6 +208,27 @@
     });
   }
 
+  function rampBgmVolume(audio, targetVolume, duration, token, onComplete) {
+    const startVolume = audio.volume;
+    const startedAt = performance.now();
+
+    const step = () => {
+      if (token !== bgmDuckToken || audio !== activeAudio) return;
+
+      const progress = Math.min(1, (performance.now() - startedAt) / duration);
+      audio.volume = startVolume + (targetVolume - startVolume) * progress;
+
+      if (progress >= 1) {
+        onComplete?.();
+        return;
+      }
+
+      window.setTimeout(step, 16);
+    };
+
+    step();
+  }
+
   async function safelyPlay(audio) {
     try {
       await audio.play();
@@ -213,6 +242,8 @@
     if (!musicTracks[track]) return;
 
     desiredTrack = track;
+    bgmDuckToken += 1;
+    window.clearTimeout(bgmDuckTimer);
 
     if (!soundSettings.bgmEnabled || soundSettings.bgmVolume <= 0) {
       stopActiveMusic();
@@ -253,6 +284,8 @@
 
   function stopActiveMusic() {
     transitionId += 1;
+    bgmDuckToken += 1;
+    window.clearTimeout(bgmDuckTimer);
     if (!activeAudio) return;
     activeAudio.pause();
     activeAudio.currentTime = 0;
@@ -292,6 +325,20 @@
 
   function playThemeMusic(theme) {
     playMusic(theme);
+  }
+
+  function duckMusic() {
+    const audio = activeAudio;
+    if (!audio || !soundSettings.bgmEnabled || soundSettings.bgmVolume <= 0) return;
+
+    const token = ++bgmDuckToken;
+    window.clearTimeout(bgmDuckTimer);
+
+    rampBgmVolume(audio, getBgmVolume() * BGM_DUCK_MULTIPLIER, BGM_DUCK_ATTACK_MS, token, () => {
+      bgmDuckTimer = window.setTimeout(() => {
+        rampBgmVolume(audio, getBgmVolume(), BGM_DUCK_RELEASE_MS, token);
+      }, BGM_DUCK_HOLD_MS);
+    });
   }
 
   function playSfx(sfx) {
@@ -398,6 +445,8 @@
     syncSoundControls();
 
     if (activeAudio && soundSettings.bgmEnabled) {
+      bgmDuckToken += 1;
+      window.clearTimeout(bgmDuckTimer);
       activeAudio.volume = getBgmVolume();
     } else if (soundSettings.bgmEnabled && soundSettings.bgmVolume > 0) {
       resumeDesiredMusic();
@@ -535,6 +584,7 @@
     initializeBackgroundMusic,
     playMenuMusic,
     playThemeMusic,
+    duckMusic,
     playSfx,
     setBgmEnabled,
     setSfxEnabled,

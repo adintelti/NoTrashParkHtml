@@ -25,6 +25,7 @@
     isVictoryOpen,
     maps,
     MAX_TOWER_RANGE,
+    duckMusic,
     playSfx,
     resetState,
     refreshPlacementPreview,
@@ -73,6 +74,21 @@
   let waveTransitionCallback = null;
   let cardChoiceCallback = null;
   let undoHideTimer = 0;
+  let screenShakeTimer = 0;
+
+  function triggerScreenShake() {
+    const stage = dom.board?.closest(".board-stage");
+    if (!stage) return;
+
+    stage.classList.remove("is-screen-shaking");
+    void stage.offsetWidth;
+    stage.classList.add("is-screen-shaking");
+
+    window.clearTimeout(screenShakeTimer);
+    screenShakeTimer = window.setTimeout(() => {
+      stage.classList.remove("is-screen-shaking");
+    }, 260);
+  }
 
   function acquirePooledElement(pool, className) {
     const el = pool.pop() || document.createElement("div");
@@ -1405,7 +1421,13 @@
       removeEnemy(enemy, false);
       if (state.gameOver) return;
       state.waveHpLost += 1;
+      const previousLives = state.lives;
       state.lives = Math.max(0, state.lives - 1);
+      if (state.lives < previousLives) {
+        triggerScreenShake();
+        duckMusic();
+        playSfx("playerHit");
+      }
       logDebug("combat", "Enemy reached exit", {
         id: enemy.id,
         wave: state.wave,
