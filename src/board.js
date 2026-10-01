@@ -63,11 +63,13 @@
     state.placedTowers.forEach((tower) => tower.el?.remove());
     state.projectiles.forEach((projectile) => projectile.el?.remove());
     state.impacts.forEach((impact) => impact.el?.remove());
+    state.destructionParticles?.forEach((particle) => particle.el?.remove());
     state.enemies = [];
     state.enemiesById?.clear?.();
     state.placedTowers = [];
     state.projectiles = [];
     state.impacts = [];
+    state.destructionParticles = [];
   }
 
   function detailClass(x, y) {
@@ -100,6 +102,7 @@
     state.enemies.forEach((enemy) => setElementPosition(enemy.el, enemy.x, enemy.y));
     state.projectiles.forEach((projectile) => setElementPosition(projectile.el, projectile.x, projectile.y));
     state.impacts.forEach((impact) => setElementPosition(impact.el, impact.x, impact.y));
+    state.destructionParticles?.forEach((particle) => setElementPosition(particle.el, particle.x, particle.y));
     renderPlacementPreview();
   }
 

@@ -70,8 +70,12 @@
   const RANGE_MAX_EPSILON = 0.001;
   const PROJECTILE_POOL_LIMIT = 80;
   const IMPACT_POOL_LIMIT = 32;
+  const DESTRUCTION_PARTICLE_POOL_LIMIT = 96;
+  const DESTRUCTION_PARTICLE_COUNT = 12;
+  const DESTRUCTION_PARTICLE_LIFE = 0.48;
   const projectileElementPool = [];
   const impactElementPool = [];
+  const destructionParticleElementPool = [];
   let waveTransitionCallback = null;
   let cardChoiceCallback = null;
   let undoHideTimer = 0;
@@ -518,6 +522,7 @@
     updateTowers(dt);
     updateProjectiles(dt);
     updateImpacts(dt);
+    updateDestructionParticles(dt);
     updateHud();
   }
 
@@ -1593,8 +1598,8 @@
       state.enemies.splice(index, 1);
     }
     state.enemiesById?.delete(enemy.id);
-    enemy.el?.remove();
     if (awardCoins) {
+      createEnemyDestruction(enemy.x, enemy.y, enemy.el?.className || "");
       playSfx("enemyDeath");
       state.waveDefeated += 1;
       state.coins += enemy.reward;
@@ -1609,6 +1614,7 @@
         coins: state.coins
       });
     }
+    enemy.el?.remove();
   }
 
   function removeProjectile(projectile) {
@@ -1636,6 +1642,63 @@
       impact.life -= dt;
       if (impact.life <= 0) {
         releasePooledElement(impactElementPool, IMPACT_POOL_LIMIT, impact.el);
+        return false;
+      }
+      return true;
+    });
+  }
+
+  function createEnemyDestruction(x, y, enemyClassName = "") {
+    const palette = getEnemyDestructionPalette(enemyClassName);
+    state.destructionParticles = state.destructionParticles || [];
+
+    for (let index = 0; index < DESTRUCTION_PARTICLE_COUNT; index += 1) {
+      const el = acquirePooledElement(destructionParticleElementPool, "destruction-particle");
+      const angle = (Math.PI * 2 * index) / DESTRUCTION_PARTICLE_COUNT + (Math.random() - 0.5) * 0.62;
+      const distance = 0.28 + Math.random() * 0.34;
+      const driftX = (Math.random() - 0.5) * 0.18;
+      const driftY = (Math.random() - 0.5) * 0.18;
+      const size = 0.07 + Math.random() * 0.08;
+      const color = palette[index % palette.length];
+
+      el.style.setProperty("--particle-dx", `${Math.cos(angle) * distance + driftX}`);
+      el.style.setProperty("--particle-dy", `${Math.sin(angle) * distance + driftY}`);
+      el.style.setProperty("--particle-size", `${size}`);
+      el.style.setProperty("--particle-rotate", `${Math.round((Math.random() - 0.5) * 280)}deg`);
+      el.style.setProperty("--particle-color", color);
+      el.style.animationDelay = `${Math.random() * 42}ms`;
+
+      state.destructionParticles.push({
+        x,
+        y,
+        life: DESTRUCTION_PARTICLE_LIFE,
+        el
+      });
+      setElementPosition(el, x, y);
+    }
+  }
+
+  function getEnemyDestructionPalette(enemyClassName) {
+    if (enemyClassName.includes("enemy-brute")) {
+      return ["#2a201d", "#1bd18c", "#7a5b44", "#ffd36a"];
+    }
+    if (enemyClassName.includes("enemy-shield")) {
+      return ["#745645", "#b08a61", "#f2ce89", "#38271f"];
+    }
+    return ["#ed4b22", "#ff9f28", "#ffd36a", "#35160f"];
+  }
+
+  function updateDestructionParticles(dt) {
+    if (!state.destructionParticles?.length) return;
+
+    state.destructionParticles = state.destructionParticles.filter((particle) => {
+      particle.life -= dt;
+      if (particle.life <= 0) {
+        releasePooledElement(
+          destructionParticleElementPool,
+          DESTRUCTION_PARTICLE_POOL_LIMIT,
+          particle.el
+        );
         return false;
       }
       return true;

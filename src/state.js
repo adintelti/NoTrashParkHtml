@@ -90,6 +90,7 @@
       placedTowers: [],
       projectiles: [],
       impacts: [],
+      destructionParticles: [],
       occupied: new Set(),
       tileByCoord: new Map(),
       pathTiles: [],
