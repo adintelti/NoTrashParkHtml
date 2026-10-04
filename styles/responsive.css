@@ -126,6 +126,24 @@
     max-width: calc(100% - 12px);
   }
 
+  .boss-hud {
+    top: calc(39px + env(safe-area-inset-top));
+    right: 6px;
+    width: min(55%, 220px);
+    padding: 3px 6px 5px;
+    border-width: 2px;
+  }
+
+  .boss-hud-details {
+    display: block;
+    font-size: 0.6rem;
+  }
+
+  .boss-hud-details span {
+    display: block;
+    text-align: left;
+  }
+
   .stat-pill {
     min-width: 62px;
     min-height: 30px;

@@ -2,6 +2,7 @@
   const ntp = window.NTP = window.NTP || {};
   const {
     buildBoard,
+    bosses,
     COLS,
     closeDifficultyPanel,
     clearDynamicElements,
@@ -57,6 +58,10 @@
   };
 
   const WAVE_TRANSITION_DURATION = 1.25;
+  const BOSS_WAVE_INTERVAL = 5;
+  const BOSS_HEALTH_GROWTH = 0.18;
+  const BOSS_SPEED_GROWTH = 0.02;
+  const BOSS_WINDUP_DURATION = 1.25;
   const UNDO_PLACEMENT_WINDOW_MS = 5000;
   const CARD_EFFECT_DURATION_WAVES = 1;
   const CARD_COIN_GAIN = 100;
@@ -148,9 +153,11 @@
     };
   }
 
-  function startGame(theme = state.theme) {
+  function startGame(theme = state.theme, options = {}) {
     ntp.clearSavedGame?.();
-    resetState(theme, getConfiguredWaveLimit());
+    resetState(theme, options.waveLimit ?? getConfiguredWaveLimit());
+    state.bossEncounters = options.bossEncounters ?? 0;
+    state.bossEncountersAtBiomeStart = state.bossEncounters;
     clearUndoPlacement();
     ensureSelectedTowerUnlocked();
     state.running = true;
@@ -497,6 +504,15 @@
 
     if (state.spawnRemaining <= 0 && state.enemies.length === 0) {
       if (state.waveInProgress) {
+        if (state.wave % BOSS_WAVE_INTERVAL === 0 && !state.bossStarted) {
+          state.bossStarted = true;
+          startWaveTransition([t("boss.incoming", {
+            name: t(`boss.${state.theme}.name`),
+            rank: state.bossEncounters + 1
+          })], spawnBoss);
+          updateHud();
+          return;
+        }
         completeCurrentWave();
         updateHud();
         return;
@@ -519,6 +535,11 @@
     }
 
     moveEnemies(dt);
+    if (state.gameOver) {
+      updateHud();
+      return;
+    }
+    updateBossAbilities(dt);
     updateTowers(dt);
     updateProjectiles(dt);
     updateImpacts(dt);
@@ -612,6 +633,8 @@
     state.waveHpLost = 0;
     state.waveComboVisible = false;
     state.waveInProgress = true;
+    state.bossStarted = false;
+    state.bossId = 0;
     state.spawnRemaining = 6 + state.wave * 2;
     state.spawnTimer = 0;
     state.victoryPending = false;
@@ -1199,7 +1222,7 @@
 
   function syncEnemyHealthBarsVisibility() {
     state.enemies.forEach((enemy) => {
-      enemy.el?.classList.toggle("show-health", state.enemyHealthBarsUnlocked);
+      enemy.el?.classList.toggle("show-health", state.enemyHealthBarsUnlocked || Boolean(enemy.bossKey));
     });
   }
 
@@ -1371,18 +1394,23 @@
     if (callback) callback();
   }
 
-  function spawnEnemy() {
+  function spawnEnemy(typeOverride, options = {}) {
     const path = maps[state.theme].path;
     const tier = state.wave > 4 && state.spawnRemaining % 5 === 0
       ? 2
       : state.wave > 2 && state.spawnRemaining % 3 === 0
         ? 1
         : 0;
-    const type = enemyTypes[tier];
-    const maxHp = Math.round(type.hp * (1 + state.wave * 0.12) * getEnemyModifierMultiplier("hp"));
+    const type = typeOverride || enemyTypes[tier];
+    const isBoss = Boolean(options.bossKey);
+    const bossRank = isBoss ? Math.max(1, options.bossRank || 1) : 0;
+    const healthMultiplier = isBoss
+      ? 1.75 * (1 + BOSS_HEALTH_GROWTH * (bossRank - 1))
+      : 1 + state.wave * 0.12;
+    const maxHp = Math.round(type.hp * healthMultiplier * getEnemyModifierMultiplier("hp"));
     const el = document.createElement("div");
-    el.className = `enemy ${type.className}`;
-    el.classList.toggle("show-health", state.enemyHealthBarsUnlocked);
+    el.className = `enemy ${type.className}${isBoss ? " enemy-boss" : ""}${options.isDecoy ? " enemy-decoy" : ""}`;
+    el.classList.toggle("show-health", state.enemyHealthBarsUnlocked || isBoss);
     const healthEl = document.createElement("div");
     const healthBar = document.createElement("span");
     healthEl.className = "health";
@@ -1397,18 +1425,97 @@
       pathIndex: 0,
       maxHp,
       hp: maxHp,
-      speed: type.speed * (1 + Math.min(state.wave, 8) * 0.025) * getEnemyModifierMultiplier("speed"),
-      reward: type.reward,
+      speed: type.speed * (1 + Math.min(state.wave, 8) * 0.025)
+        * (isBoss ? 1 + Math.min(0.4, BOSS_SPEED_GROWTH * (bossRank - 1)) : 1)
+        * getEnemyModifierMultiplier("speed"),
+      reward: isBoss ? Math.round(type.reward * (1 + 0.1 * (bossRank - 1))) : type.reward,
       slowUntil: 0,
       slowFactor: 1,
+      bossKey: options.bossKey || "",
+      bossRank,
+      abilityStage: isBoss ? "ready" : "",
+      abilityTimer: 0,
+      isDecoy: Boolean(options.isDecoy),
+      expiresAt: options.isDecoy ? state.simTime + 5 : 0,
       healthBar,
       el
     };
+
+    if (options.fromEnemy) {
+      enemy.x = options.fromEnemy.x;
+      enemy.y = options.fromEnemy.y;
+      enemy.pathIndex = options.fromEnemy.pathIndex;
+    }
+    if (options.isDecoy) {
+      enemy.maxHp = 30;
+      enemy.hp = 30;
+      enemy.speed *= 1.5;
+      enemy.reward = 0;
+    }
 
     state.nextEnemyId += 1;
     state.enemies.push(enemy);
     state.enemiesById?.set(enemy.id, enemy);
     setElementPosition(el, enemy.x, enemy.y);
+    return enemy;
+  }
+
+  function spawnBoss() {
+    if (!state.waveInProgress || state.gameOver) return;
+    state.bossEncounters += 1;
+    const boss = spawnEnemy(bosses[state.theme], {
+      bossKey: state.theme,
+      bossRank: state.bossEncounters
+    });
+    state.bossId = boss.id;
+    showMessage(t("boss.arrived", { name: t(`boss.${state.theme}.name`), rank: boss.bossRank }));
+    logDebug("waves", "Boss arrived", {
+      theme: state.theme, wave: state.wave, rank: boss.bossRank, hp: boss.maxHp
+    });
+  }
+
+  function updateBossAbilities(dt) {
+    state.enemies.slice().forEach((enemy) => {
+      if (enemy.isDecoy && state.simTime >= enemy.expiresAt) removeEnemy(enemy, false);
+    });
+
+    const boss = state.enemiesById?.get(state.bossId);
+    if (!boss?.bossKey) return;
+    if (boss.abilityStage === "ready" && boss.hp <= boss.maxHp * 0.65) {
+      boss.abilityStage = "windup";
+      boss.abilityTimer = BOSS_WINDUP_DURATION;
+      boss.el.classList.add("is-telegraphing");
+      showMessage(t(`boss.${boss.bossKey}.warning`));
+      return;
+    }
+    if (boss.abilityStage !== "windup" && boss.abilityStage !== "active") return;
+    boss.abilityTimer -= dt;
+    if (boss.abilityTimer > 0) return;
+
+    if (boss.abilityStage === "windup") {
+      boss.abilityStage = "active";
+      boss.el.classList.remove("is-telegraphing");
+      boss.el.classList.add("is-ability-active");
+      if (boss.bossKey === "park") {
+        spawnEnemy(enemyTypes[0]);
+        spawnEnemy(enemyTypes[0]);
+        boss.abilityTimer = 1;
+      } else if (boss.bossKey === "lagoon") {
+        boss.abilityTimer = 2.5;
+      } else if (boss.bossKey === "lava") {
+        boss.abilityTimer = 3;
+      } else {
+        spawnEnemy(enemyTypes[0], { isDecoy: true, fromEnemy: boss });
+        spawnEnemy(enemyTypes[0], { isDecoy: true, fromEnemy: boss });
+        boss.abilityTimer = 1;
+      }
+      showMessage(t(`boss.${boss.bossKey}.active`));
+      return;
+    }
+
+    boss.abilityStage = "done";
+    boss.abilityTimer = 0;
+    boss.el.classList.remove("is-ability-active");
   }
 
   function moveEnemies(dt) {
@@ -1418,7 +1525,10 @@
     const leaked = [];
 
     state.enemies.forEach((enemy) => {
-      let distance = enemy.speed * (enemy.slowUntil > state.simTime ? enemy.slowFactor : 1) * dt;
+      let distance = enemy.speed
+        * (enemy.slowUntil > state.simTime ? enemy.slowFactor : 1)
+        * (enemy.bossKey === "lagoon" && enemy.abilityStage === "active" ? 1.8 : 1)
+        * dt;
       while (distance > 0 && enemy.pathIndex < path.length - 1) {
         const target = path[enemy.pathIndex + 1];
         const dx = target.x - enemy.x;
@@ -1446,6 +1556,23 @@
     });
 
     leaked.forEach((enemy) => {
+      if (state.gameOver) return;
+      if (enemy.isDecoy) {
+        removeEnemy(enemy, false);
+        return;
+      }
+      if (enemy.bossKey) {
+        state.waveHpLost += 1;
+        state.lives = Math.max(0, state.lives - 1);
+        triggerScreenShake();
+        duckMusic();
+        playSfx("playerHit");
+        removeEnemy(enemy, false);
+        showMessage(t("boss.escaped", { name: t(`boss.${enemy.bossKey}.name`) }));
+        logDebug("combat", "Boss reached exit", { theme: enemy.bossKey, lives: state.lives });
+        if (state.lives <= 0) endGame();
+        return;
+      }
       removeEnemy(enemy, false);
       if (state.gameOver) return;
       state.waveHpLost += 1;
@@ -1583,7 +1710,8 @@
     if (state.waveInProgress) {
       state.waveComboVisible = true;
     }
-    enemy.hp -= Math.max(1, amount);
+    const shielded = enemy.bossKey === "lava" && enemy.abilityStage === "active";
+    enemy.hp -= Math.max(1, Math.round(amount * (shielded ? 0.55 : 1)));
     if (enemy.healthBar) {
       enemy.healthBar.style.width = `${Math.max(0, (enemy.hp / enemy.maxHp) * 100)}%`;
     }
@@ -1598,7 +1726,13 @@
       state.enemies.splice(index, 1);
     }
     state.enemiesById?.delete(enemy.id);
-    if (awardCoins) {
+    if (enemy.id === state.bossId) {
+      state.bossId = 0;
+      if (awardCoins) showMessage(t("boss.defeated", { name: t(`boss.${enemy.bossKey}.name`) }));
+    }
+    if (awardCoins && enemy.isDecoy) {
+      createEnemyDestruction(enemy.x, enemy.y, enemy.el?.className || "");
+    } else if (awardCoins) {
       createEnemyDestruction(enemy.x, enemy.y, enemy.el?.className || "");
       playSfx("enemyDeath");
       state.waveDefeated += 1;

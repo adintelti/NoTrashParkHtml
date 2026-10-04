@@ -195,6 +195,16 @@
               </div>
             </div>
 
+            <div id="bossHud" class="boss-hud" hidden>
+              <div class="boss-hud-details">
+                <strong id="bossNameText"></strong>
+                <span id="bossAbilityText"></span>
+              </div>
+              <div id="bossHealthTrack" class="boss-health-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100">
+                <span id="bossHealthFill"></span>
+              </div>
+            </div>
+
             <div id="board" class="board theme-park" data-testid="board"></div>
             <div id="comboCounter" class="combo-counter" aria-live="polite" hidden>0X</div>
             <div id="waveTransition" class="wave-transition" aria-live="assertive" hidden></div>

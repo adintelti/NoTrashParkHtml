@@ -21,6 +21,10 @@
     "waveHpLost",
     "waveComboVisible",
     "waveInProgress",
+    "bossStarted",
+    "bossId",
+    "bossEncounters",
+    "bossEncountersAtBiomeStart",
     "enemyHealthBarsUnlocked",
     "wave",
     "spawnRemaining",
@@ -163,6 +167,12 @@
       reward: enemy.reward,
       slowUntil: enemy.slowUntil,
       slowFactor: enemy.slowFactor,
+      bossKey: enemy.bossKey || "",
+      bossRank: enemy.bossRank || 0,
+      abilityStage: enemy.abilityStage || "",
+      abilityTimer: enemy.abilityTimer || 0,
+      isDecoy: Boolean(enemy.isDecoy),
+      expiresAt: enemy.expiresAt || 0,
       className: getClassToken(enemy.el, "enemy-") || "enemy-runner"
     };
   }
@@ -338,6 +348,10 @@
       waveHpLost: asNumber(savedState.waveHpLost, 0),
       waveComboVisible: Boolean(savedState.waveComboVisible),
       waveInProgress: Boolean(savedState.waveInProgress),
+      bossStarted: Boolean(savedState.bossStarted),
+      bossId: asNumber(savedState.bossId, 0),
+      bossEncounters: asNumber(savedState.bossEncounters, savedState.bossId ? 1 : 0),
+      bossEncountersAtBiomeStart: asNumber(savedState.bossEncountersAtBiomeStart, 0),
       enemyHealthBarsUnlocked: Boolean(savedState.enemyHealthBarsUnlocked),
       wave: asNumber(savedState.wave, 0),
       enemies: [],
@@ -419,8 +433,9 @@
       const maxHp = asNumber(savedEnemy.maxHp, 1);
       const hp = Math.max(0, Math.min(maxHp, asNumber(savedEnemy.hp, maxHp)));
 
-      el.className = `enemy ${savedEnemy.className || "enemy-runner"}`;
-      el.classList.toggle("show-health", ntp.state.enemyHealthBarsUnlocked);
+      const bossKey = ntp.bosses?.[savedEnemy.bossKey] ? savedEnemy.bossKey : "";
+      el.className = `enemy ${bossKey ? ntp.bosses[bossKey].className : savedEnemy.className || "enemy-runner"}${bossKey ? " enemy-boss" : ""}${savedEnemy.isDecoy ? " enemy-decoy" : ""}`;
+      el.classList.toggle("show-health", ntp.state.enemyHealthBarsUnlocked || Boolean(bossKey));
       healthEl.className = "health";
       healthEl.appendChild(healthBar);
       el.appendChild(healthEl);
@@ -437,12 +452,20 @@
         reward: asNumber(savedEnemy.reward, 0),
         slowUntil: asNumber(savedEnemy.slowUntil, 0),
         slowFactor: asNumber(savedEnemy.slowFactor, 1),
+        bossKey,
+        bossRank: bossKey ? asNumber(savedEnemy.bossRank, 1) : 0,
+        abilityStage: bossKey ? (savedEnemy.abilityStage || "ready") : "",
+        abilityTimer: asNumber(savedEnemy.abilityTimer, 0),
+        isDecoy: Boolean(savedEnemy.isDecoy),
+        expiresAt: asNumber(savedEnemy.expiresAt, 0),
         healthBar,
         el
       };
 
       healthBar.style.width = `${Math.max(0, (enemy.hp / enemy.maxHp) * 100)}%`;
       el.classList.toggle("slowed", enemy.slowUntil > ntp.state.simTime);
+      el.classList.toggle("is-telegraphing", enemy.abilityStage === "windup");
+      el.classList.toggle("is-ability-active", enemy.abilityStage === "active");
       ntp.state.enemies.push(enemy);
       ntp.state.enemiesById.set(enemy.id, enemy);
       ntp.setElementPosition?.(el, enemy.x, enemy.y);

@@ -94,7 +94,10 @@
 
   function confirmRestart() {
     hideRestartConfirm();
-    startGame(state.theme);
+    startGame(state.theme, {
+      waveLimit: state.waveLimit,
+      bossEncounters: state.bossEncountersAtBiomeStart
+    });
   }
 
   function openExitConfirm() {
@@ -205,13 +208,19 @@
     dom.victoryContinueButton.addEventListener("click", () => {
       const nextTheme = getNextTheme(state.theme);
       if (nextTheme) {
-        startGame(nextTheme);
+        startGame(nextTheme, {
+          waveLimit: state.waveLimit,
+          bossEncounters: state.bossEncounters
+        });
         return;
       }
       hideVictory();
       beginWaveSpawn();
     });
-    dom.victoryRestartButton.addEventListener("click", () => startGame(state.theme));
+    dom.victoryRestartButton.addEventListener("click", () => startGame(state.theme, {
+      waveLimit: state.waveLimit,
+      bossEncounters: state.bossEncountersAtBiomeStart
+    }));
     dom.victoryMenuButton.addEventListener("click", returnToMenu);
 
     document.querySelectorAll("[data-theme]").forEach((button) => {

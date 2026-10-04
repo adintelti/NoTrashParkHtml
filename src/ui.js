@@ -172,6 +172,7 @@
     setCachedClass("comboActive", dom.comboCounter, "is-active", state.waveDefeated > 0);
     setCachedText("pauseLabel", dom.pauseButton, t("actions.pause"));
     setCachedText("speedLabel", dom.speedButton, `${state.speed}x`);
+    syncBossHud();
 
     const shownLives = Math.min(5, state.lives);
     if (hudCache.shownLives !== shownLives) {
@@ -193,6 +194,27 @@
 
     syncTowerActionUi();
     syncPlacementPreviewFromHud();
+  }
+
+  function syncBossHud() {
+    const boss = state.enemiesById?.get(state.bossId);
+    const visible = Boolean(boss?.bossKey && state.running && !state.gameOver);
+    dom.bossHud.hidden = !visible;
+    if (!visible) return;
+
+    const name = t(`boss.${boss.bossKey}.name`);
+    const rankedName = t("boss.rankName", { name, rank: boss.bossRank || 1 });
+    const status = boss.abilityStage === "windup"
+      ? t(`boss.${boss.bossKey}.warning`)
+      : boss.abilityStage === "active"
+        ? t(`boss.${boss.bossKey}.active`)
+        : t(`boss.${boss.bossKey}.hint`);
+    const healthPercent = Math.max(0, Math.min(100, Math.round((boss.hp / boss.maxHp) * 100)));
+    setCachedText("bossName", dom.bossNameText, rankedName);
+    setCachedText("bossAbility", dom.bossAbilityText, status);
+    dom.bossHealthFill.style.width = `${healthPercent}%`;
+    dom.bossHealthTrack.setAttribute("aria-label", t("boss.healthAria", { name: rankedName }));
+    dom.bossHealthTrack.setAttribute("aria-valuenow", String(healthPercent));
   }
 
   function syncShopButtons() {

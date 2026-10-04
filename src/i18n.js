@@ -260,6 +260,18 @@
         end: "Fim da onda {wave}\nDerrotou: {defeated}",
         start: "Inicio da onda {wave}"
       },
+      boss: {
+        incoming: "CHEFE A CAMINHO: {name} (nivel {rank})",
+        rankName: "{name} · Nv. {rank}",
+        arrived: "{name} chegou!",
+        defeated: "{name} derrotado!",
+        escaped: "{name} passou! -1 vida.",
+        healthAria: "Vida do chefe {name}",
+        park: { name: "Guardiao do Parque", hint: "Invoca ajudantes", warning: "O Guardiao esta chamando ajudantes!", active: "Dois ajudantes entraram no caminho!" },
+        lagoon: { name: "Tormenta da Lagoa", hint: "Dispara pelo caminho", warning: "A Tormenta prepara uma arrancada!", active: "A Tormenta acelerou!" },
+        lava: { name: "Colosso de Fogo", hint: "Ergue uma barreira", warning: "O Colosso prepara sua barreira!", active: "Barreira ativa: dano reduzido!" },
+        halloween: { name: "Fantasma das Sombras", hint: "Cria ilusoes", warning: "O Fantasma prepara ilusoes!", active: "Ilusoes atraem as torres!" }
+      },
       board: {
         tileAria: "Celula {x}, {y}"
       }
@@ -516,6 +528,18 @@
         end: "End of wave {wave}\nDefeated: {defeated}",
         start: "Start of wave {wave}"
       },
+      boss: {
+        incoming: "BOSS INCOMING: {name} (level {rank})",
+        rankName: "{name} · Lv. {rank}",
+        arrived: "{name} has arrived!",
+        defeated: "{name} defeated!",
+        escaped: "{name} got through! -1 life.",
+        healthAria: "Boss health: {name}",
+        park: { name: "Park Guardian", hint: "Summons helpers", warning: "The Guardian is calling for helpers!", active: "Two helpers entered the path!" },
+        lagoon: { name: "Lagoon Tempest", hint: "Dashes along the path", warning: "The Tempest prepares to dash!", active: "The Tempest sped up!" },
+        lava: { name: "Fire Colossus", hint: "Raises a barrier", warning: "The Colossus prepares its barrier!", active: "Barrier active: damage reduced!" },
+        halloween: { name: "Shadow Phantom", hint: "Creates illusions", warning: "The Phantom prepares illusions!", active: "Illusions are distracting the towers!" }
+      },
       board: {
         tileAria: "Tile {x}, {y}"
       }
@@ -771,6 +795,18 @@
       wave: {
         end: "Fin de la oleada {wave}\nDerroto: {defeated}",
         start: "Inicio de la oleada {wave}"
+      },
+      boss: {
+        incoming: "JEFE EN CAMINO: {name} (nivel {rank})",
+        rankName: "{name} · Nv. {rank}",
+        arrived: "¡Llego {name}!",
+        defeated: "¡{name} derrotado!",
+        escaped: "¡{name} llego a la salida! -1 vida.",
+        healthAria: "Vida del jefe {name}",
+        park: { name: "Guardian del Parque", hint: "Invoca ayudantes", warning: "¡El Guardian llama a sus ayudantes!", active: "¡Dos ayudantes entraron al camino!" },
+        lagoon: { name: "Tormenta de la Laguna", hint: "Acelera por el camino", warning: "¡La Tormenta prepara una carrera!", active: "¡La Tormenta acelero!" },
+        lava: { name: "Coloso de Fuego", hint: "Levanta una barrera", warning: "¡El Coloso prepara su barrera!", active: "¡Barrera activa: dano reducido!" },
+        halloween: { name: "Fantasma de las Sombras", hint: "Crea ilusiones", warning: "¡El Fantasma prepara ilusiones!", active: "¡Las ilusiones distraen a las torres!" }
       },
       board: {
         tileAria: "Casilla {x}, {y}"

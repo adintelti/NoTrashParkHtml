@@ -181,10 +181,78 @@
   background: #745645;
 }
 
+.enemy-boss {
+  z-index: 5;
+  width: calc(var(--cell-size) * 0.76);
+  height: calc(var(--cell-size) * 0.76);
+  border-width: 4px;
+  box-shadow: 0 0 0 3px #f4c168, 4px 6px 0 rgba(0, 0, 0, 0.28);
+}
+
+.enemy-boss::before,
+.enemy-boss::after {
+  width: 15%;
+  height: 16%;
+  background: #fff4cd;
+  box-shadow: 0 0 4px #fff4cd;
+}
+
+.enemy-boss-park {
+  border-radius: 35% 35% 48% 48%;
+  background: radial-gradient(circle at 50% 25%, #a4ef6e 0 22%, #267044 23% 100%);
+}
+
+.enemy-boss-lagoon {
+  border-radius: 46% 54% 40% 60%;
+  background: radial-gradient(circle at 42% 34%, #b0faff 0 18%, #258cbd 19% 100%);
+}
+
+.enemy-boss-lava {
+  border-radius: 30% 30% 44% 44%;
+  background: radial-gradient(circle at 50% 30%, #ffe67b 0 17%, #ef6b20 18% 53%, #7a2a20 54% 100%);
+}
+
+.enemy-boss-halloween {
+  border-radius: 48% 48% 20% 20%;
+  background: radial-gradient(circle at 50% 34%, #dd9bff 0 17%, #703c9e 18% 100%);
+}
+
+.enemy-decoy {
+  opacity: 0.72;
+  border-color: #e9c1ff;
+  background: #8955b0;
+  box-shadow: 0 0 10px 5px rgba(201, 137, 255, 0.65);
+}
+
+.enemy-boss.is-telegraphing {
+  outline: 4px dashed #fff1a6;
+  outline-offset: 4px;
+  animation: boss-warning 450ms steps(2, end) infinite;
+}
+
+.enemy-boss.is-ability-active {
+  box-shadow: 0 0 0 5px #ffe180, 0 0 18px 8px rgba(255, 180, 72, 0.75);
+}
+
+@keyframes boss-warning {
+  50% { outline-color: #ff7154; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .enemy-boss.is-telegraphing { animation: none; }
+}
+
 .enemy.slowed {
   box-shadow:
     0 0 0 4px rgba(118, 223, 255, 0.65),
     4px 5px 0 rgba(0, 0, 0, 0.22);
+}
+
+.enemy-boss.is-ability-active.slowed {
+  box-shadow:
+    0 0 0 5px #ffe180,
+    0 0 18px 8px rgba(255, 180, 72, 0.75),
+    0 0 0 9px rgba(118, 223, 255, 0.65);
 }
 
 .health {

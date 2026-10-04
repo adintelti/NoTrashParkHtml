@@ -97,6 +97,13 @@
     { className: "enemy-shield", hp: 105, speed: 0.64, reward: 18 }
   ];
 
+  const bosses = {
+    park: { className: "enemy-boss-park", hp: 240, speed: 0.68, reward: 100 },
+    lagoon: { className: "enemy-boss-lagoon", hp: 220, speed: 0.82, reward: 100 },
+    lava: { className: "enemy-boss-lava", hp: 260, speed: 0.65, reward: 100 },
+    halloween: { className: "enemy-boss-halloween", hp: 230, speed: 0.76, reward: 100 }
+  };
+
   const themeOrder = ["park", "lagoon", "lava", "halloween"];
   const towerOrder = Object.keys(towers);
   const towerUnlocksByTheme = {
@@ -133,6 +140,7 @@
     towers,
     maps,
     enemyTypes,
+    bosses,
     themeOrder,
     towerOrder,
     getUnlockedTowerKeys,
