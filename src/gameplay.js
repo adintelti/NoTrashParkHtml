@@ -44,6 +44,7 @@
     state,
     syncThemeButtons,
     t,
+    themeDifficulty,
     towerOrder,
     towers,
     updateHud,
@@ -530,7 +531,8 @@
       if (state.spawnTimer <= 0) {
         spawnEnemy();
         state.spawnRemaining -= 1;
-        state.spawnTimer = Math.max(0.36, 0.86 - state.wave * 0.025);
+        state.spawnTimer = Math.max(0.36, 0.86 - state.wave * 0.025)
+          / (themeDifficulty[state.theme] || themeDifficulty.park).spawnRate;
       }
     }
 
@@ -638,7 +640,9 @@
     state.spawnRemaining = 6 + state.wave * 2;
     state.spawnTimer = 0;
     state.victoryPending = false;
-    showMessage(t("messages.waveStart", { wave: state.wave }));
+    showMessage(state.wave === 2 && state.theme !== "park"
+      ? t(`messages.biomeThreat.${state.theme}`)
+      : t("messages.waveStart", { wave: state.wave }));
     updateHud();
     logDebug("waves", "Wave started", {
       wave: state.wave,
@@ -1394,20 +1398,33 @@
     if (callback) callback();
   }
 
+  function getWaveEnemyType() {
+    const difficulty = themeDifficulty[state.theme] || themeDifficulty.park;
+    if (!difficulty.enemyPattern) {
+      const tier = state.wave > 4 && state.spawnRemaining % 5 === 0
+        ? 2
+        : state.wave > 2 && state.spawnRemaining % 3 === 0
+          ? 1
+          : 0;
+      return enemyTypes[tier];
+    }
+
+    const spawnIndex = 6 + state.wave * 2 - state.spawnRemaining;
+    const patternIndex = (spawnIndex + state.wave - 1) % difficulty.enemyPattern.length;
+    const tier = difficulty.enemyPattern[patternIndex];
+    return state.wave >= (difficulty.unlockWave[tier] || 1) ? enemyTypes[tier] : enemyTypes[0];
+  }
+
   function spawnEnemy(typeOverride, options = {}) {
     const path = maps[state.theme].path;
-    const tier = state.wave > 4 && state.spawnRemaining % 5 === 0
-      ? 2
-      : state.wave > 2 && state.spawnRemaining % 3 === 0
-        ? 1
-        : 0;
-    const type = typeOverride || enemyTypes[tier];
+    const difficulty = themeDifficulty[state.theme] || themeDifficulty.park;
+    const type = typeOverride || getWaveEnemyType();
     const isBoss = Boolean(options.bossKey);
     const bossRank = isBoss ? Math.max(1, options.bossRank || 1) : 0;
     const healthMultiplier = isBoss
       ? 1.75 * (1 + BOSS_HEALTH_GROWTH * (bossRank - 1))
       : 1 + state.wave * 0.12;
-    const maxHp = Math.round(type.hp * healthMultiplier * getEnemyModifierMultiplier("hp"));
+    const maxHp = Math.round(type.hp * healthMultiplier * difficulty.hp * getEnemyModifierMultiplier("hp"));
     const el = document.createElement("div");
     el.className = `enemy ${type.className}${isBoss ? " enemy-boss" : ""}${options.isDecoy ? " enemy-decoy" : ""}`;
     el.classList.toggle("show-health", state.enemyHealthBarsUnlocked || isBoss);
@@ -1425,7 +1442,7 @@
       pathIndex: 0,
       maxHp,
       hp: maxHp,
-      speed: type.speed * (1 + Math.min(state.wave, 8) * 0.025)
+      speed: type.speed * (1 + Math.min(state.wave, 8) * 0.025) * difficulty.speed
         * (isBoss ? 1 + Math.min(0.4, BOSS_SPEED_GROWTH * (bossRank - 1)) : 1)
         * getEnemyModifierMultiplier("speed"),
       reward: isBoss ? Math.round(type.reward * (1 + 0.1 * (bossRank - 1))) : type.reward,
@@ -1813,6 +1830,9 @@
   }
 
   function getEnemyDestructionPalette(enemyClassName) {
+    if (enemyClassName.includes("enemy-sprinter")) {
+      return ["#31c6ca", "#b5fbff", "#2785a1", "#ffd36a"];
+    }
     if (enemyClassName.includes("enemy-brute")) {
       return ["#2a201d", "#1bd18c", "#7a5b44", "#ffd36a"];
     }

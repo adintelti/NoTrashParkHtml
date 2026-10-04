@@ -253,6 +253,11 @@
         towerRemoved: "Torre removida.",
         towerNotFound: "Torre nao encontrada.",
         waveStart: "Onda {wave}",
+        biomeThreat: {
+          lagoon: "Onda 2: corredores velozes na Lagoa!",
+          lava: "Onda 2: inimigos com escudo no Fogo!",
+          halloween: "Onda 2: velozes e escudos no Halloween!"
+        },
         gamepadConnected: "Controle conectado.",
         gamepadDisconnected: "Controle desconectado."
       },
@@ -521,6 +526,11 @@
         towerRemoved: "Tower removed.",
         towerNotFound: "Tower not found.",
         waveStart: "Wave {wave}",
+        biomeThreat: {
+          lagoon: "Wave 2: fast sprinters in the Lagoon!",
+          lava: "Wave 2: shielded enemies in Fire!",
+          halloween: "Wave 2: sprinters and shields in Halloween!"
+        },
         gamepadConnected: "Controller connected.",
         gamepadDisconnected: "Controller disconnected."
       },
@@ -789,6 +799,11 @@
         towerRemoved: "Torre quitada.",
         towerNotFound: "Torre no encontrada.",
         waveStart: "Oleada {wave}",
+        biomeThreat: {
+          lagoon: "Oleada 2: corredores veloces en la Laguna!",
+          lava: "Oleada 2: enemigos con escudo en Fuego!",
+          halloween: "Oleada 2: veloces y escudos en Halloween!"
+        },
         gamepadConnected: "Control conectado.",
         gamepadDisconnected: "Control desconectado."
       },

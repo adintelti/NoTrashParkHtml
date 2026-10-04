@@ -86,6 +86,18 @@ When the player wins:
 - Halloween victory shows `Parabens voce protegeu todos os biomas` and only offers
   `De novo!` and `Menu`.
 
+Enemy pressure rises with each wave through larger groups, more health, and shorter
+spawn intervals. Each biome also adds a distinct step in difficulty:
+
+- Park keeps the original runner, brute, and shield mix.
+- Lagoon introduces fast sprinters in wave 2 and increases enemy speed and spawn pace.
+- Fire brings shielded enemies into wave 2, with more health and a denser mix.
+- Halloween combines sprinters and shields from wave 2 at the highest pace.
+
+Biome health, speed, spawn pace, and enemy patterns are tuned in `src/data.js`.
+Bosses keep their five-wave cadence and encounter scaling, and also inherit the
+current biome's health and speed modifiers.
+
 ## Project Structure
 
 ```text

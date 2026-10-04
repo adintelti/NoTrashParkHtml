@@ -169,6 +169,14 @@
   background: #ed4b22;
 }
 
+.enemy-sprinter {
+  width: calc(var(--cell-size) * 0.43);
+  height: calc(var(--cell-size) * 0.43);
+  border-radius: 28% 65% 30% 65%;
+  background: radial-gradient(circle at 35% 30%, #b5fbff 0 18%, #31c6ca 19% 100%);
+  box-shadow: 4px 5px 0 rgba(0, 0, 0, 0.22), 0 0 8px rgba(49, 198, 202, 0.65);
+}
+
 .enemy-brute {
   border-radius: 45% 55% 50% 42%;
   background:

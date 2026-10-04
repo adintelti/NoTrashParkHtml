@@ -94,7 +94,8 @@
   const enemyTypes = [
     { className: "enemy-runner", hp: 42, speed: 1.22, reward: 8 },
     { className: "enemy-brute", hp: 78, speed: 0.78, reward: 14 },
-    { className: "enemy-shield", hp: 105, speed: 0.64, reward: 18 }
+    { className: "enemy-shield", hp: 105, speed: 0.64, reward: 18 },
+    { className: "enemy-sprinter", hp: 32, speed: 1.62, reward: 9 }
   ];
 
   const bosses = {
@@ -105,6 +106,25 @@
   };
 
   const themeOrder = ["park", "lagoon", "lava", "halloween"];
+  // Enemy pattern slots refer to enemyTypes: runner, brute, shield, sprinter.
+  const themeDifficulty = {
+    park: { hp: 1, speed: 1, spawnRate: 1 },
+    lagoon: {
+      hp: 1.08, speed: 1.08, spawnRate: 1.08,
+      enemyPattern: [0, 3, 0, 1, 3, 0, 2],
+      unlockWave: { 1: 3, 2: 5, 3: 2 }
+    },
+    lava: {
+      hp: 1.19, speed: 1.1, spawnRate: 1.12,
+      enemyPattern: [0, 2, 1, 3, 2, 0, 1, 3],
+      unlockWave: { 1: 2, 2: 2, 3: 3 }
+    },
+    halloween: {
+      hp: 1.3, speed: 1.14, spawnRate: 1.16,
+      enemyPattern: [3, 2, 1, 3, 2, 0, 3, 2],
+      unlockWave: { 1: 2, 2: 2, 3: 2 }
+    }
+  };
   const towerOrder = Object.keys(towers);
   const towerUnlocksByTheme = {
     park: ["sentinel", "slow"],
@@ -142,6 +162,7 @@
     enemyTypes,
     bosses,
     themeOrder,
+    themeDifficulty,
     towerOrder,
     getUnlockedTowerKeys,
     isTowerUnlocked,
