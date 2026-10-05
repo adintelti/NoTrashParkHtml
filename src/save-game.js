@@ -12,6 +12,8 @@
   const savedStateFields = [
     "theme",
     "waveLimit",
+    "phaseDifficulty",
+    "phaseCardFrequency",
     "selectedTower",
     "coins",
     "maxLives",
@@ -42,6 +44,7 @@
     const { state } = ntp;
     return Boolean(
       state?.running
+      && state.gameMode !== "tutorial"
       && !state.gameOver
       && !state.victoryPending
       && !state.waveTransitionActive
@@ -133,6 +136,7 @@
       state: {
         ...savedState,
         paused: false,
+        phaseStats: { ...state.phaseStats },
         cardEffects: serializeCardEffects(state.cardEffects),
         towers: state.placedTowers.map(serializeTower),
         enemies: state.enemies.map(serializeEnemy),
@@ -316,6 +320,8 @@
     ntp.hideCardChoice?.();
     ntp.hideWaveTransition?.();
     ntp.hideVictory?.();
+    dom.game.classList.remove("is-tutorial");
+    ntp.syncTutorialUi?.();
 
     ntp.syncThemeButtons?.(state.theme);
     dom.menu.classList.add("is-hidden");
@@ -339,6 +345,10 @@
     return {
       theme: savedState.theme,
       waveLimit: asNumber(savedState.waveLimit, ntp.difficultyOptions?.medium || 12),
+      gameMode: "normal",
+      phaseDifficulty: savedState.phaseDifficulty || "custom",
+      phaseCardFrequency: asNumber(savedState.phaseCardFrequency, ntp.settings.cardFrequency),
+      phaseStats: ntp.restorePhaseStats(savedState.phaseStats),
       selectedTower: savedState.selectedTower || "sentinel",
       coins: asNumber(savedState.coins, 300),
       maxLives: asNumber(savedState.maxLives, 10),

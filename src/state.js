@@ -74,6 +74,12 @@
     return {
       theme,
       waveLimit,
+      gameMode: "normal",
+      phaseDifficulty: settings.difficulty,
+      phaseCardFrequency: settings.cardFrequency,
+      phaseStats: ntp.createPhaseStats(),
+      phaseResult: null,
+      tutorial: null,
       selectedTower: "sentinel",
       coins: 300,
       maxLives: 10,

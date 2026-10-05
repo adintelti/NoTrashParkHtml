@@ -829,6 +829,129 @@
     }
   };
 
+  const featureTranslations = {
+    "pt-BR": {
+      tutorial: {
+        menu: "Tutorial", title: "Tutorial · Onda {wave}/5", startWave: "Iniciar onda {wave}",
+        completed: "Tutorial concluído!", repeat: "Repetir tutorial",
+        summary: "Você praticou a defesa do Parque em 5 ondas. Volte ao menu para jogar os outros biomas.",
+        shopControls: "Loja / tutorial", boardControls: "Voltar ao campo",
+        needTower: "Construa pelo menos uma torre para continuar.",
+        defend: "Defenda o caminho. Ao terminar a onda, você poderá preparar a próxima.",
+        defendFinal: "Defenda a última onda e enfrente o chefe para concluir o tutorial.",
+        steps: {
+          build: "Os inimigos seguem o caminho até a saída. Escolha a Sentinela e construa perto dele; os espaços com borda são sugestões. As torres atacam automaticamente. Derrotar inimigos rende moedas para construir mais torres.",
+          slow: "A Gélida deixa os inimigos mais lentos, dando mais tempo para a Sentinela atacar. Combine as duas perto do mesmo trecho do caminho.",
+          tools: "Você pode corrigir a defesa: Desfazer devolve o custo nos primeiros 5 segundos. Excluir permite selecionar uma torre e confirmar a remoção. Você recebeu moedas para reconstruir. A partir de agora, surgem inimigos mais resistentes.",
+          controls: "Pause abre o menu e interrompe a partida; use Retomar para voltar. O botão 1x / 2x muda a velocidade. No tutorial, o combate espera enquanto você prepara cada onda.",
+          boss: "Depois dos inimigos da quinta onda, chega o chefe do Parque. Ele tem mais vida e chama ajudantes. Combine dano e lentidão para enfrentá-lo. Neste treino, suas vidas não chegam a zero."
+        },
+        objectives: {
+          build: "Objetivo: construa uma Sentinela e inicie a primeira onda.",
+          slow: "Objetivo: construa uma Gélida e inicie a segunda onda.",
+          tools: "Objetivo: use Desfazer ou Excluir, mantenha uma torre e inicie a terceira onda.",
+          controls: "Objetivo: experimente Pause e 1x / 2x e inicie a quarta onda.",
+          boss: "Prepare sua defesa e inicie a quinta e última onda."
+        }
+      },
+      evaluation: {
+        starsAria: "{stars} de 3 estrelas", perfect: "Defesa perfeita", solid: "Defesa sólida",
+        protected: "Bioma protegido", defeat: "Defesa interrompida", unavailable: "Avaliação indisponível",
+        criteria: "3★: sem perder vidas. 2★: até {limit} vidas perdidas. Ambas exigem derrotar todos os chefes. 1★: qualquer vitória.",
+        damage: "Vidas perdidas", escaped: "Escaparam", perfectWaves: "Ondas perfeitas", bosses: "Chefes derrotados",
+        newRecord: "Novo recorde nesta configuração!", best: "Melhor resultado nesta configuração: {stars}/3 estrelas",
+        tips: {
+          perfect: "Você protegeu todas as ondas. Experimente repetir em uma dificuldade maior.",
+          boss: "Um chefe escapou. Reforce o dano e use a Gélida para aumentar o tempo de ataque.",
+          leak: "Você começou a perder vidas na onda {wave}. Experimente reforçar a defesa antes dela.",
+          defeat: "Experimente combinar a Sentinela e a Gélida perto das curvas do caminho.",
+          unavailable: "Este salvamento é de uma versão anterior. Comece uma nova fase para receber uma avaliação completa."
+        }
+      }
+    },
+    en: {
+      tutorial: {
+        menu: "Tutorial", title: "Tutorial · Wave {wave}/5", startWave: "Start wave {wave}",
+        completed: "Tutorial complete!", repeat: "Repeat tutorial",
+        summary: "You practiced defending the Park across 5 waves. Return to the menu to play the other biomes.",
+        shopControls: "Shop / tutorial", boardControls: "Back to board",
+        needTower: "Build at least one tower to continue.",
+        defend: "Defend the path. After this wave, you can prepare for the next one.",
+        defendFinal: "Defend the final wave and face the boss to complete the tutorial.",
+        steps: {
+          build: "Enemies follow the path to the exit. Select Sentinel and build near it; outlined tiles are suggestions. Towers attack automatically. Defeating enemies earns coins to build more towers.",
+          slow: "Frost slows enemies, giving Sentinel more time to attack. Place both near the same stretch of path.",
+          tools: "You can adjust your defense: Undo refunds a tower within the first 5 seconds. Delete lets you select a tower and confirm its removal. You received coins to rebuild. Tougher enemies start appearing now.",
+          controls: "Pause opens the menu and stops the game; use Resume to return. The 1x / 2x button changes game speed. In the tutorial, combat waits while you prepare each wave.",
+          boss: "After the enemies of wave five, the Park boss arrives. It has more health and summons helpers. Combine damage and slowing to fight it. In this practice, your lives never reach zero."
+        },
+        objectives: {
+          build: "Goal: build a Sentinel and start the first wave.",
+          slow: "Goal: build a Frost tower and start the second wave.",
+          tools: "Goal: use Undo or Delete, keep a tower and start the third wave.",
+          controls: "Goal: try Pause and 1x / 2x, then start the fourth wave.",
+          boss: "Prepare your defense and start the fifth and final wave."
+        }
+      },
+      evaluation: {
+        starsAria: "{stars} out of 3 stars", perfect: "Perfect defense", solid: "Solid defense",
+        protected: "Biome protected", defeat: "Defense interrupted", unavailable: "Rating unavailable",
+        criteria: "3★: no lives lost. 2★: at most {limit} lives lost. Both require defeating every boss. 1★: any victory.",
+        damage: "Lives lost", escaped: "Escaped", perfectWaves: "Perfect waves", bosses: "Bosses defeated",
+        newRecord: "New record for these settings!", best: "Best result for these settings: {stars}/3 stars",
+        tips: {
+          perfect: "You protected every wave. Try playing again on a higher difficulty.",
+          boss: "A boss escaped. Add damage and use Frost to give your towers more time to attack.",
+          leak: "You first lost lives in wave {wave}. Try reinforcing your defense before that wave.",
+          defeat: "Try combining Sentinel and Frost near bends in the path.",
+          unavailable: "This save is from an earlier version. Start a new level to receive a complete rating."
+        }
+      }
+    },
+    es: {
+      tutorial: {
+        menu: "Tutorial", title: "Tutorial · Oleada {wave}/5", startWave: "Iniciar oleada {wave}",
+        completed: "¡Tutorial completado!", repeat: "Repetir tutorial",
+        summary: "Practicaste la defensa del Parque en 5 oleadas. Vuelve al menú para jugar los otros biomas.",
+        shopControls: "Tienda / tutorial", boardControls: "Volver al campo",
+        needTower: "Construye al menos una torre para continuar.",
+        defend: "Defiende el camino. Al terminar la oleada, podrás preparar la siguiente.",
+        defendFinal: "Defiende la última oleada y enfrenta al jefe para completar el tutorial.",
+        steps: {
+          build: "Los enemigos siguen el camino hasta la salida. Elige Centinela y construye cerca; las casillas con borde son sugerencias. Las torres atacan automáticamente. Derrotar enemigos da monedas para construir más torres.",
+          slow: "Gélida ralentiza a los enemigos y da más tiempo a Centinela para atacar. Combina ambas cerca del mismo tramo del camino.",
+          tools: "Puedes corregir la defensa: Deshacer devuelve el coste durante los primeros 5 segundos. Borrar permite seleccionar una torre y confirmar su eliminación. Recibiste monedas para reconstruir. Ahora aparecen enemigos más resistentes.",
+          controls: "Pausa abre el menú y detiene la partida; usa Reanudar para volver. El botón 1x / 2x cambia la velocidad. En el tutorial, el combate espera mientras preparas cada oleada.",
+          boss: "Tras los enemigos de la quinta oleada llega el jefe del Parque. Tiene más vida e invoca ayudantes. Combina daño y ralentización para enfrentarlo. En esta práctica, tus vidas nunca llegan a cero."
+        },
+        objectives: {
+          build: "Objetivo: construye una Centinela e inicia la primera oleada.",
+          slow: "Objetivo: construye una Gélida e inicia la segunda oleada.",
+          tools: "Objetivo: usa Deshacer o Borrar, conserva una torre e inicia la tercera oleada.",
+          controls: "Objetivo: prueba Pausa y 1x / 2x e inicia la cuarta oleada.",
+          boss: "Prepara tu defensa e inicia la quinta y última oleada."
+        }
+      },
+      evaluation: {
+        starsAria: "{stars} de 3 estrellas", perfect: "Defensa perfecta", solid: "Defensa sólida",
+        protected: "Bioma protegido", defeat: "Defensa interrumpida", unavailable: "Evaluación no disponible",
+        criteria: "3★: sin perder vidas. 2★: hasta {limit} vidas perdidas. Ambas requieren derrotar a todos los jefes. 1★: cualquier victoria.",
+        damage: "Vidas perdidas", escaped: "Escaparon", perfectWaves: "Oleadas perfectas", bosses: "Jefes derrotados",
+        newRecord: "¡Nuevo récord con esta configuración!", best: "Mejor resultado con esta configuración: {stars}/3 estrellas",
+        tips: {
+          perfect: "Protegiste todas las oleadas. Prueba jugar otra vez en una dificultad mayor.",
+          boss: "Un jefe escapó. Refuerza el daño y usa Gélida para dar más tiempo de ataque.",
+          leak: "Empezaste a perder vidas en la oleada {wave}. Prueba reforzar la defensa antes de ella.",
+          defeat: "Prueba combinar Centinela y Gélida cerca de las curvas del camino.",
+          unavailable: "Esta partida guardada es de una versión anterior. Inicia una fase nueva para recibir una evaluación completa."
+        }
+      }
+    }
+  };
+  Object.entries(featureTranslations).forEach(([language, features]) => {
+    Object.assign(translations[language], features);
+  });
+
   function normalizeLanguage(language) {
     return SUPPORTED_LANGUAGES.includes(language) ? language : DEFAULT_LANGUAGE;
   }
@@ -920,6 +1043,7 @@
     ntp.syncSavedGameButton?.();
     ntp.invalidateHud?.();
     ntp.updateHud?.();
+    ntp.renderPhaseEvaluation?.();
   }
 
   function setLanguage(language) {

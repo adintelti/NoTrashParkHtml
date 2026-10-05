@@ -1,4 +1,4 @@
-const CACHE_NAME = "ntp-static-v2.1.12";
+const CACHE_NAME = "ntp-static-v2.1.13-tutorial";
 
 const PRECACHE_URLS = [
   "./",
@@ -13,10 +13,12 @@ const PRECACHE_URLS = [
   "./styles/overlays.css",
   "./styles/debug.css",
   "./styles/responsive.css",
+  "./styles/tutorial-evaluation.css",
   "./game.js",
   "./src/constants.js",
   "./src/data.js",
   "./src/dom.js",
+  "./src/evaluation.js",
   "./src/state.js",
   "./src/i18n.js",
   "./src/utils.js",
@@ -25,6 +27,7 @@ const PRECACHE_URLS = [
   "./src/ui.js",
   "./src/audio.js",
   "./src/gameplay.js",
+  "./src/tutorial.js",
   "./src/storage.js",
   "./src/save-game.js",
   "./src/input-gamepad.js",

@@ -26,6 +26,7 @@ function createGame() {
 
   load("src/constants.js");
   load("src/data.js");
+  load("src/evaluation.js");
   load("src/state.js");
   load("src/i18n.js");
   Object.assign(context.window.NTP, {

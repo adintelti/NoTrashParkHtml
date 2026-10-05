@@ -20,6 +20,8 @@ characters, towers, projectiles, and obstacles.
 - Victory flow after a configurable number of waves.
 - Biome progression: Park -> Lagoon -> Fire -> Halloween.
 - Final victory message after protecting all biomes.
+- Interactive five-wave Park tutorial, available below Play in the main menu.
+- End-of-biome star ratings, performance feedback, and personal records for normal games.
 - Windows/Xbox-style gamepad support through the browser Gamepad API.
 - On-screen gamepad key hints while a connected controller is active.
 - Menu sound controls for BGM/SFX toggles and master volumes.
@@ -70,6 +72,34 @@ menu and during gameplay.
 - `Back/View`: return to the menu during gameplay.
 
 ## Victory And Progression
+
+The **Tutorial** button below **Jogar** starts a separate practice in Park with
+exactly five waves and one boss after the fifth wave. Each wave waits for the
+player to prepare: place a Sentinel, add a Frost tower, try Undo or Delete,
+and try Pause and the speed control. Suggested tiles and controls are highlighted.
+Practice enemies have less health and move more slowly; lives never reach zero.
+The tutorial ends in Park and offers Repeat Tutorial and Menu. It does not advance
+to Lagoon, offer random cards, replace the normal save, or submit normal records.
+With a gamepad, LT / ZL enters shop/tutorial navigation and B / A returns to the
+board, according to the configured controller layout.
+
+Normal games receive a rating at the end of each biome:
+
+- **3 stars:** victory without losing lives, with every boss defeated.
+- **2 stars:** victory with at most 30% of the initial lives lost, with every boss defeated.
+- **1 star:** any other victory.
+- **0 stars:** defeat, with the completed-wave count and improvement feedback.
+
+Losses accumulate throughout the biome; healing cards do not erase them. Results
+also show escapes, perfect waves, and defeated bosses. Time is informational and
+does not affect stars, so the 2x control does not change the rating. Every victory
+allows progression regardless of stars. Personal records are separated by biome,
+difficulty, wave limit, card frequency, and starting boss encounter count. Lower
+ratings and defeats never replace a better result.
+
+New saves include rating statistics. Older saves remain playable, but show that
+a complete rating requires starting a new biome because their previous losses
+and perfect waves were not recorded.
 
 The required difficulty step after `Jogar` controls how many waves must be cleared in each biome:
 

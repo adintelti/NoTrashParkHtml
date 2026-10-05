@@ -155,8 +155,13 @@
   }
 
   function startGame(theme = state.theme, options = {}) {
-    ntp.clearSavedGame?.();
-    resetState(theme, options.waveLimit ?? getConfiguredWaveLimit());
+    const tutorialMode = options.gameMode === "tutorial";
+    if (!tutorialMode) ntp.clearSavedGame?.();
+    theme = tutorialMode ? "park" : theme;
+    resetState(theme, tutorialMode ? 5 : options.waveLimit ?? getConfiguredWaveLimit());
+    state.gameMode = tutorialMode ? "tutorial" : "normal";
+    state.phaseDifficulty = options.phaseDifficulty ?? settings.difficulty;
+    state.phaseCardFrequency = options.phaseCardFrequency ?? settings.cardFrequency;
     state.bossEncounters = options.bossEncounters ?? 0;
     state.bossEncountersAtBiomeStart = state.bossEncounters;
     clearUndoPlacement();
@@ -165,6 +170,7 @@
     syncThemeButtons(theme);
     dom.menu.classList.add("is-hidden");
     dom.game.classList.remove("is-hidden");
+    dom.configPanel.hidden = true;
     closeDifficultyPanel();
     hideRestartConfirm();
     hideExitConfirm();
@@ -176,6 +182,7 @@
     waveTransitionCallback = null;
     cardChoiceCallback = null;
     buildBoard();
+    ntp.initializeTutorial?.();
     gameplayHooks.afterStartGame();
     updateHud();
     showMessage(t("messages.start"));
@@ -193,6 +200,8 @@
       defeated: state.sessionDefeated
     });
     state.running = false;
+    if (state.tutorial) state.tutorial.navigation = false;
+    ntp.syncTutorialUi?.();
     hideRestartConfirm();
     hideExitConfirm();
     hideTowerDeleteConfirm();
@@ -212,6 +221,7 @@
   }
 
   function setTheme(theme) {
+    if (state.gameMode === "tutorial" && state.running) return;
     const hadStarted = state.running;
     state.theme = theme;
     syncThemeButtons(theme);
@@ -392,6 +402,8 @@
       state.coins += refund;
     }
 
+    ntp.recordTutorialAction?.("remove");
+
     refreshPlacementPreview();
     ntp.syncGamepadCursor?.();
     logDebug("towers", "Tower removed", {
@@ -493,6 +505,10 @@
 
   function update(dt, rawDt = dt) {
     if (!state.running || state.paused || state.gameOver || state.victoryPending) return;
+    if (state.tutorial?.waiting) {
+      updateHud();
+      return;
+    }
 
     state.sessionTime += rawDt;
     state.simTime += dt;
@@ -572,6 +588,7 @@
     setDeleteMode(false, { silent: true });
     hidePlacementPreview();
     state.paused = true;
+    ntp.recordTutorialAction?.("pause");
     updateHud();
     showPauseMenu();
     return true;
@@ -591,6 +608,7 @@
   function toggleSpeed() {
     if (!state.running || state.gameOver || state.cardChoice.active || isVictoryOpen()) return;
     state.speed = state.speed === 1 ? 2 : 1;
+    ntp.recordTutorialAction?.("speed");
     updateHud();
   }
 
@@ -611,12 +629,15 @@
 
   function startNextWave() {
     if (state.gameOver) return;
+    if (state.tutorial?.waiting) return;
     if (state.wave >= state.waveLimit && !state.victoryShown) {
       setDeleteMode(false, { silent: true });
       clearUndoPlacement();
       state.victoryShown = true;
       state.victoryPending = true;
-      ntp.clearSavedGame?.();
+      if (state.gameMode !== "tutorial") ntp.clearSavedGame?.();
+      ntp.completeTutorial?.();
+      ntp.finishPhaseEvaluation?.(true);
       showVictory();
       updateHud();
       logDebug("system", "Victory pending", {
@@ -665,8 +686,8 @@
   }
 
   function shouldOfferCardChoice(finishedWave) {
-    const offerInterval = settings.cardFrequency;
-    return finishedWave < state.waveLimit
+    const offerInterval = state.phaseCardFrequency;
+    return state.gameMode !== "tutorial" && finishedWave < state.waveLimit
       && Number.isFinite(offerInterval)
       && offerInterval > 0
       && state.waveHpLost <= 0
@@ -674,7 +695,7 @@
   }
 
   function startCardChoice(callback) {
-    if (!settings.cardFrequency) {
+    if (!state.phaseCardFrequency || state.gameMode === "tutorial") {
       if (callback) callback();
       return;
     }
@@ -1338,6 +1359,8 @@
     const defeatedThisWave = state.waveDefeated;
     const hpLostThisWave = state.waveHpLost;
     state.waveInProgress = false;
+    state.phaseStats.completedWaves += 1;
+    if (hpLostThisWave === 0) state.phaseStats.perfectWaves += 1;
     state.sessionDefeated += defeatedThisWave;
     state.waveDefeated = 0;
     state.waveComboVisible = false;
@@ -1351,6 +1374,8 @@
       hpLost: hpLostThisWave,
       willOfferCards
     });
+
+    if (ntp.prepareTutorialWave?.()) return;
 
     if (willOfferCards) {
       startWaveTransition(steps, () => startCardChoice(startNextWave));
@@ -1424,7 +1449,8 @@
     const healthMultiplier = isBoss
       ? 1.75 * (1 + BOSS_HEALTH_GROWTH * (bossRank - 1))
       : 1 + state.wave * 0.12;
-    const maxHp = Math.round(type.hp * healthMultiplier * difficulty.hp * getEnemyModifierMultiplier("hp"));
+    const tutorialHp = state.gameMode === "tutorial" ? 0.6 : 1;
+    const maxHp = Math.round(type.hp * healthMultiplier * difficulty.hp * tutorialHp * getEnemyModifierMultiplier("hp"));
     const el = document.createElement("div");
     el.className = `enemy ${type.className}${isBoss ? " enemy-boss" : ""}${options.isDecoy ? " enemy-decoy" : ""}`;
     el.classList.toggle("show-health", state.enemyHealthBarsUnlocked || isBoss);
@@ -1468,6 +1494,12 @@
       enemy.hp = 30;
       enemy.speed *= 1.5;
       enemy.reward = 0;
+    }
+
+    if (state.gameMode === "tutorial") enemy.speed *= 0.8;
+    if (!enemy.isDecoy) {
+      state.phaseStats.enemiesSpawned += 1;
+      if (isBoss) state.phaseStats.bossesSpawned += 1;
     }
 
     state.nextEnemyId += 1;
@@ -1578,9 +1610,12 @@
         removeEnemy(enemy, false);
         return;
       }
+      state.phaseStats.escaped += 1;
+      state.phaseStats.damageTaken += 1;
+      if (!state.phaseStats.firstLeakWave) state.phaseStats.firstLeakWave = state.wave;
       if (enemy.bossKey) {
         state.waveHpLost += 1;
-        state.lives = Math.max(0, state.lives - 1);
+        state.lives = Math.max(state.gameMode === "tutorial" ? 1 : 0, state.lives - 1);
         triggerScreenShake();
         duckMusic();
         playSfx("playerHit");
@@ -1594,7 +1629,7 @@
       if (state.gameOver) return;
       state.waveHpLost += 1;
       const previousLives = state.lives;
-      state.lives = Math.max(0, state.lives - 1);
+      state.lives = Math.max(state.gameMode === "tutorial" ? 1 : 0, state.lives - 1);
       if (state.lives < previousLives) {
         triggerScreenShake();
         duckMusic();
@@ -1739,6 +1774,7 @@
 
   function removeEnemy(enemy, awardCoins) {
     const index = state.enemies.indexOf(enemy);
+    if (index < 0) return;
     if (index >= 0) {
       state.enemies.splice(index, 1);
     }
@@ -1750,6 +1786,8 @@
     if (awardCoins && enemy.isDecoy) {
       createEnemyDestruction(enemy.x, enemy.y, enemy.el?.className || "");
     } else if (awardCoins) {
+      state.phaseStats.defeated += 1;
+      if (enemy.bossKey) state.phaseStats.bossesDefeated += 1;
       createEnemyDestruction(enemy.x, enemy.y, enemy.el?.className || "");
       playSfx("enemyDeath");
       state.waveDefeated += 1;
@@ -1864,12 +1902,13 @@
     state.gameOver = true;
     stopMusic();
     state.waveComboVisible = false;
-    ntp.clearSavedGame?.();
+    if (state.gameMode !== "tutorial") ntp.clearSavedGame?.();
     setDeleteMode(false, { silent: true });
     clearUndoPlacement();
     hidePauseMenu();
     hideVictory();
     state.lives = 0;
+    ntp.finishPhaseEvaluation?.(false);
     showGameOver();
     updateHud();
     logDebug("system", "Game over", {

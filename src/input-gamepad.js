@@ -148,7 +148,7 @@
       resumeDesiredMusic();
     }
 
-    if (isCardChoiceOpen() || isVictoryOpen() || isRestartConfirmOpen() || isExitConfirmOpen() || isTowerDeleteConfirmOpen() || isPauseMenuOpen?.() || isMenuVisible()) {
+    if (isCardChoiceOpen() || isVictoryOpen() || isRestartConfirmOpen() || isExitConfirmOpen() || isTowerDeleteConfirmOpen() || isPauseMenuOpen?.() || isMenuVisible() || state.tutorial?.navigation) {
       updateMenuGamepadInput(dt, direction, justPressed);
     } else if (state.running) {
       updateGameplayGamepadInput(dt, direction, justPressed);
@@ -241,7 +241,9 @@
                     ? dom.configPanel
                     : isMenuVisible()
                       ? dom.menu
-                      : null;
+                      : state.tutorial?.navigation
+                        ? dom.game.querySelector(".shop-panel")
+                        : null;
   }
 
   function getGamepadFocusableButtons() {
@@ -636,12 +638,22 @@
         localFocusGamepadButton(dom.playButton);
       } else if (!dom.configPanel.hidden) {
         dom.configBackButton.click();
+      } else if (state.tutorial?.navigation) {
+        state.tutorial.navigation = false;
+        clearGamepadButtonFocus();
       }
     }
   }
 
   function updateGameplayGamepadInput(dt, direction, justPressed) {
     clearGamepadButtonFocus();
+
+    if (state.tutorial && justPressed(gamepadButtons.lt)) {
+      state.tutorial.navigation = true;
+      localFocusGamepadButton(!dom.tutorialContinueButton.disabled && !dom.tutorialContinueButton.hidden
+        ? dom.tutorialContinueButton : dom.towerShop.querySelector(`[data-tower="${state.selectedTower}"]`));
+      return;
+    }
 
     if (shouldRepeatDirection(direction, "moveCooldown", "lastDirection", GAMEPAD_MOVE_REPEAT, dt)) {
       moveGamepadCursor(direction.x, direction.y);

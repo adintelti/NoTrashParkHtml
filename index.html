@@ -15,6 +15,7 @@
     <script src="src/constants.js" defer></script>
     <script src="src/data.js" defer></script>
     <script src="src/dom.js" defer></script>
+    <script src="src/evaluation.js" defer></script>
     <script src="src/state.js" defer></script>
     <script src="src/i18n.js" defer></script>
     <script src="src/utils.js" defer></script>
@@ -23,6 +24,7 @@
     <script src="src/ui.js" defer></script>
     <script src="src/audio.js" defer></script>
     <script src="src/gameplay.js" defer></script>
+    <script src="src/tutorial.js" defer></script>
     <script src="src/storage.js" defer></script>
     <script src="src/save-game.js" defer></script>
     <script src="src/input-gamepad.js" defer></script>
@@ -75,6 +77,7 @@
         <nav class="menu-actions" aria-label="Menu" data-i18n-aria-label="menu.actionsAria">
           <button id="continueButton" class="pixel-button menu-button" type="button" data-i18n="menu.continue" hidden>Continuar</button>
           <button id="playButton" class="pixel-button menu-button" type="button" data-i18n="menu.play">Jogar</button>
+          <button id="tutorialButton" class="pixel-button menu-button" type="button" data-i18n="tutorial.menu">Tutorial</button>
           <button id="configButton" class="pixel-button menu-button" type="button" data-i18n="menu.config">Config.</button>
           <button id="exitButton" class="pixel-button menu-button" type="button" data-i18n="menu.exit">Sair</button>
         </nav>
@@ -295,6 +298,19 @@
                     <strong id="victoryDefeatedText">0</strong>
                   </div>
                 </div>
+                <div id="phaseEvaluation" class="phase-evaluation" hidden>
+                  <div id="ratingStars" class="rating-stars" role="img"></div>
+                  <strong id="ratingLabel"></strong>
+                  <p id="ratingCriteria" class="rating-criteria"></p>
+                  <div class="rating-stats">
+                    <div><span data-i18n="evaluation.damage">Vidas perdidas</span><strong id="ratingDamageText">0</strong></div>
+                    <div><span data-i18n="evaluation.escaped">Escaparam</span><strong id="ratingEscapedText">0</strong></div>
+                    <div><span data-i18n="evaluation.perfectWaves">Ondas perfeitas</span><strong id="ratingPerfectText">0/0</strong></div>
+                    <div><span data-i18n="evaluation.bosses">Chefes derrotados</span><strong id="ratingBossText">0/0</strong></div>
+                  </div>
+                  <p id="ratingTip" class="rating-tip"></p>
+                  <p id="ratingRecord" class="rating-record" hidden></p>
+                </div>
                 <div class="victory-actions" aria-label="Opcoes de resultado" data-i18n-aria-label="victory.optionsAria">
                   <button id="victoryContinueButton" class="victory-choice" type="button" data-i18n="common.continue">Continuar</button>
                   <button id="victoryRestartButton" class="victory-choice" type="button" data-i18n="victory.restart">Jogar novamente!</button>
@@ -317,6 +333,19 @@
             </div>
 
             <div class="shop-title" data-i18n="shop.title">LOJA</div>
+
+            <section id="tutorialPanel" class="tutorial-panel" aria-labelledby="tutorialTitle" hidden>
+              <strong id="tutorialTitle"></strong>
+              <p id="tutorialInstructions"></p>
+              <p id="tutorialObjective" class="tutorial-objective" aria-live="polite"></p>
+              <button id="tutorialContinueButton" class="pixel-button tutorial-continue" type="button"></button>
+              <div class="controller-hints tutorial-controller-hints">
+                <span class="pad-key pad-key-trigger" data-gamepad-token="leftTrigger" aria-hidden="true">LT</span>
+                <span data-i18n="tutorial.shopControls">Loja / tutorial</span>
+                <span class="pad-key pad-key-face is-b" data-gamepad-token="faceEast" aria-hidden="true">B</span>
+                <span data-i18n="tutorial.boardControls">Voltar ao campo</span>
+              </div>
+            </section>
 
             <div id="shopGamepadHints" class="controller-hints shop-gamepad-hints" aria-label="Controles da loja por controle" data-i18n-aria-label="shop.controlsAria">
               <div class="hint-chip">

@@ -95,6 +95,9 @@
   function confirmRestart() {
     hideRestartConfirm();
     startGame(state.theme, {
+      gameMode: state.gameMode,
+      phaseDifficulty: state.phaseDifficulty,
+      phaseCardFrequency: state.phaseCardFrequency,
       waveLimit: state.waveLimit,
       bossEncounters: state.bossEncountersAtBiomeStart
     });
@@ -142,6 +145,8 @@
       openDifficultyPanel();
       focusGamepadButton(dom.difficultyPanel.querySelector("[data-difficulty]"));
     });
+    dom.tutorialButton.addEventListener("click", () => ntp.startTutorial());
+    dom.tutorialContinueButton.addEventListener("click", () => ntp.continueTutorial());
     dom.difficultyBackButton.addEventListener("click", () => {
       closeDifficultyPanel();
       focusGamepadButton(dom.playButton);
@@ -206,9 +211,12 @@
     });
     dom.cardChoiceContinueButton.addEventListener("click", continueCardChoice);
     dom.victoryContinueButton.addEventListener("click", () => {
+      if (state.gameMode === "tutorial") return;
       const nextTheme = getNextTheme(state.theme);
       if (nextTheme) {
         startGame(nextTheme, {
+          phaseDifficulty: state.phaseDifficulty,
+          phaseCardFrequency: state.phaseCardFrequency,
           waveLimit: state.waveLimit,
           bossEncounters: state.bossEncounters
         });
@@ -218,6 +226,9 @@
       beginWaveSpawn();
     });
     dom.victoryRestartButton.addEventListener("click", () => startGame(state.theme, {
+      gameMode: state.gameMode,
+      phaseDifficulty: state.phaseDifficulty,
+      phaseCardFrequency: state.phaseCardFrequency,
       waveLimit: state.waveLimit,
       bossEncounters: state.bossEncountersAtBiomeStart
     }));

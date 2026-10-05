@@ -27,6 +27,7 @@
       leftBumper: { text: "LB" },
       rightBumper: { text: "RB" },
       rightTrigger: { text: "RT" },
+      leftTrigger: { text: "LT" },
       back: { text: "View" },
       leftStick: { text: "LS" }
     },
@@ -38,6 +39,7 @@
       leftBumper: { text: "L" },
       rightBumper: { text: "R" },
       rightTrigger: { text: "ZR" },
+      leftTrigger: { text: "ZL" },
       back: { text: "-" },
       leftStick: { text: "LS" }
     }
@@ -194,6 +196,7 @@
 
     syncTowerActionUi();
     syncPlacementPreviewFromHud();
+    ntp.syncTutorialUi?.();
   }
 
   function syncBossHud() {
@@ -490,13 +493,17 @@
   }
 
   function showVictory() {
-    const hasNextTheme = Boolean(getNextTheme(state.theme));
+    const tutorialMode = state.gameMode === "tutorial";
+    const hasNextTheme = !tutorialMode && Boolean(getNextTheme(state.theme));
     hideRestartConfirm();
     hideExitConfirm();
     hideTowerDeleteConfirm();
     hidePauseMenu();
     hideCardChoice();
-    dom.victoryTitle.textContent = getVictoryTitle(state.theme);
+    dom.victoryTitle.textContent = tutorialMode ? t("tutorial.completed") : getVictoryTitle(state.theme);
+    dom.victorySummary.hidden = !tutorialMode;
+    dom.victorySummary.textContent = tutorialMode ? t("tutorial.summary") : "";
+    dom.victoryRestartButton.textContent = t(tutorialMode ? "tutorial.repeat" : "victory.restart");
     updateResultDetails();
     dom.victoryContinueButton.hidden = !hasNextTheme;
     dom.victoryOverlay.classList.toggle("is-final-victory", !hasNextTheme);
@@ -504,6 +511,7 @@
     dom.victoryOverlay.hidden = false;
     dom.floatingMessage.classList.remove("is-visible");
     messageTimer = 0;
+    focusPauseTarget(hasNextTheme ? dom.victoryContinueButton : dom.victoryMenuButton);
   }
 
   function showGameOver() {
@@ -514,6 +522,8 @@
     hidePauseMenu();
     hideCardChoice();
     dom.victoryTitle.textContent = t("victory.gameOver", { map: levelName });
+    dom.victorySummary.hidden = true;
+    dom.victoryRestartButton.textContent = t("victory.restart");
     updateResultDetails();
     dom.victoryContinueButton.hidden = true;
     dom.victoryOverlay.classList.remove("is-final-victory");
@@ -521,12 +531,16 @@
     dom.victoryOverlay.hidden = false;
     dom.floatingMessage.classList.remove("is-visible");
     messageTimer = 0;
+    focusPauseTarget(dom.victoryRestartButton);
   }
 
   function updateResultDetails() {
     dom.victoryTimeText.textContent = formatSessionTime(state.sessionTime);
-    dom.victoryWaveText.textContent = getWaveProgressText();
-    dom.victoryDefeatedText.textContent = String(state.sessionDefeated);
+    dom.victoryWaveText.textContent = `${state.phaseStats.eligible
+      ? state.phaseStats.completedWaves : Math.max(0, state.wave - (state.waveInProgress ? 1 : 0))}/${state.waveLimit}`;
+    dom.victoryDefeatedText.textContent = String(state.phaseStats.eligible
+      ? state.phaseStats.defeated : state.sessionDefeated + state.waveDefeated);
+    ntp.renderPhaseEvaluation?.();
   }
 
   function hideVictory() {
