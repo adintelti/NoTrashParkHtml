@@ -146,6 +146,7 @@
         default: "Vitoria!",
         gameOver: "Fim de jogo, {map} destruido(a)",
         statsAria: "Resumo da sessao",
+        details: "Ver detalhes da partida", criteria: "Como funciona a avaliação", continueTo: "Continuar para {biome}",
         optionsAria: "Opcoes de resultado",
         restart: "Jogar novamente!"
       },
@@ -262,6 +263,8 @@
         gamepadDisconnected: "Controle desconectado."
       },
       wave: {
+        income: "Onda concluída: +{amount} moedas.",
+        perfectBonus: "Defesa perfeita: +{amount} moedas.",
         end: "Fim da onda {wave}\nDerrotou: {defeated}",
         start: "Inicio da onda {wave}"
       },
@@ -419,6 +422,7 @@
         default: "Victory!",
         gameOver: "Game over, {map} destroyed",
         statsAria: "Session summary",
+        details: "View match details", criteria: "How ratings work", continueTo: "Continue to {biome}",
         optionsAria: "Result options",
         restart: "Play again!"
       },
@@ -535,6 +539,8 @@
         gamepadDisconnected: "Controller disconnected."
       },
       wave: {
+        income: "Wave completed: +{amount} coins.",
+        perfectBonus: "Perfect defense: +{amount} coins.",
         end: "End of wave {wave}\nDefeated: {defeated}",
         start: "Start of wave {wave}"
       },
@@ -692,6 +698,7 @@
         default: "Victoria!",
         gameOver: "Fin del juego, {map} destruido(a)",
         statsAria: "Resumen de la sesion",
+        details: "Ver detalles de la partida", criteria: "Cómo funciona la evaluación", continueTo: "Continuar a {biome}",
         optionsAria: "Opciones de resultado",
         restart: "Jugar otra vez!"
       },
@@ -808,6 +815,8 @@
         gamepadDisconnected: "Control desconectado."
       },
       wave: {
+        income: "Oleada completada: +{amount} monedas.",
+        perfectBonus: "Defensa perfecta: +{amount} monedas.",
         end: "Fin de la oleada {wave}\nDerroto: {defeated}",
         start: "Inicio de la oleada {wave}"
       },

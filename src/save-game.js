@@ -16,6 +16,8 @@
     "phaseCardFrequency",
     "selectedTower",
     "coins",
+    "lastPaidWave",
+    "phaseEconomyVersion",
     "maxLives",
     "lives",
     "sessionDefeated",
@@ -351,6 +353,11 @@
       phaseStats: ntp.restorePhaseStats(savedState.phaseStats),
       selectedTower: savedState.selectedTower || "sentinel",
       coins: asNumber(savedState.coins, 300),
+      // Legacy saves retain their record category; already completed waves are never paid retroactively.
+      phaseEconomyVersion: savedState.phaseEconomyVersion === "legacy-recovery"
+        ? "legacy-recovery" : asNumber(savedState.phaseEconomyVersion, 1),
+      lastPaidWave: Math.max(0, Math.floor(asNumber(savedState.lastPaidWave,
+        asNumber(savedState.wave, 0) - (savedState.waveInProgress ? 1 : 0)))),
       maxLives: asNumber(savedState.maxLives, 10),
       lives: asNumber(savedState.lives, 10),
       sessionDefeated: asNumber(savedState.sessionDefeated, 0),

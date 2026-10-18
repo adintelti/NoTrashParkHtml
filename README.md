@@ -83,6 +83,13 @@ to Lagoon, offer random cards, replace the normal save, or submit normal records
 With a gamepad, LT / ZL enters shop/tutorial navigation and B / A returns to the
 board, according to the configured controller layout.
 
+Normal games award 25 coins once per completed wave, plus 10 for a wave without
+lost lives. Boss waves pay after the boss encounter, including the final wave.
+Defeats during a wave pay nothing. Kill rewards and perfect-wave card conditions
+remain unchanged; tutorial economy remains separate. Payment tracking survives
+saving and loading, with no retroactive payments for old saves. Records are
+separated by economy rules, including a separate category for resumed legacy runs.
+
 Normal games receive a rating at the end of each biome:
 
 - **3 stars:** victory without losing lives, with every boss defeated.

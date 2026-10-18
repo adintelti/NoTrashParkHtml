@@ -199,3 +199,106 @@
     font-size: 0.7rem;
   }
 }
+/* Results: celebrate first, keep the full breakdown available on demand. */
+.victory-overlay .victory-card,
+.victory-overlay:not(.is-game-over) .victory-card {
+  width: min(100%, 560px);
+  padding: 28px;
+  gap: 20px;
+  color: #fff4d0;
+  background: #143c31;
+  border: 4px solid #ffe76b;
+  box-shadow: 6px 6px 0 #071c16;
+  align-content: start;
+}
+.victory-overlay .phase-evaluation { gap: 8px; }
+.victory-overlay .rating-stars { color: #ffe76b; font-size: 2.7rem; }
+.victory-overlay .rating-record {
+  justify-self: center;
+  padding: 5px 10px;
+  color: #ffe76b;
+  background: #205345;
+  font: 600 0.85rem/1.4 system-ui, sans-serif;
+}
+.victory-overlay .victory-stats,
+.victory-overlay:not(.is-game-over) .victory-stats {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+}
+.victory-overlay .victory-stat,
+.victory-overlay:not(.is-game-over) .victory-stat {
+  display: flex;
+  gap: 6px;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  box-shadow: none;
+  background: transparent;
+  color: #d4e3db;
+  font: 0.9rem/1.5 system-ui, sans-serif;
+}
+.victory-overlay .victory-stat span,
+.victory-overlay .victory-stat strong,
+.victory-overlay:not(.is-game-over) .victory-stat strong {
+  font-size: inherit;
+  line-height: inherit;
+}
+.victory-overlay .victory-actions,
+.victory-overlay:not(.is-game-over) .victory-actions {
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.victory-overlay .victory-choice,
+.victory-overlay:not(.is-game-over) .victory-choice {
+  width: 100%;
+  padding: 12px 8px;
+  color: #fff4d0;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  border: 2px solid transparent;
+}
+.victory-overlay #victoryContinueButton,
+.victory-overlay .victory-choice.is-primary {
+  grid-column: 1 / -1;
+  color: #143c31;
+  background: #ffe76b;
+  border-color: #ffe76b;
+}
+.victory-overlay .victory-choice:hover,
+.victory-overlay .victory-choice:focus-visible,
+.victory-overlay .victory-choice.gamepad-focused,
+.victory-overlay .result-details-button:focus-visible,
+.victory-overlay .result-details-button.gamepad-focused {
+  outline: 3px solid #fff4d0;
+  outline-offset: 2px;
+}
+.result-disclosure { border-top: 1px solid #567467; padding-top: 12px; }
+.result-disclosure[hidden], .result-details[hidden] { display: none; }
+.result-details-button {
+  width: 100%; min-height: 44px; padding: 8px;
+  border: 0; background: transparent; color: #d4e3db;
+  cursor: pointer; font: 600 0.9rem/1.5 system-ui, sans-serif;
+}
+.result-details-button::after { content: ' ▾'; }
+.result-details-button[aria-expanded="true"]::after { content: ' ▴'; }
+.result-details {
+  display: grid; gap: 16px; padding-top: 12px; text-align: left;
+  font: 0.9rem/1.5 system-ui, sans-serif;
+}
+.victory-overlay .rating-stats { gap: 0; }
+.victory-overlay .rating-stats > div {
+  padding: 10px 8px; background: transparent; border: 0;
+  border-bottom: 1px solid #567467; font: inherit;
+}
+.result-details p { margin: 0; }
+.result-details .rating-criteria, .result-details .rating-tip { font: inherit; color: #d4e3db; }
+@media (max-width: 560px) {
+  .victory-overlay { padding: 14px; }
+  .victory-overlay .victory-card,
+  .victory-overlay:not(.is-game-over) .victory-card {
+    padding: 20px 16px; gap: 16px; max-height: calc(100dvh - 28px);
+  }
+  .victory-overlay .rating-stats { grid-template-columns: 1fr; }
+}

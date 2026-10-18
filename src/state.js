@@ -82,6 +82,8 @@
       tutorial: null,
       selectedTower: "sentinel",
       coins: 300,
+      lastPaidWave: 0,
+      phaseEconomyVersion: ntp.ECONOMY_VERSION,
       maxLives: 10,
       lives: 10,
       sessionDefeated: 0,

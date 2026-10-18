@@ -294,3 +294,96 @@ test("first victory creates a record and all new messages resolve in every langu
     }
   }
 });
+
+function completeIncomeWave(game, wave, lost = 0) {
+  Object.assign(game.state, {
+    wave, waveInProgress: true, waveHpLost: lost,
+    spawnRemaining: 0, enemies: [], bossStarted: true,
+    waveTransitionActive: false, paused: false
+  });
+  game.update(0.01);
+}
+
+test("wave income rewards recovery and perfection once, including the final boss wave", () => {
+  const game = createGame();
+  game.settings.cardFrequency = 0;
+  game.startGame("park", { waveLimit: 5 });
+  completeIncomeWave(game, 1, 2);
+  assert.equal(game.state.coins, 325);
+  assert.equal(game.state.lastPaidWave, 1);
+  assert.match(game.state.waveTransitionSteps[0], /25/);
+  assert.doesNotMatch(game.state.waveTransitionSteps[0], /10/);
+  completeIncomeWave(game, 1, 2);
+  assert.equal(game.state.coins, 325);
+  completeIncomeWave(game, 2);
+  assert.equal(game.state.coins, 360);
+  assert.match(game.state.waveTransitionSteps[0], /10/);
+  // Clearing ordinary enemies on a boss wave is not yet completion.
+  Object.assign(game.state, { wave: 5, waveInProgress: true, bossStarted: false,
+    waveTransitionActive: false, spawnRemaining: 0, enemies: [] });
+  game.update(0.01);
+  assert.equal(game.state.coins, 360);
+  completeIncomeWave(game, 5);
+  assert.equal(game.state.coins, 395);
+  assert.equal(game.state.lastPaidWave, 5);
+});
+
+test("income survives saves and legacy runs do not get retroactive payments or share records", () => {
+  const game = createGame();
+  game.startGame("park", { waveLimit: 12 });
+  completeIncomeWave(game, 2, 1);
+  game.state.waveTransitionActive = false;
+  assert.equal(game.saveGame(), true);
+  assert.equal(game.loadSavedGame(), true);
+  assert.equal(game.state.lastPaidWave, 2);
+  completeIncomeWave(game, 2, 1);
+  assert.equal(game.state.coins, 325);
+  const newKey = game.getPhaseRecordKey(game.state);
+  game.state.waveTransitionActive = false;
+  game.saveGame();
+  const legacy = JSON.parse(JSON.stringify(game.records.get("ntp.savedGame")));
+  delete legacy.state.lastPaidWave;
+  delete legacy.state.phaseEconomyVersion;
+  const oldGame = createGame();
+  oldGame.records.set("ntp.savedGame", legacy);
+  oldGame.loadSavedGame();
+  assert.equal(oldGame.state.lastPaidWave, 2);
+  assert.equal(oldGame.state.coins, 325);
+  const oldKey = oldGame.getPhaseRecordKey(oldGame.state);
+  completeIncomeWave(oldGame, 3, 1);
+  assert.equal(oldGame.state.coins, 350);
+  assert.notEqual(oldGame.getPhaseRecordKey(oldGame.state), oldKey);
+  assert.notEqual(oldGame.getPhaseRecordKey(oldGame.state), newKey);
+  oldGame.state.waveTransitionActive = false;
+  oldGame.saveGame();
+  oldGame.loadSavedGame();
+  assert.equal(oldGame.state.phaseEconomyVersion, "legacy-recovery");
+});
+
+test("defeat and tutorial grant no wave income; speed and cards do not change payments", () => {
+  for (const speed of [1, 2]) {
+    const game = createGame();
+    game.settings.cardFrequency = 1;
+    game.startGame("park", { waveLimit: 5 });
+    game.state.speed = speed;
+    completeIncomeWave(game, 1);
+    assert.equal(game.state.coins, 335);
+    assert.equal(game.state.lastPaidWave, 1);
+    game.state.gameOver = true;
+    completeIncomeWave(game, 2);
+    assert.equal(game.state.coins, 335);
+  }
+  const game = createGame();
+  game.startGame("park", { gameMode: "tutorial" });
+  game.state.tutorial.waiting = false;
+  completeIncomeWave(game, 1);
+  assert.equal(game.state.coins, 300);
+  assert.equal(game.state.lastPaidWave, 0);
+  for (const language of ["pt-BR", "en", "es"]) {
+    game.settings.language = language;
+    for (const key of ["wave.income", "wave.perfectBonus"]) {
+      assert.notEqual(game.t(key, { amount: 25 }), key);
+      assert.match(game.t(key, { amount: 25 }), /25/);
+    }
+  }
+});

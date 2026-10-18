@@ -506,6 +506,8 @@
     dom.victoryRestartButton.textContent = t(tutorialMode ? "tutorial.repeat" : "victory.restart");
     updateResultDetails();
     dom.victoryContinueButton.hidden = !hasNextTheme;
+    dom.victoryContinueButton.textContent = hasNextTheme
+      ? t("victory.continueTo", { biome: getMapName(getNextTheme(state.theme)) }) : t("common.continue");
     dom.victoryOverlay.classList.toggle("is-final-victory", !hasNextTheme);
     dom.victoryOverlay.classList.remove("is-game-over");
     dom.victoryOverlay.hidden = false;
@@ -535,6 +537,10 @@
   }
 
   function updateResultDetails() {
+    dom.resultDisclosure.hidden = state.gameMode === "tutorial" || !state.phaseResult;
+    dom.resultDetails.hidden = true;
+    dom.resultDetailsButton.setAttribute("aria-expanded", "false");
+    dom.victoryRestartButton.classList.toggle("is-primary", state.gameOver || state.gameMode === "tutorial" || !getNextTheme(state.theme));
     dom.victoryTimeText.textContent = formatSessionTime(state.sessionTime);
     dom.victoryWaveText.textContent = `${state.phaseStats.eligible
       ? state.phaseStats.completedWaves : Math.max(0, state.wave - (state.waveInProgress ? 1 : 0))}/${state.waveLimit}`;

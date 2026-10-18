@@ -233,6 +233,11 @@
       bossEncounters: state.bossEncountersAtBiomeStart
     }));
     dom.victoryMenuButton.addEventListener("click", returnToMenu);
+    dom.resultDetailsButton.addEventListener("click", () => {
+      const expanded = dom.resultDetailsButton.getAttribute("aria-expanded") !== "true";
+      dom.resultDetails.hidden = !expanded;
+      dom.resultDetailsButton.setAttribute("aria-expanded", String(expanded));
+    });
 
     document.querySelectorAll("[data-theme]").forEach((button) => {
       button.addEventListener("click", () => setTheme(button.dataset.theme));

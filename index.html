@@ -284,6 +284,11 @@
               <div class="victory-card">
                 <h2 id="victoryTitle">Parque Protegido!</h2>
                 <p id="victorySummary" class="victory-summary"></p>
+                <div id="phaseEvaluation" class="phase-evaluation" hidden>
+                  <div id="ratingStars" class="rating-stars" role="img"></div>
+                  <strong id="ratingLabel"></strong>
+                  <p id="ratingRecord" class="rating-record" hidden></p>
+                </div>
                 <div class="victory-stats" aria-label="Resumo da sessao" data-i18n-aria-label="victory.statsAria">
                   <div class="victory-stat">
                     <span data-i18n="hud.time">Tempo</span>
@@ -298,10 +303,14 @@
                     <strong id="victoryDefeatedText">0</strong>
                   </div>
                 </div>
-                <div id="phaseEvaluation" class="phase-evaluation" hidden>
-                  <div id="ratingStars" class="rating-stars" role="img"></div>
-                  <strong id="ratingLabel"></strong>
-                  <p id="ratingCriteria" class="rating-criteria"></p>
+                <div class="victory-actions" aria-label="Opcoes de resultado" data-i18n-aria-label="victory.optionsAria">
+                  <button id="victoryContinueButton" class="victory-choice" type="button" data-i18n="common.continue">Continuar</button>
+                  <button id="victoryRestartButton" class="victory-choice" type="button" data-i18n="victory.restart">Jogar novamente!</button>
+                  <button id="victoryMenuButton" class="victory-choice" type="button" data-i18n="common.menu">Menu</button>
+                </div>
+                <div id="resultDisclosure" class="result-disclosure" hidden>
+                  <button id="resultDetailsButton" type="button" class="result-details-button" aria-expanded="false" aria-controls="resultDetails" data-i18n="victory.details">Ver detalhes da partida</button>
+                  <div id="resultDetails" class="result-details" hidden>
                   <div class="rating-stats">
                     <div><span data-i18n="evaluation.damage">Vidas perdidas</span><strong id="ratingDamageText">0</strong></div>
                     <div><span data-i18n="evaluation.escaped">Escaparam</span><strong id="ratingEscapedText">0</strong></div>
@@ -309,12 +318,9 @@
                     <div><span data-i18n="evaluation.bosses">Chefes derrotados</span><strong id="ratingBossText">0/0</strong></div>
                   </div>
                   <p id="ratingTip" class="rating-tip"></p>
-                  <p id="ratingRecord" class="rating-record" hidden></p>
-                </div>
-                <div class="victory-actions" aria-label="Opcoes de resultado" data-i18n-aria-label="victory.optionsAria">
-                  <button id="victoryContinueButton" class="victory-choice" type="button" data-i18n="common.continue">Continuar</button>
-                  <button id="victoryRestartButton" class="victory-choice" type="button" data-i18n="victory.restart">Jogar novamente!</button>
-                  <button id="victoryMenuButton" class="victory-choice" type="button" data-i18n="common.menu">Menu</button>
+                    <strong data-i18n="victory.criteria">Como funciona a avaliação</strong>
+                  <p id="ratingCriteria" class="rating-criteria"></p>
+                  </div>
                 </div>
               </div>
             </div>

@@ -1355,6 +1355,7 @@
   }
 
   function completeCurrentWave() {
+    if (!state.waveInProgress || state.gameOver) return;
     const finishedWave = state.wave;
     const defeatedThisWave = state.waveDefeated;
     const hpLostThisWave = state.waveHpLost;
@@ -1367,6 +1368,15 @@
     clearExpiredCardEffects(finishedWave);
 
     const steps = [t("wave.end", { wave: finishedWave, defeated: defeatedThisWave })];
+    if (state.gameMode !== "tutorial" && finishedWave > state.lastPaidWave) {
+      const bonus = hpLostThisWave === 0 ? ntp.PERFECT_WAVE_BONUS : 0;
+      state.coins += ntp.WAVE_INCOME + bonus;
+      state.lastPaidWave = finishedWave;
+      if (state.phaseEconomyVersion === 1) state.phaseEconomyVersion = "legacy-recovery";
+      steps[0] += `\n${t("wave.income", { amount: ntp.WAVE_INCOME })}`;
+      if (bonus) steps[0] += `\n${t("wave.perfectBonus", { amount: bonus })}`;
+      logDebug("economy", "Wave income paid", { wave: finishedWave, income: ntp.WAVE_INCOME, bonus });
+    }
     const willOfferCards = shouldOfferCardChoice(finishedWave);
     logDebug("waves", "Wave completed", {
       wave: finishedWave,

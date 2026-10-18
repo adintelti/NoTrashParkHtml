@@ -1,6 +1,9 @@
 (() => {
   const ntp = window.NTP = window.NTP || {};
 
+  ntp.ECONOMY_VERSION = 2;
+  ntp.WAVE_INCOME = 25;
+  ntp.PERFECT_WAVE_BONUS = 10;
   ntp.COLS = 12;
   ntp.ROWS = 9;
   ntp.GAME_VERSION = "2.1.13";
