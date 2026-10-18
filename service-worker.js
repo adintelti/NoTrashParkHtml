@@ -1,4 +1,4 @@
-const CACHE_NAME = "ntp-static-v2.1.15-shop";
+const CACHE_NAME = "ntp-static-v2.2.0-eco-landscape";
 
 const PRECACHE_URLS = [
   "./",
@@ -6,6 +6,13 @@ const PRECACHE_URLS = [
   "./styles.css",
   "./styles/base.css",
   "./styles/shop.css",
+  "./styles/pixel-language.css",
+  "./assets/logo-pixel.svg",
+  "./assets/menu-park-scene.svg",
+  "./assets/towers/sentinel.svg",
+  "./assets/towers/slow.svg",
+  "./assets/towers/splash.svg",
+  "./assets/towers/flame.svg",
   "./styles/menu.css",
   "./styles/game-layout.css",
   "./styles/gamepad-hints.css",

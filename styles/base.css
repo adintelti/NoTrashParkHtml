@@ -1,4 +1,9 @@
 :root {
+  /* Pixel grid: 2px detail/contour, 4px frames and depth; light from top-left. */
+  --pixel: 2px;
+  --pixel-frame: 4px;
+  --pixel-depth: 4px;
+  --pixel-shadow: #071c16;
   --ink: #16110d;
   --outline: #24170c;
   --gold: #f7b617;
@@ -69,14 +74,14 @@ input {
 .seg-button,
 .icon-button,
 .waves-input {
-  border: 3px solid var(--outline);
-  border-radius: 4px;
+  border: var(--pixel) solid var(--outline);
+  border-radius: 0;
   color: #160b00;
   background: var(--gold);
   box-shadow:
-    inset 3px 3px 0 var(--gold-light),
-    inset -3px -3px 0 #b46600,
-    0 4px 0 #351d0b;
+    inset var(--pixel) var(--pixel) 0 var(--gold-light),
+    inset calc(-1 * var(--pixel)) calc(-1 * var(--pixel)) 0 #b46600,
+    var(--pixel-depth) var(--pixel-depth) 0 var(--pixel-shadow);
   cursor: pointer;
   text-transform: none;
 }
@@ -118,9 +123,9 @@ input {
 .icon-button:active {
   transform: translateY(2px);
   box-shadow:
-    inset 3px 3px 0 var(--gold-light),
-    inset -3px -3px 0 #b46600,
-    0 2px 0 #351d0b;
+    inset var(--pixel) var(--pixel) 0 var(--gold-light),
+    inset calc(-1 * var(--pixel)) calc(-1 * var(--pixel)) 0 #b46600,
+    var(--pixel) var(--pixel) 0 var(--pixel-shadow);
 }
 
 .seg-button.is-active,
