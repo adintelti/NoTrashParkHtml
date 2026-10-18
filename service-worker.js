@@ -1,10 +1,11 @@
-const CACHE_NAME = "ntp-static-v2.1.14-wave-banner";
+const CACHE_NAME = "ntp-static-v2.1.15-shop";
 
 const PRECACHE_URLS = [
   "./",
   "./index.html",
   "./styles.css",
   "./styles/base.css",
+  "./styles/shop.css",
   "./styles/menu.css",
   "./styles/game-layout.css",
   "./styles/gamepad-hints.css",

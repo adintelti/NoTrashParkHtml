@@ -1,0 +1,90 @@
+/* Quiet surfaces keep selection and the board as the strongest signals. */
+.shop-panel {
+  background: #293e37;
+  color: #f0eee3;
+  border-left: 3px solid #172922;
+}
+.shop-panel .shop-title {
+  color: #f0eee3;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  font-size: 1.25rem;
+}
+.shop-panel .shop-button,
+.shop-panel .icon-button,
+.shop-panel .small-button {
+  color: #f0eee3;
+  background: #3a5047;
+  border: 2px solid #607269;
+  box-shadow: none;
+}
+.shop-panel .shop-button:hover:not(:disabled),
+.shop-panel .icon-button:hover,
+.shop-panel .small-button:hover {
+  background: #496357;
+}
+.shop-panel .shop-button.is-active:not(.is-locked) {
+  color: #202c24;
+  background: #ffe47a;
+  border-color: #ffe47a;
+  outline: none;
+  box-shadow: inset 4px 0 #b99528;
+}
+.shop-panel .shop-button:focus-visible,
+.shop-panel .icon-button:focus-visible,
+.shop-panel .small-button:focus-visible,
+.shop-panel .gamepad-focused {
+  outline: 3px solid #f3f8f1;
+  outline-offset: 2px;
+}
+.shop-panel .shop-button.is-locked {
+  color: #c2ccc5;
+  background: #2e3b35;
+  border-color: #4b5b52;
+  opacity: 1;
+}
+.shop-panel .shop-button.is-locked strong { color: #c2ccc5; }
+.shop-panel .shop-button[disabled]:not(.is-locked) { opacity: 0.65; }
+.shop-panel .shop-stat {
+  border: 0;
+  box-shadow: none;
+  padding: 2px 0;
+  background: transparent;
+  color: #d2ded5;
+}
+.shop-panel .shop-button.is-active .shop-stat { color: #344733; }
+.shop-panel .delete-tool-button.is-active {
+  color: #fff2ec;
+  background: #8c3933;
+  border-color: #db9380;
+  box-shadow: none;
+}
+.shop-panel .coin-icon {
+  background: #d5e2d7;
+  border-color: #607269;
+  color: #263d30;
+}
+.tower-shop .shop-button { position: relative; padding-right: 38px; }
+.tower-shop .shop-tower-preview {
+  position: absolute;
+  left: auto;
+  right: 6px;
+  top: 50%;
+  width: 28px;
+  height: 38px;
+  transform: translateY(-50%);
+  will-change: auto;
+}
+.tower-shop .is-locked .shop-tower-preview { opacity: 0.5; filter: grayscale(1); }
+@media (max-width: 560px) {
+  .tower-shop .shop-button { padding-right: 22px; }
+  .tower-shop .shop-tower-preview { width: 18px; height: 27px; right: 3px; }
+  .tower-shop .shop-tower-preview::before,
+  .tower-shop .shop-tower-preview::after { border-width: 2px; }
+}
+.shop-panel .menu-icon-button::before,
+.shop-panel .menu-icon-button::after { background: #f0eee3; }
+.shop-panel .menu-icon-button::before { box-shadow: 0 8px 0 #f0eee3; }
+.shop-panel .restart-icon-button::before { border-color: #f0eee3; border-right-color: transparent; }
+.shop-panel .restart-icon-button::after { border-left-color: #f0eee3; }
