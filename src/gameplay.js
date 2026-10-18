@@ -154,13 +154,21 @@
     };
   }
 
+  function getCombatDifficulty() {
+    return state.gameMode === "tutorial" || state.combatRulesVersion !== ntp.COMBAT_RULES_VERSION
+      ? ntp.combatDifficulties.medium : ntp.combatDifficulties[state.phaseDifficulty] || ntp.combatDifficulties.medium;
+  }
+
   function startGame(theme = state.theme, options = {}) {
     const tutorialMode = options.gameMode === "tutorial";
     if (!tutorialMode) ntp.clearSavedGame?.();
     theme = tutorialMode ? "park" : theme;
     resetState(theme, tutorialMode ? 5 : options.waveLimit ?? getConfiguredWaveLimit());
     state.gameMode = tutorialMode ? "tutorial" : "normal";
-    state.phaseDifficulty = options.phaseDifficulty ?? settings.difficulty;
+    state.phaseDifficulty = tutorialMode ? "medium" : options.phaseDifficulty ?? settings.difficulty;
+    if (!ntp.combatDifficulties[state.phaseDifficulty]) state.phaseDifficulty = "medium";
+    state.combatRulesVersion = options.combatRulesVersion ?? ntp.COMBAT_RULES_VERSION;
+    state.maxLives = state.lives = getCombatDifficulty().lives;
     state.phaseCardFrequency = options.phaseCardFrequency ?? settings.cardFrequency;
     state.bossEncounters = options.bossEncounters ?? 0;
     state.bossEncountersAtBiomeStart = state.bossEncounters;
@@ -226,7 +234,8 @@
     state.theme = theme;
     syncThemeButtons(theme);
     if (hadStarted) {
-      startGame(theme);
+      startGame(theme, { phaseDifficulty: state.phaseDifficulty, combatRulesVersion: state.combatRulesVersion,
+        phaseCardFrequency: state.phaseCardFrequency, waveLimit: state.waveLimit, bossEncounters: state.bossEncountersAtBiomeStart });
     }
   }
 
@@ -548,7 +557,8 @@
         spawnEnemy();
         state.spawnRemaining -= 1;
         state.spawnTimer = Math.max(0.36, 0.86 - state.wave * 0.025)
-          / (themeDifficulty[state.theme] || themeDifficulty.park).spawnRate;
+          / (themeDifficulty[state.theme] || themeDifficulty.park).spawnRate
+          * getCombatDifficulty().spawnInterval;
       }
     }
 
@@ -1367,16 +1377,20 @@
     state.waveComboVisible = false;
     clearExpiredCardEffects(finishedWave);
 
-    const steps = [t("wave.end", { wave: finishedWave, defeated: defeatedThisWave })];
+    const result = { kind: "result", wave: finishedWave, defeated: defeatedThisWave,
+      lost: hpLostThisWave, income: 0, bonus: 0 };
+    const steps = state.gameMode === "tutorial"
+      ? [t("wave.end", { wave: finishedWave, defeated: defeatedThisWave })] : [result];
     if (state.gameMode !== "tutorial" && finishedWave > state.lastPaidWave) {
       const bonus = hpLostThisWave === 0 ? ntp.PERFECT_WAVE_BONUS : 0;
       state.coins += ntp.WAVE_INCOME + bonus;
       state.lastPaidWave = finishedWave;
       if (state.phaseEconomyVersion === 1) state.phaseEconomyVersion = "legacy-recovery";
-      steps[0] += `\n${t("wave.income", { amount: ntp.WAVE_INCOME })}`;
-      if (bonus) steps[0] += `\n${t("wave.perfectBonus", { amount: bonus })}`;
+      result.income = ntp.WAVE_INCOME;
+      result.bonus = bonus;
       logDebug("economy", "Wave income paid", { wave: finishedWave, income: ntp.WAVE_INCOME, bonus });
     }
+    if (state.gameMode !== "tutorial") state.lastWaveResult = { ...result };
     const willOfferCards = shouldOfferCardChoice(finishedWave);
     logDebug("waves", "Wave completed", {
       wave: finishedWave,
@@ -1393,7 +1407,7 @@
     }
 
     if (finishedWave < state.waveLimit) {
-      steps.push(t("wave.start", { wave: finishedWave + 1 }));
+      steps.push({ kind: "start", wave: finishedWave + 1 });
     }
 
     startWaveTransition(steps, startNextWave);
@@ -1403,7 +1417,8 @@
     state.waveTransitionActive = true;
     state.waveTransitionSteps = steps;
     state.waveTransitionIndex = 0;
-    state.waveTransitionTimer = WAVE_TRANSITION_DURATION;
+    state.waveTransitionTimer = state.waveTransitionSteps[state.waveTransitionIndex]?.kind === "result"
+      ? 3 : WAVE_TRANSITION_DURATION;
     waveTransitionCallback = callback;
     showWaveTransition(steps[0]);
   }
@@ -1414,7 +1429,8 @@
 
     state.waveTransitionIndex += 1;
     if (state.waveTransitionIndex < state.waveTransitionSteps.length) {
-      state.waveTransitionTimer = WAVE_TRANSITION_DURATION;
+      state.waveTransitionTimer = state.waveTransitionSteps[state.waveTransitionIndex]?.kind === "result"
+      ? 3 : WAVE_TRANSITION_DURATION;
       showWaveTransition(state.waveTransitionSteps[state.waveTransitionIndex]);
       return;
     }
@@ -1460,7 +1476,7 @@
       ? 1.75 * (1 + BOSS_HEALTH_GROWTH * (bossRank - 1))
       : 1 + state.wave * 0.12;
     const tutorialHp = state.gameMode === "tutorial" ? 0.6 : 1;
-    const maxHp = Math.round(type.hp * healthMultiplier * difficulty.hp * tutorialHp * getEnemyModifierMultiplier("hp"));
+    const maxHp = Math.round(type.hp * healthMultiplier * difficulty.hp * getCombatDifficulty().hp * tutorialHp * getEnemyModifierMultiplier("hp"));
     const el = document.createElement("div");
     el.className = `enemy ${type.className}${isBoss ? " enemy-boss" : ""}${options.isDecoy ? " enemy-decoy" : ""}`;
     el.classList.toggle("show-health", state.enemyHealthBarsUnlocked || isBoss);
@@ -1478,7 +1494,7 @@
       pathIndex: 0,
       maxHp,
       hp: maxHp,
-      speed: type.speed * (1 + Math.min(state.wave, 8) * 0.025) * difficulty.speed
+      speed: type.speed * (1 + Math.min(state.wave, 8) * 0.025) * difficulty.speed * getCombatDifficulty().speed
         * (isBoss ? 1 + Math.min(0.4, BOSS_SPEED_GROWTH * (bossRank - 1)) : 1)
         * getEnemyModifierMultiplier("speed"),
       reward: isBoss ? Math.round(type.reward * (1 + 0.1 * (bossRank - 1))) : type.reward,

@@ -40,6 +40,7 @@
 
   const settings = {
     difficulty: "medium",
+    duration: "standard",
     customWaves: ntp.MIN_CUSTOM_WAVES,
     cardFrequency: loadCardFrequency(),
     language: loadLanguage(),
@@ -76,6 +77,7 @@
       waveLimit,
       gameMode: "normal",
       phaseDifficulty: settings.difficulty,
+      combatRulesVersion: ntp.COMBAT_RULES_VERSION,
       phaseCardFrequency: settings.cardFrequency,
       phaseStats: ntp.createPhaseStats(),
       phaseResult: null,
@@ -83,6 +85,7 @@
       selectedTower: "sentinel",
       coins: 300,
       lastPaidWave: 0,
+      lastWaveResult: null,
       phaseEconomyVersion: ntp.ECONOMY_VERSION,
       maxLives: 10,
       lives: 10,

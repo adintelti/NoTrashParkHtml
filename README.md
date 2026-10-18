@@ -108,12 +108,20 @@ New saves include rating statistics. Older saves remain playable, but show that
 a complete rating requires starting a new biome because their previous losses
 and perfect waves were not recorded.
 
-The required difficulty step after `Jogar` controls how many waves must be cleared in each biome:
+Before starting, choose combat difficulty independently from duration per biome:
 
-- `Facil`: 5 waves.
-- `Medio`: 12 waves.
-- `Dificil`: 20 waves.
-- `Custom`: any typed value from 20 to 99 waves.
+- Easy: enemy HP x0.85, speed x0.95, spawn intervals x1.10, 15 lives.
+- Normal: current baseline combat, 10 lives.
+- Hard: enemy HP x1.15, speed x1.05, spawn intervals x0.90, 8 lives.
+- Duration: Short (5), Standard (12), Long (20), or Custom (5-99 waves).
+
+All combinations start with 300 coins and keep tower costs, kill rewards, wave
+income and five-wave boss cadence. Bosses inherit combat modifiers and continue
+scaling by encounter. Longer runs still increase cumulative challenge.
+Restart, replay and biome progression preserve the run's combat rules and wave
+limit. Legacy saves retain neutral combat, their existing lives and wave limit,
+and use a separate record category. Tutorial remains Park-only with five waves
+and its own practice modifiers. New records include combat rules version.
 
 When the player wins:
 
@@ -159,3 +167,9 @@ Current entities are CSS placeholders:
   `.theme-lava`, and `.theme-halloween`.
 
 These classes define the current geometric shapes and theme-specific visuals.
+
+Wave results appear in a compact banner below the HUD for three real-time seconds
+at either game speed. The banner separates performance and completion income
+(excluding kill rewards). The last completed wave remains readable in the pause
+menu and survives save/load. Routine messages use a polite status announcement;
+boss warnings keep a distinct highlighted presentation.

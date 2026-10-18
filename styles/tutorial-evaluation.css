@@ -302,3 +302,47 @@
   }
   .victory-overlay .rating-stats { grid-template-columns: 1fr; }
 }
+.combat-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.setup-description { font: 0.9rem/1.45 system-ui, sans-serif; margin: 10px 0 16px; }
+.difficulty-panel { max-height: calc(100dvh - 32px); overflow-y: auto; }
+.difficulty-panel .waves-input[hidden] { display: none; }
+.victory-overlay .victory-summary { font: 0.85rem/1.4 system-ui, sans-serif; color: #d4e3db; }
+/* Wave communication stays below the HUD and leaves the board visible. */
+.wave-transition {
+  top: 76px;
+  width: min(90%, 520px);
+  min-width: 0;
+  box-sizing: border-box;
+  padding: 14px 18px;
+  border: 2px solid #ffe76b;
+  background: #143c31;
+  color: #fff4d0;
+  box-shadow: 3px 3px 0 #071c16;
+  transform: translateX(-50%);
+  font-size: 1.2rem;
+  line-height: 1.4;
+  white-space: normal;
+}
+.wave-transition.is-visible { transform: translateX(-50%); }
+.wave-transition.is-wave-result, .last-wave-summary {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 6px 16px;
+  text-align: left;
+}
+.wave-transition[hidden], .last-wave-summary[hidden] { display: none; }
+.wave-result-title { font-size: 0.95rem; line-height: 1.5; }
+.wave-result-reward { color: #ffe76b; font: 700 1.05rem/1.5 system-ui, sans-serif; }
+.wave-result-performance, .wave-result-breakdown { font: 0.85rem/1.5 system-ui, sans-serif; color: #d4e3db; }
+.wave-result-breakdown { text-align: right; }
+.wave-transition.is-wave-start { width: max-content; max-width: 90%; font-size: 0.95rem; }
+.last-wave-summary { padding: 12px; background: #143c31; color: #fff4d0; border: 1px solid #567467; }
+.pause-menu-card { max-height: calc(100dvh - 32px); overflow-y: auto; }
+@media (max-width: 560px) {
+  .wave-transition { top: 64px; width: calc(100% - 24px); padding: 10px 12px; }
+  .wave-transition.is-wave-result, .last-wave-summary { grid-template-columns: 1fr; gap: 3px; }
+  .wave-result-performance { grid-row: 2; }
+  .wave-result-breakdown { text-align: left; }
+}
+@media (prefers-reduced-motion: reduce) { .wave-transition { transition: none; } }
+.wave-transition.is-special-wave { border-color: #ffb703; border-width: 3px; color: #ffe76b; }

@@ -97,6 +97,7 @@
     startGame(state.theme, {
       gameMode: state.gameMode,
       phaseDifficulty: state.phaseDifficulty,
+      combatRulesVersion: state.combatRulesVersion,
       phaseCardFrequency: state.phaseCardFrequency,
       waveLimit: state.waveLimit,
       bossEncounters: state.bossEncountersAtBiomeStart
@@ -216,6 +217,7 @@
       if (nextTheme) {
         startGame(nextTheme, {
           phaseDifficulty: state.phaseDifficulty,
+      combatRulesVersion: state.combatRulesVersion,
           phaseCardFrequency: state.phaseCardFrequency,
           waveLimit: state.waveLimit,
           bossEncounters: state.bossEncounters
@@ -228,6 +230,7 @@
     dom.victoryRestartButton.addEventListener("click", () => startGame(state.theme, {
       gameMode: state.gameMode,
       phaseDifficulty: state.phaseDifficulty,
+      combatRulesVersion: state.combatRulesVersion,
       phaseCardFrequency: state.phaseCardFrequency,
       waveLimit: state.waveLimit,
       bossEncounters: state.bossEncountersAtBiomeStart
@@ -252,24 +255,23 @@
     });
 
     document.querySelectorAll("[data-difficulty]").forEach((button) => {
+      button.addEventListener("click", () => setDifficulty(button.dataset.difficulty));
+    });
+    document.querySelectorAll("[data-duration]").forEach((button) => {
       button.addEventListener("click", () => {
-        const difficulty = button.dataset.difficulty;
-        setDifficulty(difficulty);
-        if (difficulty === "custom") {
+        ntp.setDuration(button.dataset.duration);
+        if (button.dataset.duration === "custom") {
           focusGamepadButton(dom.customWavesInput);
           dom.customWavesInput.select();
         }
       });
     });
-
-    dom.customWavesInput.addEventListener("focus", () => setDifficulty("custom"));
     dom.customWavesInput.addEventListener("input", () => {
       sanitizeCustomWavesInput();
-      settings.difficulty = "custom";
-      syncDifficultyButtons();
+      ntp.setDuration("custom");
     });
-    dom.customWavesInput.addEventListener("change", normalizeCustomWaves);
-    dom.customWavesInput.addEventListener("blur", normalizeCustomWaves);
+    dom.customWavesInput.addEventListener("change", () => { normalizeCustomWaves(); syncDifficultyButtons(); });
+    dom.customWavesInput.addEventListener("blur", () => { normalizeCustomWaves(); syncDifficultyButtons(); });
     dom.cardFrequencyInput.addEventListener("input", () => {
       setCardFrequency(Number(dom.cardFrequencyInput.value));
     });

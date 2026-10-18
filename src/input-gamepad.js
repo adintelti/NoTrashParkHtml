@@ -258,7 +258,7 @@
   function isGamepadFocusableElement(el) {
     if (el.disabled || el.hidden || !isElementVisible(el)) return false;
 
-    if (isCustomWavesInput(el) && settings.difficulty !== "custom" && document.activeElement !== el) {
+    if (isCustomWavesInput(el) && settings.duration !== "custom" && document.activeElement !== el) {
       return false;
     }
 
@@ -351,117 +351,12 @@
   }
 
   function moveDifficultyGamepadFocus(direction) {
-    const easyButton = dom.difficultyPanel.querySelector("[data-difficulty='easy']");
-    const mediumButton = dom.difficultyPanel.querySelector("[data-difficulty='medium']");
-    const hardButton = dom.difficultyPanel.querySelector("[data-difficulty='hard']");
-    const customButton = dom.difficultyPanel.querySelector("[data-difficulty='custom']");
-    const buttons = [
-      easyButton,
-      mediumButton,
-      hardButton,
-      customButton,
-      dom.customWavesInput,
-      dom.difficultyBackButton,
-      dom.startGameButton
-    ].filter(isGamepadFocusableElement);
-
+    const buttons = Array.from(dom.difficultyPanel.querySelectorAll("button, input"))
+      .filter(isGamepadFocusableElement);
     if (!buttons.length) return;
-
-    const current = buttons.includes(document.activeElement) ? document.activeElement : null;
-    if (!current) {
-      localFocusGamepadButton(buttons[0]);
-      return;
-    }
-
-    if (current === easyButton) {
-      if (isHorizontalDirection(direction) && direction.x > 0) {
-        focusFirstGamepadButton(mediumButton);
-        return;
-      }
-      if (isVerticalDirection(direction) && direction.y > 0) {
-        focusFirstGamepadButton(hardButton);
-        return;
-      }
-    }
-
-    if (current === mediumButton) {
-      if (isHorizontalDirection(direction) && direction.x < 0) {
-        focusFirstGamepadButton(easyButton);
-        return;
-      }
-      if (isVerticalDirection(direction) && direction.y > 0) {
-        focusFirstGamepadButton(customButton);
-        return;
-      }
-    }
-
-    if (current === hardButton) {
-      if (isHorizontalDirection(direction) && direction.x > 0) {
-        focusFirstGamepadButton(customButton);
-        return;
-      }
-      if (isVerticalDirection(direction) && direction.y < 0) {
-        focusFirstGamepadButton(easyButton);
-        return;
-      }
-      if (isVerticalDirection(direction) && direction.y > 0) {
-        focusFirstGamepadButton(dom.customWavesInput, dom.difficultyBackButton);
-        return;
-      }
-    }
-
-    if (current === customButton) {
-      if (isHorizontalDirection(direction) && direction.x < 0) {
-        focusFirstGamepadButton(hardButton);
-        return;
-      }
-      if (isVerticalDirection(direction) && direction.y < 0) {
-        focusFirstGamepadButton(mediumButton);
-        return;
-      }
-      if (isVerticalDirection(direction) && direction.y > 0) {
-        focusFirstGamepadButton(dom.customWavesInput, dom.startGameButton, dom.difficultyBackButton);
-        return;
-      }
-    }
-
-    if (current === dom.customWavesInput) {
-      if (isVerticalDirection(direction) && direction.y < 0) {
-        focusFirstGamepadButton(customButton);
-        return;
-      }
-      if (isVerticalDirection(direction) && direction.y > 0) {
-        focusFirstGamepadButton(dom.difficultyBackButton);
-        return;
-      }
-    }
-
-    if (current === dom.difficultyBackButton) {
-      if (isHorizontalDirection(direction) && direction.x > 0) {
-        focusFirstGamepadButton(dom.startGameButton);
-        return;
-      }
-      if (isVerticalDirection(direction) && direction.y < 0) {
-        focusFirstGamepadButton(dom.customWavesInput, hardButton);
-        return;
-      }
-    }
-
-    if (current === dom.startGameButton) {
-      if (isHorizontalDirection(direction) && direction.x < 0) {
-        focusFirstGamepadButton(dom.difficultyBackButton);
-        return;
-      }
-      if (isVerticalDirection(direction) && direction.y < 0) {
-        focusFirstGamepadButton(dom.customWavesInput, customButton);
-        return;
-      }
-    }
-
+    const index = buttons.indexOf(document.activeElement);
     const step = direction.x > 0 || direction.y > 0 ? 1 : -1;
-    const currentIndex = buttons.indexOf(current);
-    const nextIndex = (currentIndex + step + buttons.length) % buttons.length;
-    localFocusGamepadButton(buttons[nextIndex]);
+    localFocusGamepadButton(buttons[index < 0 ? 0 : (index + step + buttons.length) % buttons.length]);
   }
 
   function focusFirstGamepadButton(...buttons) {
@@ -605,7 +500,7 @@
 
       if (justPressed(gamepadButtons.a) || justPressed(gamepadButtons.b) || justPressed(gamepadButtons.start)) {
         normalizeCustomWaves();
-        localFocusGamepadButton(dom.difficultyPanel.querySelector("[data-difficulty='custom']"));
+        localFocusGamepadButton(dom.difficultyPanel.querySelector("[data-duration='custom']"));
       }
       return;
     }

@@ -71,11 +71,19 @@
         title: "Dificuldade",
         aria: "Dificuldade",
         easy: "Facil",
-        medium: "Medio",
+        medium: "Normal",
         hard: "Dificil",
         custom: "Custom",
         waves: "Ondas",
-        customWavesAria: "Quantidade de ondas customizada"
+        customWavesAria: "Quantidade de ondas customizada",
+        duration: "Duração por bioma",
+        short: "Curta",
+        standard: "Padrão",
+        long: "Longa",
+        summary: "{difficulty} · {waves} ondas por bioma · Chefes: {bosses} (a cada 5 ondas)",
+        easyDescription: "Inimigos menos resistentes, ritmo mais tranquilo e 15 vidas.",
+        mediumDescription: "Pressão padrão dos inimigos e 10 vidas.",
+        hardDescription: "Inimigos mais resistentes, ritmo intenso e 8 vidas."
       },
       game: {
         screenAria: "Demo tower defense",
@@ -263,6 +271,12 @@
         gamepadDisconnected: "Controle desconectado."
       },
       wave: {
+        resultTitle: "Onda {wave} concluída",
+        resultReward: "+{amount} moedas",
+        resultDefeated: "{count} derrotados",
+        resultPerfect: "Defesa perfeita",
+        resultLost: "Vidas perdidas: {count}",
+        resultBreakdown: "{base} base + {bonus} bônus",
         income: "Onda concluída: +{amount} moedas.",
         perfectBonus: "Defesa perfeita: +{amount} moedas.",
         end: "Fim da onda {wave}\nDerrotou: {defeated}",
@@ -347,11 +361,19 @@
         title: "Difficulty",
         aria: "Difficulty",
         easy: "Easy",
-        medium: "Medium",
+        medium: "Normal",
         hard: "Hard",
         custom: "Custom",
         waves: "Waves",
-        customWavesAria: "Custom wave count"
+        customWavesAria: "Custom wave count",
+        duration: "Duration per biome",
+        short: "Short",
+        standard: "Standard",
+        long: "Long",
+        summary: "{difficulty} · {waves} waves per biome · Bosses: {bosses} (every 5 waves)",
+        easyDescription: "Weaker enemies, a gentler pace and 15 lives.",
+        mediumDescription: "Standard enemy pressure and 10 lives.",
+        hardDescription: "Stronger enemies, intense pacing and 8 lives."
       },
       game: {
         screenAria: "Tower defense demo",
@@ -539,6 +561,12 @@
         gamepadDisconnected: "Controller disconnected."
       },
       wave: {
+        resultTitle: "Wave {wave} completed",
+        resultReward: "+{amount} coins",
+        resultDefeated: "{count} defeated",
+        resultPerfect: "Perfect defense",
+        resultLost: "Lives lost: {count}",
+        resultBreakdown: "{base} base + {bonus} bonus",
         income: "Wave completed: +{amount} coins.",
         perfectBonus: "Perfect defense: +{amount} coins.",
         end: "End of wave {wave}\nDefeated: {defeated}",
@@ -623,11 +651,19 @@
         title: "Dificultad",
         aria: "Dificultad",
         easy: "Facil",
-        medium: "Medio",
+        medium: "Normal",
         hard: "Dificil",
         custom: "Custom",
         waves: "Oleadas",
-        customWavesAria: "Cantidad de oleadas personalizada"
+        customWavesAria: "Cantidad de oleadas personalizada",
+        duration: "Duración por bioma",
+        short: "Corta",
+        standard: "Estándar",
+        long: "Larga",
+        summary: "{difficulty} · {waves} oleadas por bioma · Jefes: {bosses} (cada 5 oleadas)",
+        easyDescription: "Enemigos menos resistentes, ritmo tranquilo y 15 vidas.",
+        mediumDescription: "Presión estándar y 10 vidas.",
+        hardDescription: "Enemigos más resistentes, ritmo intenso y 8 vidas."
       },
       game: {
         screenAria: "Demo tower defense",
@@ -815,6 +851,12 @@
         gamepadDisconnected: "Control desconectado."
       },
       wave: {
+        resultTitle: "Oleada {wave} completada",
+        resultReward: "+{amount} monedas",
+        resultDefeated: "{count} derrotados",
+        resultPerfect: "Defensa perfecta",
+        resultLost: "Vidas perdidas: {count}",
+        resultBreakdown: "{base} base + {bonus} de bonificación",
         income: "Oleada completada: +{amount} monedas.",
         perfectBonus: "Defensa perfecta: +{amount} monedas.",
         end: "Fin de la oleada {wave}\nDerroto: {defeated}",
@@ -1059,6 +1101,7 @@
     settings.language = normalizeLanguage(language);
     saveLanguage?.(settings.language);
     applyTranslations();
+    ntp.syncDifficultyButtons?.();
   }
 
   Object.assign(ntp, {

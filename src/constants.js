@@ -6,10 +6,10 @@
   ntp.PERFECT_WAVE_BONUS = 10;
   ntp.COLS = 12;
   ntp.ROWS = 9;
-  ntp.GAME_VERSION = "2.1.13";
+  ntp.GAME_VERSION = "2.1.14";
   ntp.DEFAULT_LANGUAGE = "pt-BR";
   ntp.SUPPORTED_LANGUAGES = ["pt-BR", "en", "es"];
-  ntp.MIN_CUSTOM_WAVES = 20;
+  ntp.MIN_CUSTOM_WAVES = 5;
   ntp.MAX_CUSTOM_WAVES = 99;
   ntp.MIN_CARD_FREQUENCY = 0;
   ntp.MAX_CARD_FREQUENCY = 10;
@@ -19,6 +19,13 @@
   ntp.GAMEPAD_MOVE_REPEAT = 0.16;
   ntp.GAMEPAD_NAV_REPEAT = 0.18;
 
+  ntp.COMBAT_RULES_VERSION = 2;
+  ntp.combatDifficulties = {
+    easy: { hp: 0.85, speed: 0.95, spawnInterval: 1.1, lives: 15 },
+    medium: { hp: 1, speed: 1, spawnInterval: 1, lives: 10 },
+    hard: { hp: 1.15, speed: 1.05, spawnInterval: 0.9, lives: 8 }
+  };
+  ntp.durationOptions = { short: 5, standard: 12, long: 20 };
   ntp.difficultyOptions = {
     easy: 5,
     medium: 12,

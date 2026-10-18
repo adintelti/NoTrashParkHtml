@@ -144,29 +144,21 @@
         <div id="difficultyPanel" class="config-panel difficulty-panel" role="dialog" aria-modal="true" aria-labelledby="difficultyTitle" hidden>
           <div class="config-section">
             <div id="difficultyTitle" class="config-title" data-i18n="difficulty.title">Dificuldade</div>
-            <div class="difficulty-grid" role="group" aria-label="Dificuldade" data-i18n-aria-label="difficulty.aria">
-              <button class="seg-button" data-difficulty="easy" type="button">
-                <span data-i18n="difficulty.easy">Facil</span>
-                <strong>5</strong>
-              </button>
-              <button class="seg-button" data-difficulty="medium" type="button">
-                <span data-i18n="difficulty.medium">Medio</span>
-                <strong>12</strong>
-              </button>
-              <button class="seg-button" data-difficulty="hard" type="button">
-                <span data-i18n="difficulty.hard">Dificil</span>
-                <strong>20</strong>
-              </button>
-              <button class="seg-button" data-difficulty="custom" type="button">
-                <span data-i18n="difficulty.custom">Custom</span>
-                <strong>20-99</strong>
-              </button>
+            <div class="difficulty-grid combat-grid" role="group" data-i18n-aria-label="difficulty.aria">
+              <button class="seg-button" data-difficulty="easy" type="button"><span data-i18n="difficulty.easy">Fácil</span></button>
+              <button class="seg-button" data-difficulty="medium" type="button"><span data-i18n="difficulty.medium">Normal</span></button>
+              <button class="seg-button" data-difficulty="hard" type="button"><span data-i18n="difficulty.hard">Difícil</span></button>
             </div>
-
-            <label class="waves-field" for="customWavesInput">
-              <span data-i18n="difficulty.waves">Ondas</span>
-              <input id="customWavesInput" class="waves-input" type="text" inputmode="numeric" pattern="[0-9]*" value="20" aria-label="Quantidade de ondas customizada" data-i18n-aria-label="difficulty.customWavesAria">
-            </label>
+            <p id="combatDescription" class="setup-description"></p>
+            <div class="config-title" data-i18n="difficulty.duration">Duração por bioma</div>
+            <div class="difficulty-grid" role="group" data-i18n-aria-label="difficulty.duration">
+              <button class="seg-button" data-duration="short" type="button"><span data-i18n="difficulty.short">Curta</span><strong>5</strong></button>
+              <button class="seg-button" data-duration="standard" type="button"><span data-i18n="difficulty.standard">Padrão</span><strong>12</strong></button>
+              <button class="seg-button" data-duration="long" type="button"><span data-i18n="difficulty.long">Longa</span><strong>20</strong></button>
+              <button class="seg-button" data-duration="custom" type="button"><span data-i18n="difficulty.custom">Personalizada</span><strong>5–99</strong></button>
+            </div>
+            <input id="customWavesInput" class="waves-input" type="text" inputmode="numeric" pattern="[0-9]*" value="20" data-i18n-aria-label="difficulty.customWavesAria" hidden>
+            <p id="matchSetupSummary" class="setup-description" aria-live="polite"></p>
           </div>
 
           <div class="difficulty-actions">
@@ -210,7 +202,7 @@
 
             <div id="board" class="board theme-park" data-testid="board"></div>
             <div id="comboCounter" class="combo-counter" aria-live="polite" hidden>0X</div>
-            <div id="waveTransition" class="wave-transition" aria-live="assertive" hidden></div>
+            <div id="waveTransition" class="wave-transition" role="status" aria-live="polite" aria-atomic="true" hidden></div>
             <div id="floatingMessage" class="floating-message" aria-live="polite"></div>
 
             <div id="debugConsole" class="debug-console" aria-label="Debug console" hidden>
@@ -456,6 +448,7 @@
           <div id="pauseMenuOverlay" class="pause-menu-overlay" role="dialog" aria-modal="true" aria-labelledby="pauseMenuTitle" hidden>
             <div class="pause-menu-card">
               <h2 id="pauseMenuTitle" data-i18n="pause.title">Pausado</h2>
+              <section id="lastWaveSummary" class="last-wave-summary" hidden></section>
               <div id="pauseMenuActions" class="pause-menu-actions" aria-label="Menu de pausa" data-i18n-aria-label="pause.actionsAria">
                 <button id="pauseResumeButton" class="pixel-button pause-menu-button" type="button" data-i18n="actions.resume">Retomar</button>
                 <button id="pauseSoundButton" class="pixel-button pause-menu-button" type="button" data-i18n="settings.sound">Som</button>

@@ -13,10 +13,12 @@
     "theme",
     "waveLimit",
     "phaseDifficulty",
+    "combatRulesVersion",
     "phaseCardFrequency",
     "selectedTower",
     "coins",
     "lastPaidWave",
+    "lastWaveResult",
     "phaseEconomyVersion",
     "maxLives",
     "lives",
@@ -348,11 +350,16 @@
       theme: savedState.theme,
       waveLimit: asNumber(savedState.waveLimit, ntp.difficultyOptions?.medium || 12),
       gameMode: "normal",
-      phaseDifficulty: savedState.phaseDifficulty || "custom",
+      phaseDifficulty: savedState.combatRulesVersion === ntp.COMBAT_RULES_VERSION
+        && ntp.combatDifficulties[savedState.phaseDifficulty] ? savedState.phaseDifficulty : "medium",
+      combatRulesVersion: savedState.combatRulesVersion === ntp.COMBAT_RULES_VERSION ? ntp.COMBAT_RULES_VERSION : 1,
       phaseCardFrequency: asNumber(savedState.phaseCardFrequency, ntp.settings.cardFrequency),
       phaseStats: ntp.restorePhaseStats(savedState.phaseStats),
       selectedTower: savedState.selectedTower || "sentinel",
       coins: asNumber(savedState.coins, 300),
+      lastWaveResult: savedState.lastWaveResult && Number.isFinite(savedState.lastWaveResult.wave)
+        ? Object.fromEntries(["wave", "defeated", "lost", "income", "bonus"].map(key =>
+          [key, Math.max(0, Math.floor(asNumber(savedState.lastWaveResult[key], 0)))])) : null,
       // Legacy saves retain their record category; already completed waves are never paid retroactively.
       phaseEconomyVersion: savedState.phaseEconomyVersion === "legacy-recovery"
         ? "legacy-recovery" : asNumber(savedState.phaseEconomyVersion, 1),

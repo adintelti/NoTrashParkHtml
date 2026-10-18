@@ -2,7 +2,7 @@
   const ntp = window.NTP = window.NTP || {};
   const {
     DEFAULT_CARD_FREQUENCY,
-    difficultyOptions,
+    durationOptions,
     dom,
     MAX_CARD_FREQUENCY,
     MAX_CUSTOM_WAVES,
@@ -16,14 +16,14 @@
   let difficultySelectedForStart = false;
 
   function getConfiguredWaveLimit() {
-    if (settings.difficulty === "custom") {
-      return normalizeCustomWaves();
+    if (settings.duration === "custom") {
+      return clampCustomWaves(getRawCustomWaves());
     }
-    return difficultyOptions[settings.difficulty] || difficultyOptions.medium;
+    return durationOptions[settings.duration] || durationOptions.standard;
   }
 
   function openDifficultyPanel() {
-    difficultySelectedForStart = false;
+    difficultySelectedForStart = true;
     dom.configPanel.hidden = true;
     dom.difficultyPanel.hidden = false;
     syncDifficultyButtons();
@@ -75,16 +75,31 @@
   }
 
   function setDifficulty(difficulty) {
+    if (!ntp.combatDifficulties[difficulty]) return;
     settings.difficulty = difficulty;
     difficultySelectedForStart = true;
-    if (difficulty === "custom" && dom.customWavesInput.value.trim() === "") {
-      dom.customWavesInput.value = String(settings.customWaves);
-    }
     syncDifficultyButtons();
     syncStartGameButton();
   }
 
+  function setDuration(duration) {
+    if (!durationOptions[duration] && duration !== "custom") return;
+    settings.duration = duration;
+    syncDifficultyButtons();
+  }
+
   function syncDifficultyButtons() {
+    document.querySelectorAll("[data-duration]").forEach((button) => {
+      const selected = button.dataset.duration === settings.duration;
+      button.classList.toggle("is-active", selected);
+      button.setAttribute("aria-pressed", String(selected));
+    });
+    dom.customWavesInput.hidden = settings.duration !== "custom";
+    if (dom.combatDescription) dom.combatDescription.textContent = ntp.t(`difficulty.${settings.difficulty}Description`);
+    if (dom.matchSetupSummary) dom.matchSetupSummary.textContent = ntp.t("difficulty.summary", {
+      difficulty: ntp.t(`difficulty.${settings.difficulty}`),
+      waves: getConfiguredWaveLimit(), bosses: Math.floor(getConfiguredWaveLimit() / 5)
+    });
     document.querySelectorAll("[data-difficulty]").forEach((button) => {
       const isSelected = difficultySelectedForStart && button.dataset.difficulty === settings.difficulty;
       button.classList.toggle("is-active", isSelected);
@@ -105,7 +120,8 @@
     const nextValue = clampCustomWaves(currentValue + (increase ? 1 : -1));
     settings.customWaves = nextValue;
     dom.customWavesInput.value = String(nextValue);
-    setDifficulty("custom");
+    setDuration("custom");
+    syncDifficultyButtons();
   }
 
   function clampCardFrequency(value) {
@@ -153,6 +169,7 @@
     closeDifficultyPanel,
     isDifficultyPanelOpen,
     setDifficulty,
+    setDuration,
     syncDifficultyButtons,
     isCustomWavesInput,
     adjustCustomWavesFromGamepad,

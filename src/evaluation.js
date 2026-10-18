@@ -35,7 +35,7 @@
     const prefix = economy === 1 ? "ntp.phaseResults.v1." : `ntp.phaseResults.economy${economy}.`;
     return `${prefix}${JSON.stringify([
       state.theme, state.phaseDifficulty, state.waveLimit,
-      state.phaseCardFrequency, state.bossEncountersAtBiomeStart
+      state.phaseCardFrequency, state.bossEncountersAtBiomeStart, state.combatRulesVersion || 1
     ])}`;
   }
 

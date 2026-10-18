@@ -311,13 +311,14 @@ test("wave income rewards recovery and perfection once, including the final boss
   completeIncomeWave(game, 1, 2);
   assert.equal(game.state.coins, 325);
   assert.equal(game.state.lastPaidWave, 1);
-  assert.match(game.state.waveTransitionSteps[0], /25/);
-  assert.doesNotMatch(game.state.waveTransitionSteps[0], /10/);
+  assert.equal(game.state.waveTransitionSteps[0].income, 25);
+  assert.equal(game.state.waveTransitionTimer, 3);
+  assert.equal(game.state.waveTransitionSteps[0].bonus, 0);
   completeIncomeWave(game, 1, 2);
   assert.equal(game.state.coins, 325);
   completeIncomeWave(game, 2);
   assert.equal(game.state.coins, 360);
-  assert.match(game.state.waveTransitionSteps[0], /10/);
+  assert.equal(game.state.waveTransitionSteps[0].bonus, 10);
   // Clearing ordinary enemies on a boss wave is not yet completion.
   Object.assign(game.state, { wave: 5, waveInProgress: true, bossStarted: false,
     waveTransitionActive: false, spawnRemaining: 0, enemies: [] });
@@ -385,5 +386,81 @@ test("defeat and tutorial grant no wave income; speed and cards do not change pa
       assert.notEqual(game.t(key, { amount: 25 }), key);
       assert.match(game.t(key, { amount: 25 }), /25/);
     }
+  }
+});
+
+test("combat difficulty is independent of length across every biome and applies to bosses", () => {
+  for (const theme of ["park", "lagoon", "lava", "halloween"]) {
+    for (const waves of [5, 12, 20, 99]) {
+      const values = [];
+      for (const difficulty of ["easy", "medium", "hard"]) {
+        const game = createGame();
+        game.startGame(theme, { waveLimit: waves, phaseDifficulty: difficulty });
+        assert.equal(game.state.waveLimit, waves);
+        assert.equal(game.state.lives, game.combatDifficulties[difficulty].lives);
+        game.state.wave = 1;
+        game.beginWaveSpawn();
+        game.update(0);
+        const enemy = game.state.enemies[0];
+        const interval = game.state.spawnTimer;
+        Object.assign(game.state, { wave: 5, enemies: [], spawnRemaining: 0, bossEncounters: 1 });
+        game.state.enemiesById.clear();
+        game.update(0);
+        game.update(0, 2);
+        const boss = game.state.enemies[0];
+        values.push({ hp: enemy.maxHp, speed: enemy.speed, bossHp: boss.maxHp, bossSpeed: boss.speed, interval });
+        assert.equal(game.state.coins, 300);
+        assert.equal(game.saveGame(), true);
+        game.settings.difficulty = difficulty === "hard" ? "easy" : "hard";
+        game.loadSavedGame();
+        assert.equal(game.state.phaseDifficulty, difficulty);
+        assert.equal(game.state.waveLimit, waves);
+      }
+      assert.ok(values[0].interval > values[1].interval);
+      assert.ok(values[1].interval > values[2].interval);
+      for (const key of ["hp", "speed", "bossHp", "bossSpeed"]) {
+        assert.ok(values[0][key] < values[1][key]);
+        assert.ok(values[1][key] < values[2][key]);
+      }
+    }
+  }
+});
+
+test("old difficulty labels migrate to neutral combat without changing waves or lives", () => {
+  const game = createGame();
+  game.startGame("lava", { waveLimit: 20, phaseDifficulty: "hard" });
+  game.state.lives = 6;
+  game.saveGame();
+  const legacy = JSON.parse(JSON.stringify(game.records.get("ntp.savedGame")));
+  delete legacy.state.combatRulesVersion;
+  const restored = createGame();
+  restored.records.set("ntp.savedGame", legacy);
+  restored.loadSavedGame();
+  assert.equal(restored.state.phaseDifficulty, "medium");
+  assert.equal(restored.state.waveLimit, 20);
+  assert.equal(restored.state.lives, 6);
+  assert.equal(restored.state.combatRulesVersion, 1);
+  const key = restored.getPhaseRecordKey(restored.state);
+  restored.state.combatRulesVersion = restored.COMBAT_RULES_VERSION;
+  assert.notEqual(restored.getPhaseRecordKey(restored.state), key);
+});
+
+test("last wave summary persists and transition time uses real seconds at either speed", () => {
+  for (const speed of [1, 2]) {
+    const game = createGame();
+    game.settings.cardFrequency = 0;
+    game.startGame("park", { waveLimit: 12 });
+    game.state.speed = speed;
+    completeIncomeWave(game, 1, 2);
+    assert.equal(game.state.lastWaveResult.lost, 2);
+    assert.equal(game.state.lastWaveResult.income, 25);
+    game.update(speed, 1);
+    assert.equal(game.state.waveTransitionTimer, 2);
+    game.state.waveTransitionActive = false;
+    game.saveGame();
+    game.loadSavedGame();
+    assert.equal(game.state.lastWaveResult.wave, 1);
+    assert.equal(game.state.lastWaveResult.lost, 2);
+    assert.equal(game.state.lastWaveResult.bonus, 0);
   }
 });

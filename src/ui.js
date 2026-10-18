@@ -379,9 +379,25 @@
   }
 
   function showWaveTransition(text) {
-    dom.waveTransition.textContent = text;
+    dom.waveTransition.textContent = "";
+    dom.waveTransition.classList.toggle("is-special-wave", typeof text === "string");
+    dom.waveTransition.classList.toggle("is-wave-result", text?.kind === "result");
+    dom.waveTransition.classList.toggle("is-wave-start", text?.kind === "start");
+    if (text?.kind === "result") renderWaveResult(dom.waveTransition, text);
+    else dom.waveTransition.textContent = text?.kind === "start"
+      ? t("wave.start", { wave: text.wave }) : text;
     dom.waveTransition.hidden = false;
     dom.waveTransition.classList.add("is-visible");
+  }
+
+  function renderWaveResult(container, result) {
+    container.textContent = "";
+    appendCardText(container, "strong", "wave-result-title", t("wave.resultTitle", { wave: result.wave }));
+    appendCardText(container, "span", "wave-result-reward", t("wave.resultReward", { amount: result.income + result.bonus }));
+    appendCardText(container, "span", "wave-result-performance", t("wave.resultDefeated", { count: result.defeated }) + " · "
+      + (result.lost === 0 ? t("wave.resultPerfect") : t("wave.resultLost", { count: result.lost })));
+    if (result.bonus) appendCardText(container, "span", "wave-result-breakdown",
+      t("wave.resultBreakdown", { base: result.income, bonus: result.bonus }));
   }
 
   function hideWaveTransition() {
@@ -501,8 +517,8 @@
     hidePauseMenu();
     hideCardChoice();
     dom.victoryTitle.textContent = tutorialMode ? t("tutorial.completed") : getVictoryTitle(state.theme);
-    dom.victorySummary.hidden = !tutorialMode;
-    dom.victorySummary.textContent = tutorialMode ? t("tutorial.summary") : "";
+    dom.victorySummary.hidden = false;
+    dom.victorySummary.textContent = tutorialMode ? t("tutorial.summary") : `${t(`difficulty.${state.phaseDifficulty}`)} · ${state.waveLimit} ${t("difficulty.waves")}`;
     dom.victoryRestartButton.textContent = t(tutorialMode ? "tutorial.repeat" : "victory.restart");
     updateResultDetails();
     dom.victoryContinueButton.hidden = !hasNextTheme;
@@ -524,7 +540,8 @@
     hidePauseMenu();
     hideCardChoice();
     dom.victoryTitle.textContent = t("victory.gameOver", { map: levelName });
-    dom.victorySummary.hidden = true;
+    dom.victorySummary.hidden = false;
+    dom.victorySummary.textContent = `${t(`difficulty.${state.phaseDifficulty}`)} · ${state.waveLimit} ${t("difficulty.waves")}`;
     dom.victoryRestartButton.textContent = t("victory.restart");
     updateResultDetails();
     dom.victoryContinueButton.hidden = true;
@@ -593,6 +610,8 @@
   }
 
   function showPauseMenu() {
+    dom.lastWaveSummary.hidden = !state.lastWaveResult;
+    if (state.lastWaveResult) renderWaveResult(dom.lastWaveSummary, state.lastWaveResult);
     hideRestartConfirm();
     hideExitConfirm();
     hideTowerDeleteConfirm();
