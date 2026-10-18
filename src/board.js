@@ -33,6 +33,9 @@
         if (pathSet.has(key)) {
           tile.classList.add("path", "blocked");
           pathTiles.push(tile);
+          for (const [side, dx, dy] of [["n", 0, -1], ["e", 1, 0], ["s", 0, 1], ["w", -1, 0]]) {
+            if (!pathSet.has(coordKey(x + dx, y + dy))) tile.classList.add(`edge-${side}`);
+          }
         } else if (blockedSet.has(key)) {
           tile.classList.add("terrain", "blocked");
         } else {

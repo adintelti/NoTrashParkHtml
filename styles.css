@@ -11,3 +11,7 @@
 
 @import "./styles/shop.css";
 @import "./styles/pixel-language.css";
+
+@import "./styles/tilesets.css";
+
+@import "./styles/enemies.css";

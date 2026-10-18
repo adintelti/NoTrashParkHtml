@@ -1,0 +1,20 @@
+/* Sprites share a 32px pixel grid; combat markers remain separate from the artwork. */
+.enemy {
+  border: 0; border-radius: 0; background-color: transparent;
+  background-repeat: no-repeat; background-position: center; background-size: contain;
+  image-rendering: pixelated;
+}
+.enemy::before, .enemy::after { display: none; }
+.enemy-runner { background-image: url("../assets/enemies/runner.svg"); background-color: transparent; border-radius: 0; }
+.enemy-sprinter { background-image: url("../assets/enemies/sprinter.svg"); background-color: transparent; border-radius: 0; }
+.enemy-brute { background-image: url("../assets/enemies/brute.svg"); background-color: transparent; border-radius: 0; }
+.enemy-shield { background-image: url("../assets/enemies/shield.svg"); background-color: transparent; border-radius: 0; }
+.enemy-boss-park { background-image: url("../assets/enemies/boss-park.svg"); background-color: transparent; border-radius: 0; }
+.enemy-boss-lagoon { background-image: url("../assets/enemies/boss-lagoon.svg"); background-color: transparent; border-radius: 0; }
+.enemy-boss-lava { background-image: url("../assets/enemies/boss-lava.svg"); background-color: transparent; border-radius: 0; }
+.enemy-boss-halloween { background-image: url("../assets/enemies/boss-halloween.svg"); background-color: transparent; border-radius: 0; }
+
+.enemy.enemy-decoy {
+  background-image: url("../assets/enemies/runner.svg"); background-color: transparent;
+  filter: hue-rotate(220deg); opacity: .65;
+}

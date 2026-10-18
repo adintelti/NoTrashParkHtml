@@ -1,0 +1,26 @@
+/* Pixel tiles share one 32px source grid; board geometry and interactions stay intact. */
+.board .tile { border-color: rgba(20, 47, 30, .06); background-size: 100% 100%; image-rendering: pixelated; }
+.board .tile::after { display: none; }
+.theme-park .tile.terrain { background-image: url("../assets/tiles/park-ground.svg"); background-color: transparent; background-size: 100% 100%; box-shadow: none; }
+.theme-park .tile.path { background-image: url("../assets/tiles/park-path.svg"); background-color: transparent; background-size: 100% 100%; box-shadow: none; }
+.theme-park .tile.terrain.blocked { background-image: url("../assets/tiles/park-blocked.svg"); background-color: transparent; background-size: 100% 100%; box-shadow: none; }
+.theme-lagoon .tile.terrain { background-image: url("../assets/tiles/lagoon-ground.svg"); background-color: transparent; background-size: 100% 100%; box-shadow: none; }
+.theme-lagoon .tile.path { background-image: url("../assets/tiles/lagoon-path.svg"); background-color: transparent; background-size: 100% 100%; box-shadow: none; }
+.theme-lagoon .tile.terrain.blocked { background-image: url("../assets/tiles/lagoon-blocked.svg"); background-color: transparent; background-size: 100% 100%; box-shadow: none; }
+.theme-lava .tile.terrain { background-image: url("../assets/tiles/lava-ground.svg"); background-color: transparent; background-size: 100% 100%; box-shadow: none; }
+.theme-lava .tile.path { background-image: url("../assets/tiles/lava-path.svg"); background-color: transparent; background-size: 100% 100%; box-shadow: none; }
+.theme-lava .tile.terrain.blocked { background-image: url("../assets/tiles/lava-blocked.svg"); background-color: transparent; background-size: 100% 100%; box-shadow: none; }
+.theme-halloween .tile.terrain { background-image: url("../assets/tiles/halloween-ground.svg"); background-color: transparent; background-size: 100% 100%; box-shadow: none; }
+.theme-halloween .tile.path { background-image: url("../assets/tiles/halloween-path.svg"); background-color: transparent; background-size: 100% 100%; box-shadow: none; }
+.theme-halloween .tile.terrain.blocked { background-image: url("../assets/tiles/halloween-blocked.svg"); background-color: transparent; background-size: 100% 100%; box-shadow: none; }
+
+/* Only the outside of a route is edged, so adjoining path tiles read as one trail. */
+.board .tile.path { border-color: transparent; }
+.board .tile.path::after {
+  display: block; inset: 0; width: auto; height: auto; opacity: 1;
+  border: 0 solid rgba(48, 55, 33, .35); background: transparent; pointer-events: none;
+}
+.board .tile.path.edge-n::after { border-top-width: 2px; }
+.board .tile.path.edge-e::after { border-right-width: 2px; }
+.board .tile.path.edge-s::after { border-bottom-width: 2px; }
+.board .tile.path.edge-w::after { border-left-width: 2px; }
